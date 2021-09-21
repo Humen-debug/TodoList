@@ -25,6 +25,7 @@ class _DatePickerState extends State<DatePicker> {
         text: getText(),
         onClicked: () => pickDate(context),
         icon: Icons.event,
+        color: Colors.grey,
       );
 
   Future pickDate(BuildContext context) async {

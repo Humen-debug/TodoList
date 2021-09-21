@@ -15,7 +15,10 @@ class _TimePickerState extends State<TimePicker> {
     if (time == null) {
       return 'Select time';
     } else {
-      return '${time!.hour}:${time!.minute}';
+      final hours = time!.hour.toString().padLeft(2, '0');
+      final minutes = time!.minute.toString().padLeft(2, '0');
+
+      return '$hours:$minutes';
     }
   }
 
@@ -24,7 +27,9 @@ class _TimePickerState extends State<TimePicker> {
       title: 'Time',
       text: getText(),
       onClicked: () => pickTime(context),
-      icon: Icons.alarm);
+      icon: Icons.alarm,
+      color: Colors.grey,
+      );
 
   Future pickTime(BuildContext context) async {
     final initialTime = TimeOfDay(hour: 8, minute: 0);

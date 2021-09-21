@@ -5,12 +5,14 @@ class ButtonHeaderWidget extends StatelessWidget {
   final String text;
   final VoidCallback onClicked;
   final IconData icon;
+  final Color color;
   const ButtonHeaderWidget({
     Key? key,
     required this.title,
     required this.text,
     required this.onClicked,
     required this.icon,
+    required this.color,
   }) : super(key: key);
 
   @override
@@ -20,6 +22,7 @@ class ButtonHeaderWidget extends StatelessWidget {
         text: text,
         onClicked: onClicked,
         icon: icon,
+        color: color,
       ));
 }
 
@@ -40,14 +43,16 @@ class ButtonWidget extends StatelessWidget {
   final String text;
   final VoidCallback onClicked;
   final IconData icon;
+  final Color color;
   const ButtonWidget(
       {Key? key,
       required this.text,
       required this.onClicked,
-      required this.icon})
-      : super(key: key);
+      required this.icon,
+      required this.color,
+      }): super(key: key);
 
   @override
   Widget build(BuildContext context) => TextButton.icon(
-      onPressed: onClicked, icon: Icon(icon), label: Text(text));
+      onPressed: onClicked, icon: Icon(icon, color: color,), label: Text(text, style: TextStyle(color: color)));
 }

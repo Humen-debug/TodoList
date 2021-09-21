@@ -23,6 +23,7 @@ class TaskScreenState extends State<TaskScreen> {
         context: context,
         builder: (BuildContext bottomContext) {
           return Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+            
             Flex(
               direction: Axis.horizontal,
               children: <Widget>[
@@ -46,12 +47,6 @@ class TaskScreenState extends State<TaskScreen> {
             Flex(direction: Axis.horizontal, children: <Widget>[
               DatePicker(),
               TimePicker(),
-              // Expanded(
-              //     flex: 1,
-              //     child: TextButton.icon(
-              //         onPressed: () {},
-              //         icon: const Icon(Icons.alarm),
-              //         label: const Text('Set Alarm'))),
               Expanded(
                   flex: 1,
                   child: TextButton.icon(
