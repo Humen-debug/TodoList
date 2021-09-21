@@ -54,5 +54,8 @@ class ButtonWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => TextButton.icon(
-      onPressed: onClicked, icon: Icon(icon, color: color,), label: Text(text, style: TextStyle(color: color)));
+      onPressed: onClicked, 
+      icon: Icon(icon, color: color,), 
+      label: Text(text, style: TextStyle(color: color))
+      );
 }
