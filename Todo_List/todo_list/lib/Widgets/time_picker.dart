@@ -24,18 +24,21 @@ class _TimePickerState extends State<TimePicker> {
 
   @override
   Widget build(BuildContext context) => ButtonHeaderWidget(
-      title: 'Time',
-      text: getText(),
-      onClicked: () => pickTime(context),
-      icon: Icons.alarm,
-      color: Colors.grey,
+        title: 'Time',
+        text: getText(),
+        onClicked: () => pickTime(context),
+        icon: Icons.alarm,
+        color: Colors.grey,
       );
 
   Future pickTime(BuildContext context) async {
     final initialTime = TimeOfDay(hour: 8, minute: 0);
-    final newTime =
-        await showTimePicker(context: context, initialTime: initialTime);
+    final newTime = await showTimePicker(
+        context: context,
+        initialTime: initialTime,
+      );
     if (newTime == null) return;
     setState(() => time = newTime);
+    return time;
   }
 }

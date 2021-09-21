@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:todo_list/Models/task.dart';
 import '/Widgets/date_picker.dart';
 import '/Widgets/time_picker.dart';
-
 
 class TaskScreen extends StatefulWidget {
   TaskScreen({Key? key}) : super(key: key);
@@ -11,6 +11,9 @@ class TaskScreen extends StatefulWidget {
 
 class TaskScreenState extends State<TaskScreen> {
   final appBarTitle = "Welcome";
+  late Task task;
+  late List<Task> taskList;
+  TextEditingController taskController = TextEditingController();
 
   void onSelected(BuildContext context, int item) {
     switch (item) {
@@ -18,27 +21,34 @@ class TaskScreenState extends State<TaskScreen> {
     }
   }
 
+  void updateTask() {
+    task.task = taskController.text;
+  }
+
   void buildTask(BuildContext context) {
     showModalBottomSheet(
         context: context,
         builder: (BuildContext bottomContext) {
           return Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-            
             Flex(
               direction: Axis.horizontal,
               children: <Widget>[
                 Expanded(
                   flex: 6,
                   child: TextField(
+                    controller: taskController,
                     decoration: InputDecoration(
                       labelText: 'Add Task',
                     ),
+                    onChanged: (value) => updateTask(),
                   ),
                 ),
                 Expanded(
                   flex: 1,
                   child: IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
                     icon: const Icon(Icons.arrow_upward_outlined),
                   ),
                 )
@@ -71,8 +81,8 @@ class TaskScreenState extends State<TaskScreen> {
         slivers: <Widget>[
           SliverAppBar(
             pinned: true,
-            backgroundColor: Colors.transparent,
-            shadowColor: Colors.transparent,
+            backgroundColor: Colors.white,
+            elevation: 0.0,
             expandedHeight: 120.0,
             flexibleSpace: FlexibleSpaceBar(
               title: Text(appBarTitle, style: TextStyle(color: Colors.grey)),
@@ -98,6 +108,23 @@ class TaskScreenState extends State<TaskScreen> {
                         )
                       ])
             ],
+          ),
+          SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) => ListTile(
+                // leading: Builder(builder: (context) {
+                //   return Checkbox(
+                //       value: task.isCompleted,
+                //       onChanged: (bool? value) {
+                //         setState(() {
+                //           task.isCompleted = value!;
+                //         });
+                //       });
+                // }),
+                title: Text('Item $index'),
+              ),
+              childCount: 2,
+            ),
           )
         ],
       ),
