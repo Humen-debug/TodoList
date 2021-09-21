@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '/Widgets/date_picker.dart';
+import '/Widgets/time_picker.dart';
+
 
 class TaskScreen extends StatefulWidget {
   TaskScreen({Key? key}) : super(key: key);
@@ -43,12 +45,13 @@ class TaskScreenState extends State<TaskScreen> {
             ),
             Flex(direction: Axis.horizontal, children: <Widget>[
               DatePicker(),
-              Expanded(
-                  flex: 1,
-                  child: TextButton.icon(
-                      onPressed: () {},
-                      icon: const Icon(Icons.alarm),
-                      label: const Text('Set Alarm'))),
+              TimePicker(),
+              // Expanded(
+              //     flex: 1,
+              //     child: TextButton.icon(
+              //         onPressed: () {},
+              //         icon: const Icon(Icons.alarm),
+              //         label: const Text('Set Alarm'))),
               Expanded(
                   flex: 1,
                   child: TextButton.icon(
