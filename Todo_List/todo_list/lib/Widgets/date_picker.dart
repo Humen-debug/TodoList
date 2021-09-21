@@ -60,13 +60,13 @@ class ButtonWidget extends StatelessWidget {
 }
 
 class _DatePickerState extends State<DatePicker> {
-  late DateTime date;
+  DateTime? date;
 
   String getString() {
     if (date == null) {
       return 'Select Date';
     } else {
-      return '${date.month}/${date.day}/${date.year}';
+      return '${date!.month}/${date!.day}/${date!.year}';
     }
   }
 
@@ -85,7 +85,6 @@ class _DatePickerState extends State<DatePicker> {
         initialDate: initialDate,
         firstDate: DateTime(DateTime.now().year - 5),
         lastDate: DateTime(DateTime.now().year + 5));
-
     if (newDate == null) return;
     setState(() => date = newDate);
   }

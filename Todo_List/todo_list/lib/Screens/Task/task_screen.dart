@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '/Widgets/date_picker.dart';
+
 class TaskScreen extends StatefulWidget {
   TaskScreen({Key? key}) : super(key: key);
   @override
@@ -40,12 +42,7 @@ class TaskScreenState extends State<TaskScreen> {
               ],
             ),
             Flex(direction: Axis.horizontal, children: <Widget>[
-              Expanded(
-                  flex: 1,
-                  child: TextButton.icon(
-                      onPressed: () {},
-                      icon: const Icon(Icons.event),
-                      label: const Text('Deadline'))),
+              DatePicker(),
               Expanded(
                   flex: 1,
                   child: TextButton.icon(
