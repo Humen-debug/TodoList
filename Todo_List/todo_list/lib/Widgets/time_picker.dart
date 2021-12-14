@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:todo_list/Widgets/button_widget.dart';
 
 class TimePicker extends StatefulWidget {
-  TimePicker({Key? key}) : super(key: key);
+  String time;
+  TimePicker(this.time);
 
   @override
   _TimePickerState createState() => _TimePickerState();
@@ -17,7 +18,6 @@ class _TimePickerState extends State<TimePicker> {
     } else {
       final hours = time!.hour.toString().padLeft(2, '0');
       final minutes = time!.minute.toString().padLeft(2, '0');
-
       return '$hours:$minutes';
     }
   }
@@ -34,11 +34,15 @@ class _TimePickerState extends State<TimePicker> {
   Future pickTime(BuildContext context) async {
     final initialTime = TimeOfDay(hour: 8, minute: 0);
     final newTime = await showTimePicker(
-        context: context,
-        initialTime: initialTime,
-      );
+      context: context,
+      initialTime: initialTime,
+    );
     if (newTime == null) return;
-    setState(() => time = newTime);
-    return time;
+    setState(() {
+      time = newTime;
+      final hours = time!.hour.toString().padLeft(2, '0');
+      final minutes = time!.minute.toString().padLeft(2, '0');
+      widget.time = '$hours:$minutes';
+    });
   }
 }

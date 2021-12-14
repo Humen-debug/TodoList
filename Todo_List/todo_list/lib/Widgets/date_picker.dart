@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:todo_list/Widgets/button_widget.dart';
-import 'package:todo_list/Models/task.dart';
 
 class DatePicker extends StatefulWidget {
-  DatePicker({Key? key}) : super(key: key);
+  String date;
+  // DatePicker({Key? key}) : super(key: key);
+  DatePicker(this.date);
 
   @override
   _DatePickerState createState() => _DatePickerState();
@@ -11,12 +12,12 @@ class DatePicker extends StatefulWidget {
 
 class _DatePickerState extends State<DatePicker> {
   DateTime? date;
-  
+
   String getText() {
     if (date == null) {
       return 'Select Date';
     } else {
-      return '${date!.month}/${date!.day}/${date!.year}';
+      return '${date!.day}/${date!.month}/${date!.year}';
     }
   }
 
@@ -39,7 +40,7 @@ class _DatePickerState extends State<DatePicker> {
     if (newDate == null) return;
     setState(() {
       date = newDate;
-      // task.date = date.toString();
+      widget.date = '${date!.day}/${date!.month}/${date!.year}';
     });
   }
 }
