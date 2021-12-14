@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
-import 'Screens/Task/task_screen.dart';
-import 'Screens/Home/home_screen.dart';
+import 'package:todo_list/Models/theme.dart';
+import 'Screens/main_screen.dart';
+import 'package:provider/provider.dart';
 
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Todo List',
-      theme: ThemeData(
-        scaffoldBackgroundColor: Colors.white,
-      ),
-      // darkTheme: ThemeDeta.dark(),
-      home: HomeScreen(),
-    );
-  }
+  Widget build(BuildContext context) => ChangeNotifierProvider(
+      create: (context) => ThemeProvider(),
+      builder: (context, _) {
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'Todo List',
+          themeMode: ThemeProvider.themeMode,
+          theme: Themes.lighttheme,
+          darkTheme: Themes.darktheme,
+          home: MainScreen(),
+        );
+      });
 }
