@@ -131,7 +131,19 @@ class TaskScreenState extends State<TaskScreen> {
     }
   }
 
+  void updateComplete(int index, bool? flag) {
+    setState(() {
+      MainScreenState.taskMap[appBarTitle]![index].isCompleted = flag!;
+      if (MainScreenState.taskMap[appBarTitle]![index].isCompleted == true) {
+        MainScreenState.taskMap['Completed']!
+            .add(MainScreenState.taskMap[appBarTitle]![index]);
+        MainScreenState.taskMap[appBarTitle]!.removeAt(index);
+      }
+    });
+  }
+
   void buildTask(BuildContext context) {
+    setDefault();
     showModalBottomSheet(
         context: context,
         builder: (BuildContext bottomContext) {
@@ -183,7 +195,9 @@ class TaskScreenState extends State<TaskScreen> {
                                   initialDate: initialDate,
                                   firstDate: DateTime(DateTime.now().year - 5),
                                   lastDate: DateTime(DateTime.now().year + 5))
-                              .then((date) => updateDate(date, state));
+                              .then((date) {
+                            updateDate(date, state);
+                          });
                         },
                         icon: const Icon(Icons.event),
                         label: task.date == null
@@ -200,7 +214,9 @@ class TaskScreenState extends State<TaskScreen> {
                           await showTimePicker(
                             context: context,
                             initialTime: initialTime,
-                          ).then((time) => updateTime(time, state));
+                          ).then((time) {
+                            updateTime(time, state);
+                          });
                         },
                         icon: const Icon(Icons.alarm),
                         label: task.time == ""
@@ -245,7 +261,6 @@ class TaskScreenState extends State<TaskScreen> {
           highlightElevation: 0.0,
           child: const Icon(Icons.add),
           onPressed: () {
-            setDefault();
             buildTask(context);
           }),
       body: CustomScrollView(
@@ -335,6 +350,7 @@ class TaskScreenState extends State<TaskScreen> {
                               MaterialPageRoute(
                                 builder: (context) => UpdateTaskScreen(
                                   index: index,
+                                  // buildTask: buildTask(context),
                                 ),
                               ));
                         },
@@ -347,21 +363,7 @@ class TaskScreenState extends State<TaskScreen> {
                                   value: MainScreenState
                                       .taskMap[appBarTitle]![index].isCompleted,
                                   onChanged: (bool? value) {
-                                    setState(() {
-                                      MainScreenState
-                                          .taskMap[appBarTitle]![index]
-                                          .isCompleted = value!;
-                                      if (MainScreenState
-                                              .taskMap[appBarTitle]![index]
-                                              .isCompleted ==
-                                          true) {
-                                        MainScreenState.taskMap['Completed']!
-                                            .add(MainScreenState
-                                                .taskMap[appBarTitle]![index]);
-                                        MainScreenState.taskMap[appBarTitle]!
-                                            .removeAt(index);
-                                      }
-                                    });
+                                    updateComplete(index, value);
                                   },
                                 ),
                                 title: Text(MainScreenState

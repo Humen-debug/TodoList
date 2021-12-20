@@ -41,7 +41,7 @@ class _SideDrawerState extends State<SideDrawer> {
         child: Column(
       children: [
         SizedBox(
-          height: 172,
+          height: 175,
           child: DrawerHeader(
               child: Column(
             children: [
@@ -99,7 +99,7 @@ class _SideDrawerState extends State<SideDrawer> {
           )),
         ),
         SizedBox(
-          height: MediaQuery.of(context).size.height - 310,
+          height: MediaQuery.of(context).size.height - 313,
           child: tasklistListView(context, categories),
         ),
         Flex(
