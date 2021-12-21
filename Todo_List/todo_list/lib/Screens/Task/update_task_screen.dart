@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:todo_list/Models/task.dart';
 import 'package:todo_list/Screens/main_screen.dart';
+import 'package:todo_list/Widgets/task_list_tile.dart';
 import 'package:todo_list/Widgets/time_picker_widget.dart';
 
 class UpdateTaskScreen extends StatefulWidget {
@@ -168,7 +169,11 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
                         ),
                       );
                     } else {
-                      return ListTile(
+                      return
+                          // TaskListTile(
+                          //     tasks: widget.task.subtasks,
+                          //     task: widget.task.subtasks[index]);
+                          ListTile(
                         title: Text(
                           widget.task.subtasks[index].text,
                         ),

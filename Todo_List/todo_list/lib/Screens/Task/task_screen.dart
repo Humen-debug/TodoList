@@ -6,6 +6,7 @@ import 'package:todo_list/Widgets/drawer.dart';
 import 'package:todo_list/Models/theme.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_list/Screens/main_screen.dart';
+import 'package:todo_list/Widgets/task_list_tile.dart';
 import 'package:todo_list/Widgets/time_picker_widget.dart';
 
 class TaskScreen extends StatefulWidget {
@@ -280,7 +281,13 @@ class TaskScreenState extends State<TaskScreen> {
                           children: <Widget>[
                             SizedBox(
                               height: 45,
-                              child: ListTile(
+                              child:
+                                  // TaskListTile(
+                                  // tasks:
+                                  //     MainScreenState.taskMap[appBarTitle]!,
+                                  // task: MainScreenState
+                                  //     .taskMap[appBarTitle]![index]),
+                                  ListTile(
                                 leading: Checkbox(
                                   value: MainScreenState
                                       .taskMap[appBarTitle]![index].isCompleted,
