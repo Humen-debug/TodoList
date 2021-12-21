@@ -17,7 +17,6 @@ class TaskScreen extends StatefulWidget {
 class TaskScreenState extends State<TaskScreen> {
   final appBarTitle = MainScreenState.currentList;
   late Task task;
-  List<Task> subtasks = [];
   List<Task> list = [];
   TextEditingController taskController = TextEditingController();
   bool showComplete = true;
@@ -65,19 +64,22 @@ class TaskScreenState extends State<TaskScreen> {
 
   void setDefault() {
     setState(() => task = Task("", null, false, "", DateTime.now(), "",
-        const Text("No Deadline"), subtasks));
+        const Text("No Deadline"), []));
   }
 
   void createTask() {
     if (task.text == '') return;
     var newTask = Task(task.text, task.date, false, task.time, task.createdTime,
         task.status, task.deadline, task.subtasks);
-    setState(() {
-      setDefault();
-      list.add(newTask);
-      MainScreenState.taskMap[appBarTitle] = list;
-      // print(MainScreenState.taskMap[appBarTitle].toString());
-    });
+    setDefault();
+    list.add(newTask);
+    MainScreenState.taskMap[appBarTitle] = list;
+    // setState(() {
+    //   setDefault();
+    //   list.add(newTask);
+    //   MainScreenState.taskMap[appBarTitle] = list;
+    //   // print(MainScreenState.taskMap[appBarTitle].toString());
+    // });
   }
 
   void updateComplete(int index, bool? flag) {
@@ -114,7 +116,6 @@ class TaskScreenState extends State<TaskScreen> {
                       onSubmitted: (String text) {
                         setState(() {
                           task.text = text;
-                          // print(task.date);
                           createTask();
                         });
                         Navigator.pop(context);
@@ -252,6 +253,7 @@ class TaskScreenState extends State<TaskScreen> {
           ),
           ReorderableSliverList(
             delegate: ReorderableSliverChildBuilderDelegate(
+              // index: taskMap[currentList][index]
               (context, index) {
                 if (index == 0) return Text("Tasks");
                 index--;
@@ -269,7 +271,8 @@ class TaskScreenState extends State<TaskScreen> {
                               context,
                               MaterialPageRoute(
                                 builder: (context) => UpdateTaskScreen(
-                                  index: index,
+                                  task: MainScreenState
+                                      .taskMap[appBarTitle]![index],
                                 ),
                               ));
                         },

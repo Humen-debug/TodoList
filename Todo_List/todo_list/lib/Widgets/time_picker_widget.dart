@@ -15,8 +15,8 @@ class _TimePickerWidgetState extends State<TimePickerWidget> {
   void updateDate(date) {
     if (date == null) return;
     setState(() {
-      updateDeadline();
       widget.task.date = date;
+      updateDeadline();
     });
   }
 
@@ -31,14 +31,13 @@ class _TimePickerWidgetState extends State<TimePickerWidget> {
           widget.task.date!.day,
           time.hour,
           time.minute);
-      updateDeadline();
       widget.task.time = '$hours:$minutes';
+      updateDeadline();
     });
   }
 
   void updateDeadline() {
-    print(widget.task.date!);
-    var diff = (widget.task.date!).difference(DateTime.now()).inDays;
+    var diff = (widget.task.date)?.difference(DateTime.now()).inDays ?? 0;
 
     if (diff > 0) {
       if (diff == 1) {
@@ -88,7 +87,9 @@ class _TimePickerWidgetState extends State<TimePickerWidget> {
                         firstDate: DateTime(DateTime.now().year - 5),
                         lastDate: DateTime(DateTime.now().year + 5))
                     .then((date) {
+                  // print('date: $date');
                   updateDate(date);
+                  // print('task.date: $widget.task.date');
                 });
               }
               break;

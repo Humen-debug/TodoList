@@ -4,8 +4,8 @@ import 'package:todo_list/Screens/main_screen.dart';
 import 'package:todo_list/Widgets/time_picker_widget.dart';
 
 class UpdateTaskScreen extends StatefulWidget {
-  final index;
-  UpdateTaskScreen({Key? key, required this.index}) : super(key: key);
+  Task task;
+  UpdateTaskScreen({Key? key, required this.task}) : super(key: key);
 
   @override
   _UpdateTaskScreenState createState() => _UpdateTaskScreenState();
@@ -31,13 +31,13 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
         subtask.status,
         subtask.deadline,
         subtask.subtasks);
-    setState(() {
-      setDefault();
-      MainScreenState
-          .taskMap[MainScreenState.currentList]?[widget.index].subtasks
-          .add(newTask);
-      // print(MainScreenState.taskMap[appBarTitle].toString());
-    });
+    setDefault();
+    widget.task.subtasks.add(newTask);
+    // setState(() {
+    //   setDefault();
+    //   widget.task.subtasks.add(newTask);
+    //   // print(MainScreenState.taskMap[appBarTitle].toString());
+    // });
   }
 
   void buildTask(BuildContext context) {
@@ -117,7 +117,6 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController taskController = TextEditingController();
     String appTitle = MainScreenState.currentList;
 
     return Scaffold(
@@ -133,8 +132,7 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
           child: Column(children: [
             TextFormField(
               // controller: taskController,
-              initialValue:
-                  MainScreenState.taskMap[appTitle]![widget.index].text,
+              initialValue: widget.task.text,
               decoration: const InputDecoration(
                 border: InputBorder.none,
               ),
@@ -142,39 +140,25 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
               ),
-              onFieldSubmitted: (String text) => setState(() =>
-                  MainScreenState.taskMap[appTitle]![widget.index].text = text),
+              onFieldSubmitted: (String text) =>
+                  setState(() => widget.task.text = text),
             ),
             TextFormField(
-              initialValue:
-                  MainScreenState.taskMap[appTitle]![widget.index].status,
+              initialValue: widget.task.status,
               decoration: const InputDecoration(
                   border: InputBorder.none, hintText: "Description"),
               onChanged: (String descript) => setState(
-                () => MainScreenState.taskMap[appTitle]![widget.index].status =
-                    descript,
+                () => widget.task.status = descript,
               ),
             ),
             SizedBox(
               height: MediaQuery.of(context).size.height - 258,
               child: ListView.builder(
-                  itemCount: MainScreenState
-                          .taskMap[MainScreenState.currentList]![widget.index]
-                          .subtasks
-                          .isEmpty
+                  itemCount: widget.task.subtasks.isEmpty
                       ? 1
-                      : (MainScreenState
-                              .taskMap[MainScreenState.currentList]![
-                                  widget.index]
-                              .subtasks
-                              .length) +
-                          1,
+                      : (widget.task.subtasks.length) + 1,
                   itemBuilder: (context, index) {
-                    if (index ==
-                        MainScreenState
-                            .taskMap[MainScreenState.currentList]![widget.index]
-                            .subtasks
-                            .length) {
+                    if (index == widget.task.subtasks.length) {
                       return TextButton.icon(
                         onPressed: () => buildTask(context),
                         icon: const Icon(Icons.add),
@@ -186,25 +170,13 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
                     } else {
                       return ListTile(
                         title: Text(
-                          MainScreenState
-                              .taskMap[MainScreenState.currentList]![
-                                  widget.index]
-                              .subtasks[index]
-                              .text,
+                          widget.task.subtasks[index].text,
                         ),
                         leading: Checkbox(
-                          value: MainScreenState
-                              .taskMap[MainScreenState.currentList]![
-                                  widget.index]
-                              .subtasks[index]
-                              .isCompleted,
+                          value: widget.task.subtasks[index].isCompleted,
                           onChanged: (bool? value) {
                             setState(() {
-                              MainScreenState
-                                  .taskMap[MainScreenState.currentList]![
-                                      widget.index]
-                                  .subtasks[index]
-                                  .isCompleted = value!;
+                              widget.task.subtasks[index].isCompleted = value!;
                             });
                           },
                         ),
