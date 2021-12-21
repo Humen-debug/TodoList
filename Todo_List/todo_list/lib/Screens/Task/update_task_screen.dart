@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:todo_list/Models/task.dart';
 import 'package:todo_list/Screens/main_screen.dart';
+import 'package:todo_list/Widgets/time_picker_widget.dart';
 
 class UpdateTaskScreen extends StatefulWidget {
   final index;
@@ -37,58 +38,6 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
           .add(newTask);
       // print(MainScreenState.taskMap[appBarTitle].toString());
     });
-  }
-
-  void updateDate(date, StateSetter updateState) {
-    if (date == null) return;
-    updateState(() {
-      subtask.date = date;
-    });
-  }
-
-  void updateTime(time, StateSetter updateState) {
-    if (time == null) return;
-    final hours = time.hour.toString().padLeft(2, '0');
-    final minutes = time.minute.toString().padLeft(2, '0');
-    updateState(() {
-      subtask.date = DateTime(subtask.date!.year, subtask.date!.month,
-          subtask.date!.day, time.hour, time.minute);
-      updateDeadline();
-      subtask.time = '$hours:$minutes';
-    });
-  }
-
-  void updateDeadline() {
-    var diff = (subtask.date!).difference(DateTime.now()).inDays;
-
-    if (diff > 0) {
-      if (diff == 1) {
-        subtask.deadline = Text(
-          'Due Tomorrow',
-          // style: TextStyle(color: Theme.of(context).primaryColor)
-        );
-      } else {
-        subtask.deadline = Text(
-          '${subtask.date!.day}/${subtask.date!.month}/${subtask.date!.year}: $diff days left',
-          // style: TextStyle(color: Theme.of(context).primaryColor)
-        );
-      }
-    } else if (diff == 0) {
-      var diffHour = (subtask.date!).difference(DateTime.now()).inHours;
-      if (diffHour >= 0) {
-        subtask.deadline = Text('$diffHour hrs left',
-            style: const TextStyle(color: Colors.red));
-      } else {
-        diffHour = -diffHour;
-        subtask.deadline = Text('$diffHour hrs late',
-            style: const TextStyle(color: Colors.red));
-      }
-    } else {
-      diff = -diff;
-      subtask.deadline = Text(
-          '${subtask.date!.day}/${subtask.date!.month}/${subtask.date!.year}: $diff days late',
-          style: const TextStyle(color: Colors.red));
-    }
   }
 
   void buildTask(BuildContext context) {
@@ -136,42 +85,16 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
               Flex(direction: Axis.horizontal, children: <Widget>[
                 Expanded(
                     flex: 1,
-                    child: TextButton.icon(
-                        onPressed: () async {
-                          final initialDate = DateTime.now();
-                          await showDatePicker(
-                                  context: context,
-                                  initialDate: initialDate,
-                                  firstDate: DateTime(DateTime.now().year - 5),
-                                  lastDate: DateTime(DateTime.now().year + 5))
-                              .then((date) {
-                            updateDate(date, state);
-                          });
-                        },
-                        icon: const Icon(Icons.event),
-                        label: subtask.date == null
-                            ? const Text("Select Date",
-                                style: TextStyle(color: Colors.grey))
-                            : Text(
-                                '${subtask.date!.day}/${subtask.date!.month}/${subtask.date!.year}',
-                                style: const TextStyle(color: Colors.grey)))),
+                    child: TimePickerWidget(
+                      task: subtask,
+                      type: 'Date',
+                    )),
                 Expanded(
                     flex: 1,
-                    child: TextButton.icon(
-                        onPressed: () async {
-                          const initialTime = TimeOfDay(hour: 8, minute: 0);
-                          await showTimePicker(
-                            context: context,
-                            initialTime: initialTime,
-                          ).then((time) {
-                            updateTime(time, state);
-                          });
-                        },
-                        icon: const Icon(Icons.alarm),
-                        label: subtask.time == ""
-                            ? const Text("Select Time",
-                                style: TextStyle(color: Colors.grey))
-                            : Text(subtask.time))),
+                    child: TimePickerWidget(
+                      task: subtask,
+                      type: 'Time',
+                    )),
                 Expanded(
                     flex: 1,
                     child: TextButton.icon(

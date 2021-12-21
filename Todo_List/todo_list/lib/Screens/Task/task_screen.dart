@@ -6,6 +6,7 @@ import 'package:todo_list/Widgets/drawer.dart';
 import 'package:todo_list/Models/theme.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_list/Screens/main_screen.dart';
+import 'package:todo_list/Widgets/time_picker_widget.dart';
 
 class TaskScreen extends StatefulWidget {
   TaskScreen({Key? key}) : super(key: key);
@@ -79,58 +80,6 @@ class TaskScreenState extends State<TaskScreen> {
     });
   }
 
-  void updateDate(date, StateSetter updateState) {
-    if (date == null) return;
-    updateState(() {
-      task.date = date;
-    });
-  }
-
-  void updateTime(time, StateSetter updateState) {
-    if (time == null) return;
-    final hours = time.hour.toString().padLeft(2, '0');
-    final minutes = time.minute.toString().padLeft(2, '0');
-    updateState(() {
-      task.date = DateTime(task.date!.year, task.date!.month, task.date!.day,
-          time.hour, time.minute);
-      updateDeadline();
-      task.time = '$hours:$minutes';
-    });
-  }
-
-  void updateDeadline() {
-    var diff = (task.date!).difference(DateTime.now()).inDays;
-
-    if (diff > 0) {
-      if (diff == 1) {
-        task.deadline = Text(
-          'Due Tomorrow',
-          // style: TextStyle(color: Theme.of(context).primaryColor)
-        );
-      } else {
-        task.deadline = Text(
-          '${task.date!.day}/${task.date!.month}/${task.date!.year}: $diff days left',
-          // style: TextStyle(color: Theme.of(context).primaryColor)
-        );
-      }
-    } else if (diff == 0) {
-      var diffHour = (task.date!).difference(DateTime.now()).inHours;
-      if (diffHour >= 0) {
-        task.deadline = Text('$diffHour hrs left',
-            style: const TextStyle(color: Colors.red));
-      } else {
-        diffHour = -diffHour;
-        task.deadline = Text('$diffHour hrs late',
-            style: const TextStyle(color: Colors.red));
-      }
-    } else {
-      diff = -diff;
-      task.deadline = Text(
-          '${task.date!.day}/${task.date!.month}/${task.date!.year}: $diff days late',
-          style: const TextStyle(color: Colors.red));
-    }
-  }
-
   void updateComplete(int index, bool? flag) {
     setState(() {
       MainScreenState.taskMap[appBarTitle]![index].isCompleted = flag!;
@@ -147,7 +96,7 @@ class TaskScreenState extends State<TaskScreen> {
     showModalBottomSheet(
         context: context,
         builder: (BuildContext bottomContext) {
-          return StatefulBuilder(builder: (context, state) {
+          return StatefulBuilder(builder: (buttomContext, state) {
             return Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
               Flex(
                 direction: Axis.horizontal,
@@ -165,6 +114,7 @@ class TaskScreenState extends State<TaskScreen> {
                       onSubmitted: (String text) {
                         setState(() {
                           task.text = text;
+                          // print(task.date);
                           createTask();
                         });
                         Navigator.pop(context);
@@ -186,43 +136,13 @@ class TaskScreenState extends State<TaskScreen> {
               ),
               Flex(direction: Axis.horizontal, children: <Widget>[
                 Expanded(
-                    flex: 1,
-                    child: TextButton.icon(
-                        onPressed: () async {
-                          final initialDate = DateTime.now();
-                          await showDatePicker(
-                                  context: context,
-                                  initialDate: initialDate,
-                                  firstDate: DateTime(DateTime.now().year - 5),
-                                  lastDate: DateTime(DateTime.now().year + 5))
-                              .then((date) {
-                            updateDate(date, state);
-                          });
-                        },
-                        icon: const Icon(Icons.event),
-                        label: task.date == null
-                            ? const Text("Select Date",
-                                style: TextStyle(color: Colors.grey))
-                            : Text(
-                                '${task.date!.day}/${task.date!.month}/${task.date!.year}',
-                                style: const TextStyle(color: Colors.grey)))),
+                  flex: 1,
+                  child: TimePickerWidget(task: task, type: "Date"),
+                ),
                 Expanded(
-                    flex: 1,
-                    child: TextButton.icon(
-                        onPressed: () async {
-                          const initialTime = TimeOfDay(hour: 8, minute: 0);
-                          await showTimePicker(
-                            context: context,
-                            initialTime: initialTime,
-                          ).then((time) {
-                            updateTime(time, state);
-                          });
-                        },
-                        icon: const Icon(Icons.alarm),
-                        label: task.time == ""
-                            ? const Text("Select Time",
-                                style: TextStyle(color: Colors.grey))
-                            : Text(task.time))),
+                  flex: 1,
+                  child: TimePickerWidget(task: task, type: 'Time'),
+                ),
                 Expanded(
                     flex: 1,
                     child: TextButton.icon(
@@ -335,7 +255,7 @@ class TaskScreenState extends State<TaskScreen> {
               (context, index) {
                 if (index == 0) return Text("Tasks");
                 index--;
-                if (index < MainScreenState.taskMap[appBarTitle]!.length) {
+                if (index <= MainScreenState.taskMap[appBarTitle]!.length) {
                   return Card(
                       elevation: 0.1,
                       child: ElevatedButton(
@@ -350,7 +270,6 @@ class TaskScreenState extends State<TaskScreen> {
                               MaterialPageRoute(
                                 builder: (context) => UpdateTaskScreen(
                                   index: index,
-                                  // buildTask: buildTask(context),
                                 ),
                               ));
                         },
