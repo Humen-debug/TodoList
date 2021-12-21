@@ -16,7 +16,7 @@ class ThemeProvider extends ChangeNotifier {
 
 class Themes {
   // ColorScheme lightColor;
-  static int themeKey = 0;
+  static int themeKey = 4;
   static void changeKey(int index) {
     print("change $index");
     themeKey = index;

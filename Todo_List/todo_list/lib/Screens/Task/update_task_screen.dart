@@ -109,13 +109,6 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
         });
   }
 
-  Widget subtasksListView(BuildContext context, subtasks) {
-    return ListView.builder(
-      itemCount: subtasks.length,
-      itemBuilder: (context, index) => subtasks[index],
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     String appTitle = MainScreenState.currentList;
@@ -126,6 +119,7 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
           actions: <Widget>[
             IconButton(onPressed: () {}, icon: Icon(Icons.more_horiz))
           ],
+          elevation: 0,
         ),
         body: SafeArea(
             child: Padding(
