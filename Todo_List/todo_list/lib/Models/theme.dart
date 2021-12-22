@@ -16,7 +16,7 @@ class ThemeProvider extends ChangeNotifier {
 
 class Themes {
   // ColorScheme lightColor;
-  static int themeKey = 4;
+  static int themeKey = 0;
   static void changeKey(int index) {
     print("change $index");
     themeKey = index;
@@ -56,7 +56,7 @@ class Themes {
       Colors.amber.shade600,
       Colors.amber.shade200,
       Colors.amber.shade300,
-      Colors.blue.shade50,
+      Colors.amber.shade50,
     ],
     [
       Colors.green.shade400,
@@ -94,8 +94,8 @@ class Themes {
     ),
   );
   static final lighttheme = ThemeData(
-    scaffoldBackgroundColor: themeColors[themeKey]
-        [themeColors[themeKey].length - 1],
+    // scaffoldBackgroundColor: themeColors[themeKey]
+    //     [themeColors[themeKey].length - 1],
     colorScheme: ColorScheme.light(
       primary: themeColors[themeKey][0],
       primaryVariant: themeColors[themeKey][1],

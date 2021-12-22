@@ -75,12 +75,6 @@ class TaskScreenState extends State<TaskScreen> {
     setDefault();
     list.add(newTask);
     MainScreenState.taskMap[appBarTitle] = list;
-    // setState(() {
-    //   setDefault();
-    //   list.add(newTask);
-    //   MainScreenState.taskMap[appBarTitle] = list;
-    //   // print(MainScreenState.taskMap[appBarTitle].toString());
-    // });
   }
 
   void updateComplete(int index, bool? flag) {
@@ -316,6 +310,7 @@ class TaskScreenState extends State<TaskScreen> {
                         ),
                       ));
                 }
+                print(MainScreenState.taskMap[appBarTitle]!);
                 return const Text("Completed");
               },
               childCount: MainScreenState.taskMap[appBarTitle]!.isEmpty

@@ -34,11 +34,6 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
         subtask.subtasks);
     setDefault();
     widget.task.subtasks.add(newTask);
-    // setState(() {
-    //   setDefault();
-    //   widget.task.subtasks.add(newTask);
-    //   // print(MainScreenState.taskMap[appBarTitle].toString());
-    // });
   }
 
   void buildTask(BuildContext context) {
