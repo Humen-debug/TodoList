@@ -4,8 +4,12 @@ import 'package:flutter/material.dart';
 class TimePickerWidget extends StatefulWidget {
   Task task;
   String type;
-  TimePickerWidget({Key? key, required this.task, required this.type})
-      : super(key: key);
+  // Text deadline;
+  TimePickerWidget({
+    Key? key,
+    required this.task,
+    required this.type,
+  }) : super(key: key);
 
   @override
   _TimePickerWidgetState createState() => _TimePickerWidgetState();
@@ -41,31 +45,23 @@ class _TimePickerWidgetState extends State<TimePickerWidget> {
 
     if (diff > 0) {
       if (diff == 1) {
-        widget.task.deadline = Text(
-          'Due Tomorrow',
-          // style: TextStyle(color: Theme.of(context).primaryColor)
-        );
+        widget.task.deadline = 'Due Tomorrow';
       } else {
-        widget.task.deadline = Text(
-          '${widget.task.date!.day}/${widget.task.date!.month}/${widget.task.date!.year}: $diff days left',
-          // style: TextStyle(color: Theme.of(context).primaryColor)
-        );
+        widget.task.deadline =
+            '${widget.task.date!.day}/${widget.task.date!.month}/${widget.task.date!.year}: $diff days left';
       }
     } else if (diff == 0) {
       var diffHour = (widget.task.date!).difference(DateTime.now()).inHours;
       if (diffHour >= 0) {
-        widget.task.deadline = Text('$diffHour hrs left',
-            style: const TextStyle(color: Colors.red));
+        widget.task.deadline = '$diffHour hrs left';
       } else {
         diffHour = -diffHour;
-        widget.task.deadline = Text('$diffHour hrs late',
-            style: const TextStyle(color: Colors.red));
+        widget.task.deadline = '$diffHour hrs late';
       }
     } else {
       diff = -diff;
-      widget.task.deadline = Text(
-          '${widget.task.date!.day}/${widget.task.date!.month}/${widget.task.date!.year}: $diff days late',
-          style: const TextStyle(color: Colors.red));
+      widget.task.deadline =
+          '${widget.task.date!.day}/${widget.task.date!.month}/${widget.task.date!.year}: $diff days late';
     }
   }
 

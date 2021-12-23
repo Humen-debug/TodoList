@@ -15,7 +15,7 @@ class MainScreen extends StatefulWidget {
 class MainScreenState extends State<MainScreen> {
   FileHandler fileHandler = FileHandler.instance;
   late User user;
-  late List<User> users;
+  List<User> users = [];
   int _selectedIndex = 0;
   static String currentList = "Inbox";
   static var taskMap = <String, List<Task>>{
@@ -27,24 +27,34 @@ class MainScreenState extends State<MainScreen> {
     // super.initState();
     fileHandler.readUsers().then((List<User> userList) {
       setState(() {
-        user = User(id: 1, email: "", name: "", taskMap: taskMap);
         users = userList;
-        for (int i = 0; i < users.length; i++) {
-          if (users[i].id == user.id) break;
-        }
       });
     });
-    // fileHandler.writeUser(user);
+    int id = 0;
+
+    if (users.isNotEmpty) {
+      for (int i = 0; i < users.length; i++) {
+        if (id == i) {
+          user = users[i];
+        }
+      }
+    } else {
+      user = User(
+          id: id,
+          name: "",
+          email: "",
+          taskMap: <String, List<Task>>{'Inbox': [], 'Completed': []});
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    fileHandler.file;
-    initState();
+    if (user == null) initState();
+    // print(user);
     // print(fileHandler.toString());
 
     final _pages = [
-      TaskScreen(),
+      TaskScreen(user: user, file: fileHandler),
       Center(child: Text('Home')),
       CalenderScreen(),
       Center(child: Text('Person')),
@@ -68,7 +78,6 @@ class MainScreenState extends State<MainScreen> {
         onTap: (index) {
           setState(() {
             _selectedIndex = index;
-            print(taskMap[currentList].toString());
           });
         },
       ),

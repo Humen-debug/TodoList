@@ -1,16 +1,24 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:reorderables/reorderables.dart';
+import 'package:todo_list/Models/file_header.dart';
 import 'package:todo_list/Models/task.dart';
 import 'package:todo_list/Screens/Task/update_task_screen.dart';
 import 'package:todo_list/Widgets/drawer.dart';
 import 'package:todo_list/Models/theme.dart';
+import 'package:todo_list/Models/user.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_list/Screens/main_screen.dart';
+import 'package:todo_list/Widgets/statment_widget.dart';
 import 'package:todo_list/Widgets/task_list_tile.dart';
 import 'package:todo_list/Widgets/time_picker_widget.dart';
 
 class TaskScreen extends StatefulWidget {
-  TaskScreen({Key? key}) : super(key: key);
+  // Map<String, List<Task>> taskMap;
+  User user;
+  FileHandler file;
+  TaskScreen({Key? key, required this.user, required this.file})
+      : super(key: key);
   @override
   TaskScreenState createState() => TaskScreenState();
 }
@@ -19,6 +27,7 @@ class TaskScreenState extends State<TaskScreen> {
   final appBarTitle = MainScreenState.currentList;
   late Task task;
   late List<Task> list;
+
   TextEditingController taskController = TextEditingController();
   bool showComplete = true;
   bool reOrder = false;
@@ -66,16 +75,16 @@ class TaskScreenState extends State<TaskScreen> {
   @override
   void initState() {
     setState(() {
-      list = MainScreenState.taskMap[appBarTitle] != null
-          ? MainScreenState.taskMap[appBarTitle]!
+      list = widget.user.taskMap[appBarTitle] != null
+          ? widget.user.taskMap[appBarTitle]!
           : [];
       // setDefault();
     });
   }
 
   void setDefault() {
-    setState(() => task = Task("", null, false, "", DateTime.now(), "",
-        const Text("No Deadline"), []));
+    setState(() => task =
+        Task("", null, false, "", DateTime.now(), "", "No Deadline", []));
   }
 
   void createTask() {
@@ -84,16 +93,21 @@ class TaskScreenState extends State<TaskScreen> {
         task.status, task.deadline, task.subtasks);
     setDefault();
     list.add(newTask);
-    MainScreenState.taskMap[appBarTitle] = list;
+    // print(jsonEncode(newTask));
+    widget.user.taskMap[appBarTitle] = list;
+    print(jsonEncode(widget.user.taskMap));
+    // widget.file.writeUser(widget.user);
   }
 
   void updateComplete(int index, bool? flag) {
     setState(() {
-      MainScreenState.taskMap[appBarTitle]![index].isCompleted = flag!;
-      if (MainScreenState.taskMap[appBarTitle]![index].isCompleted == true) {
-        MainScreenState.taskMap['Completed']!
-            .add(MainScreenState.taskMap[appBarTitle]![index]);
-        MainScreenState.taskMap[appBarTitle]!.removeAt(index);
+      widget.user.taskMap[appBarTitle]![index].isCompleted = flag!;
+      if (widget.user.taskMap[appBarTitle]![index].isCompleted == true) {
+        widget.user.taskMap['Completed']!
+            .add(widget.user.taskMap[appBarTitle]![index]);
+        print(jsonEncode(widget.user.taskMap));
+
+        widget.user.taskMap[appBarTitle]!.removeAt(index);
       }
     });
   }
@@ -181,7 +195,10 @@ class TaskScreenState extends State<TaskScreen> {
     }
 
     return Scaffold(
-      drawer: SideDrawer(),
+      drawer: SideDrawer(
+        user: widget.user,
+        // taskMap: widget.user.taskMap,
+      ),
       floatingActionButton: FloatingActionButton(
           splashColor: Colors.white60,
           elevation: 4.0,
@@ -263,7 +280,7 @@ class TaskScreenState extends State<TaskScreen> {
               (context, index) {
                 if (index == 0) return Text("Tasks");
                 index--;
-                if (index <= MainScreenState.taskMap[appBarTitle]!.length) {
+                if (index <= widget.user.taskMap[appBarTitle]!.length) {
                   return Card(
                       elevation: 0.1,
                       child: ElevatedButton(
@@ -277,8 +294,8 @@ class TaskScreenState extends State<TaskScreen> {
                               context,
                               MaterialPageRoute(
                                 builder: (context) => UpdateTaskScreen(
-                                  task: MainScreenState
-                                      .taskMap[appBarTitle]![index],
+                                  task:
+                                      widget.user.taskMap[appBarTitle]![index],
                                 ),
                               ));
                         },
@@ -289,44 +306,34 @@ class TaskScreenState extends State<TaskScreen> {
                               child:
                                   // TaskListTile(
                                   // tasks:
-                                  //     MainScreenState.taskMap[appBarTitle]!,
+                                  //     widget.user.taskMap[appBarTitle]!,
                                   // task: MainScreenState
                                   //     .taskMap[appBarTitle]![index]),
                                   ListTile(
                                 leading: Checkbox(
-                                  value: MainScreenState
+                                  value: widget.user
                                       .taskMap[appBarTitle]![index].isCompleted,
                                   onChanged: (bool? value) {
                                     updateComplete(index, value);
                                   },
                                 ),
-                                title: Text(MainScreenState
-                                    .taskMap[appBarTitle]![index].text),
+                                title: Text(widget
+                                    .user.taskMap[appBarTitle]![index].text),
                               ),
                             ),
-                            Container(
-                              margin: const EdgeInsets.only(left: 80),
-                              child: Flex(
-                                direction: Axis.horizontal,
-                                children: <Widget>[
-                                  Expanded(
-                                      flex: 2,
-                                      child: MainScreenState
-                                          .taskMap[appBarTitle]![index]
-                                          .deadline),
-                                ],
-                              ),
-                            ),
+                            StatementWidget(
+                                deadline: widget.user
+                                    .taskMap[appBarTitle]![index].deadline),
                           ],
                         ),
                       ));
                 }
-                print(MainScreenState.taskMap[appBarTitle]!);
+                print(widget.user.taskMap[appBarTitle]!);
                 return const Text("Completed");
               },
-              childCount: MainScreenState.taskMap[appBarTitle]!.isEmpty
+              childCount: widget.user.taskMap[appBarTitle]!.isEmpty
                   ? 1
-                  : MainScreenState.taskMap[appBarTitle]!.length + 1,
+                  : widget.user.taskMap[appBarTitle]!.length + 1,
             ),
             onReorder: _onReorder,
           )

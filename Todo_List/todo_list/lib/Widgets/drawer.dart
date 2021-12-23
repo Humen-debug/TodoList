@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:todo_list/Screens/Task/add_list_screen.dart';
-import 'package:todo_list/Screens/Task/task_screen.dart';
+// import 'package:todo_list/Models/task.dart';
+import 'package:todo_list/Models/user.dart';
+
 import 'package:todo_list/Screens/main_screen.dart';
 import 'package:todo_list/Screens/profile_screen.dart';
 import 'package:todo_list/Screens/setting_screen.dart';
 
 class SideDrawer extends StatefulWidget {
-  SideDrawer({Key? key}) : super(key: key);
+  User user;
+  // Map<String, List<Task>> taskMap;
+  SideDrawer({Key? key, required this.user}) : super(key: key);
 
   @override
   _SideDrawerState createState() => _SideDrawerState();
@@ -24,8 +28,8 @@ class _SideDrawerState extends State<SideDrawer> {
   @override
   Widget build(BuildContext context) {
     final categories = <Widget>[];
-    for (int index = 0; index < MainScreenState.taskMap.length; index++) {
-      List<String> listNames = MainScreenState.taskMap.keys.toList();
+    for (int index = 0; index < widget.user.taskMap.length; index++) {
+      List<String> listNames = widget.user.taskMap.keys.toList();
       categories.add(ListTile(
         title: Text(listNames[index]),
         onTap: () {
@@ -65,15 +69,11 @@ class _SideDrawerState extends State<SideDrawer> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    // ignore: prefer_const_literals_to_create_immutables
                     children: [
-                      // ignore: prefer_const_constructors
-                      Text('User_name',
-                          style: TextStyle(
-                            fontSize: 20.0,
-                          )),
-                      SizedBox(height: 2),
-                      Text('user@gmail.com'),
+                      Text(widget.user.name,
+                          style: const TextStyle(fontSize: 20.0)),
+                      const SizedBox(height: 2),
+                      Text(widget.user.email),
                     ],
                   ),
                 ),
@@ -108,8 +108,11 @@ class _SideDrawerState extends State<SideDrawer> {
             Expanded(
               flex: 4,
               child: TextButton.icon(
-                onPressed: () => Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => AddListScreen())),
+                onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            AddListScreen(taskMap: widget.user.taskMap))),
                 icon: const Icon(Icons.add),
                 label: const Text("Add List"),
                 style: const ButtonStyle(

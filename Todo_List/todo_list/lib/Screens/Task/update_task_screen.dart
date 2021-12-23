@@ -14,11 +14,12 @@ class UpdateTaskScreen extends StatefulWidget {
 
 class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
   late Task subtask;
+  final deadline = Text('No deadline');
   TextEditingController taskController = TextEditingController();
 
   void setDefault() {
-    setState(() => subtask = Task("", null, false, "", DateTime.now(), "",
-        const Text("No Deadline"), []));
+    setState(() => subtask =
+        Task("", null, false, "", DateTime.now(), "", "No Dealine", []));
   }
 
   void createTask() {

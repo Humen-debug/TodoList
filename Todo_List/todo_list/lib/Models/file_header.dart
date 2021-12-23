@@ -25,10 +25,12 @@ class FileHandler {
   Future<File> _initFile() async {
     final _directory = await getApplicationDocumentsDirectory();
     final _path = _directory.path;
-    return File('$_path/$_fileName');
+    // final dir = Directory(_directory.path);
+
+    return File('$_path/$_fileName').create(recursive: true);
   }
 
-  static Set<User> _userSet = {};
+  final Set<User> _userSet = {};
 
   Future<void> writeUser(User user) async {
     final File fl = await file;
@@ -44,14 +46,17 @@ class FileHandler {
   Future<List<User>> readUsers() async {
     final File fl = await file;
     final _content = await fl.readAsString();
-
-    final List<dynamic> _jsonData = jsonDecode(_content);
-    final List<User> _users = _jsonData
-        .map(
-          (e) => User.fromJson(e as Map<String, dynamic>),
-        )
-        .toList();
-    return _users;
+    if (_content.isNotEmpty) {
+      final List<dynamic> _jsonData = jsonDecode(_content);
+      final List<User> _users = _jsonData
+          .map(
+            (e) => User.fromJson(e as Map<String, dynamic>),
+          )
+          .toList();
+      return _users;
+    } else {
+      return [];
+    }
   }
 
   Future<void> deleteUser(User user) async {

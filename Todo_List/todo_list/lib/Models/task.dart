@@ -6,7 +6,7 @@ class Task {
   String text, time, status;
   DateTime? date;
   DateTime createdTime;
-  Text deadline;
+  String deadline;
   List<Task> subtasks;
 
   @override
@@ -19,21 +19,23 @@ class Task {
 
   Task.fromJson(Map<String, dynamic> map)
       : text = map['text'] as String,
-        date = (map['date']),
+        date = map['date'] as DateTime,
         isCompleted = map['isCompleted'] as bool,
         time = map['time'] as String,
-        createdTime = (map['createdTime']),
+        createdTime = map['createdTime'] as DateTime,
         status = map['status'] as String,
-        deadline = map['deadline'],
-        subtasks = map['subtasks'];
+        deadline = map['deadline'] as String,
+        subtasks = map['subtasks'] as List<Task>;
 
   Map<String, dynamic> toJson() {
+    List<Map>? subtasks = this.subtasks.map((e) => e.toJson()).toList();
+
     return {
       'text': text,
-      'date': date,
+      'date': date?.toIso8601String(),
       'isCompleted': isCompleted,
       'time': time,
-      'createdTime': createdTime,
+      'createdTime': createdTime.toIso8601String(),
       'status': status,
       'deadline': deadline,
       'subtasks': subtasks,
