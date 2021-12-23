@@ -18,7 +18,7 @@ class TaskScreen extends StatefulWidget {
 class TaskScreenState extends State<TaskScreen> {
   final appBarTitle = MainScreenState.currentList;
   late Task task;
-  List<Task> list = [];
+  late List<Task> list;
   TextEditingController taskController = TextEditingController();
   bool showComplete = true;
   bool reOrder = false;
@@ -61,6 +61,16 @@ class TaskScreenState extends State<TaskScreen> {
           showComplete = !showComplete;
         });
     }
+  }
+
+  @override
+  void initState() {
+    setState(() {
+      list = MainScreenState.taskMap[appBarTitle] != null
+          ? MainScreenState.taskMap[appBarTitle]!
+          : [];
+      // setDefault();
+    });
   }
 
   void setDefault() {
@@ -154,6 +164,7 @@ class TaskScreenState extends State<TaskScreen> {
 
   @override
   Widget build(BuildContext context) {
+    initState();
     final themeProvider = Provider.of<ThemeProvider>(context);
 
     // ScrollController _scrollController =

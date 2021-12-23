@@ -1,7 +1,7 @@
-import 'package:todo_list/Models/task.dart';
 import 'dart:io';
 import 'dart:convert';
 import 'package:path_provider/path_provider.dart';
+import 'package:todo_list/Models/user.dart';
 
 class FileHandler {
   // Makes this a singleton class, as we want only want a single
@@ -28,9 +28,9 @@ class FileHandler {
     return File('$_path/$_fileName');
   }
 
-  static Set<Task> _userSet = {};
+  static Set<User> _userSet = {};
 
-  Future<void> writeUser(Task user) async {
+  Future<void> writeUser(User user) async {
     final File fl = await file;
     _userSet.add(user);
 
@@ -41,20 +41,20 @@ class FileHandler {
     await fl.writeAsString(jsonEncode(_userListMap));
   }
 
-  Future<List<Task>> readUsers() async {
+  Future<List<User>> readUsers() async {
     final File fl = await file;
     final _content = await fl.readAsString();
 
     final List<dynamic> _jsonData = jsonDecode(_content);
-    final List<Task> _users = _jsonData
+    final List<User> _users = _jsonData
         .map(
-          (e) => Task.fromJson(e as Map<String, dynamic>),
+          (e) => User.fromJson(e as Map<String, dynamic>),
         )
         .toList();
     return _users;
   }
 
-  Future<void> deleteUser(Task user) async {
+  Future<void> deleteUser(User user) async {
     final File fl = await file;
 
     _userSet.removeWhere((e) => e == user);
@@ -65,9 +65,13 @@ class FileHandler {
 
   Future<void> updateUser({
     required int id,
-    required Task updatedUser,
+    required User updatedUser,
   }) async {
     _userSet.removeWhere((e) => e.id == updatedUser.id);
     await writeUser(updatedUser);
+  }
+
+  String toString() {
+    return '$_userSet $_file';
   }
 }

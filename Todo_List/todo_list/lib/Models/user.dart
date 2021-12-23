@@ -1,4 +1,4 @@
-import "package:flutter/material.dart";
+// import "package:flutter/material.dart";
 import 'package:todo_list/Models/task.dart';
 
 class User {
@@ -18,5 +18,15 @@ class User {
       : id = (map['id'] as num).toInt(),
         name = map['name'] as String,
         email = map['email'] as String,
-        taskMap = map['taskMap'];
+        taskMap = map['taskMap'] as Map<String, List<Task>>;
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'email': email,
+      'taskMap': taskMap,
+    };
+  }
+
+  List<Object> get props => [name, email, id, taskMap];
 }
