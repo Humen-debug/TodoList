@@ -96,7 +96,7 @@ class TaskScreenState extends State<TaskScreen> {
     // print(jsonEncode(newTask));
     widget.user.taskMap[appBarTitle] = list;
     print(jsonEncode(widget.user.taskMap));
-    // widget.file.writeUser(widget.user);
+    widget.file.writeUser(widget.user);
   }
 
   void updateComplete(int index, bool? flag) {

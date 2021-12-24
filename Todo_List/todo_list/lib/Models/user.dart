@@ -16,19 +16,30 @@ class User {
     required this.taskMap,
   });
 
-  User.fromJson(Map<String, dynamic> map)
-      : id = (map['id'] as num).toInt(),
-        name = map['name'] as String,
-        email = map['email'] as String,
-        taskMap = map['taskMap'] as Map<String, List<Task>>;
+  factory User.fromJson(Map<String, dynamic> map) {
+    return User(
+      id: map['id'] as int,
+      email: map['email'] as String,
+      name: map['name'] as String,
+      taskMap: Map<String, List<Task>>.from((map['taskMap'])),
+    );
+  }
+
+  // User.fromJson(Map<String, dynamic> map)
+  //     : id = (map['id'] as num).toInt(),
+  //       name = map['name'] as String,
+  //       email = map['email'] as String,
+  //       // taskMap = Map<String, List<Task>>.from(map['taskMap']);
+  //       taskMap = (map['taskMap']).cast<Map<String,List<Task>>>();
+
   Map<String, dynamic> toJson() {
     // JsonEncoder().convert(taskMap);
-    jsonEncode(taskMap);
+    // jsonEncode(taskMap);
     return {
       'id': id,
       'name': name,
       'email': email,
-      'taskMap': taskMap,
+      'taskMap': jsonEncode(taskMap),
     };
   }
 

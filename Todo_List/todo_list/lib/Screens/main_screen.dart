@@ -18,10 +18,7 @@ class MainScreenState extends State<MainScreen> {
   List<User> users = [];
   int _selectedIndex = 0;
   static String currentList = "Inbox";
-  static var taskMap = <String, List<Task>>{
-    'Inbox': [],
-    'Completed': [],
-  };
+
   @mustCallSuper
   void initState() {
     // super.initState();

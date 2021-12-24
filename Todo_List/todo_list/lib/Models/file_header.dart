@@ -48,11 +48,12 @@ class FileHandler {
     final _content = await fl.readAsString();
     if (_content.isNotEmpty) {
       final List<dynamic> _jsonData = jsonDecode(_content);
-      final List<User> _users = _jsonData
-          .map(
-            (e) => User.fromJson(e as Map<String, dynamic>),
-          )
-          .toList();
+      final List<User> _users = _jsonData.map(
+        (e) {
+          // print(e);
+          return User.fromJson(e as Map<String, dynamic>);
+        },
+      ).toList();
       return _users;
     } else {
       return [];

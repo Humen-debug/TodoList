@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:todo_list/Screens/main_screen.dart';
 import 'package:todo_list/Models/task.dart';
+import 'package:todo_list/Models/user.dart';
 
 class TaskListTile extends StatefulWidget {
+  User user;
   List<Task> tasks;
   Task task;
-  TaskListTile({Key? key, required this.tasks, required this.task})
+  TaskListTile(
+      {Key? key, required this.tasks, required this.task, required this.user})
       : super(key: key);
 
   @override
@@ -18,7 +21,7 @@ class _TaskListTileState extends State<TaskListTile> {
       widget.task.isCompleted = flag!;
       if (widget.task.isCompleted == true) {
         widget.tasks.remove(widget.task);
-        MainScreenState.taskMap['Completed']!.add(widget.task);
+        widget.user.taskMap['Completed']!.add(widget.task);
       }
     });
   }

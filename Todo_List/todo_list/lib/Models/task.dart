@@ -19,10 +19,10 @@ class Task {
 
   Task.fromJson(Map<String, dynamic> map)
       : text = map['text'] as String,
-        date = map['date'] as DateTime,
+        date = map['date'] != null ? DateTime.parse(map['date']) : null,
         isCompleted = map['isCompleted'] as bool,
         time = map['time'] as String,
-        createdTime = map['createdTime'] as DateTime,
+        createdTime = DateTime.parse(map['createdTime']),
         status = map['status'] as String,
         deadline = map['deadline'] as String,
         subtasks = map['subtasks'] as List<Task>;
