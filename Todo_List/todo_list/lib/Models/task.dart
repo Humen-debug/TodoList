@@ -25,7 +25,7 @@ class Task {
         createdTime = DateTime.parse(map['createdTime']),
         status = map['status'] as String,
         deadline = map['deadline'] as String,
-        subtasks = map['subtasks'] as List<Task>;
+        subtasks = map['subtasks'].cast<Task>();
 
   Map<String, dynamic> toJson() {
     List<Map>? subtasks = this.subtasks.map((e) => e.toJson()).toList();

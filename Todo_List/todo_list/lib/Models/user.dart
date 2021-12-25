@@ -17,11 +17,27 @@ class User {
   });
 
   factory User.fromJson(Map<String, dynamic> map) {
+    // print(map['taskMap']['Inbox'] is List);
+    Map<String, List<Task>> taskMap =
+        Map.fromEntries((map['taskMap']).map((taskBox, taskLists) {
+      print(taskLists.isEmpty);
+      if (taskLists.isNotEmpty) {
+        // print(taskLists);
+        List<Task> list = taskLists.map((e) {
+          // print(e);
+          return Task.fromJson(e);
+        }).toList();
+        return MapEntry(taskBox, list);
+      } else {
+        return MapEntry(taskBox, taskLists);
+      }
+    }));
+
     return User(
       id: map['id'] as int,
       email: map['email'] as String,
       name: map['name'] as String,
-      taskMap: Map<String, List<Task>>.from((map['taskMap'])),
+      taskMap: taskMap,
     );
   }
 
