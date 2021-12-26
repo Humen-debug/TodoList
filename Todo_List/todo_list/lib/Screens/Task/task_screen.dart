@@ -55,7 +55,7 @@ class TaskScreenState extends State<TaskScreen> {
         list.sort((a, b) => a.date!.compareTo(b.date!));
         break;
       case 2:
-        list.sort((a, b) => a.text.compareTo(b.text));
+        list.sort((a, b) => a.title.compareTo(b.title));
         break;
       case 3:
         break;
@@ -84,7 +84,7 @@ class TaskScreenState extends State<TaskScreen> {
 
   void setDefault() {
     setState(() => task = Task(
-        text: "",
+        title: "",
         date: null,
         isCompleted: false,
         time: "",
@@ -95,9 +95,9 @@ class TaskScreenState extends State<TaskScreen> {
   }
 
   void createTask() {
-    if (task.text == '') return;
+    if (task.title == '') return;
     var newTask = Task(
-        text: task.text,
+        title: task.title,
         date: task.date,
         isCompleted: false,
         time: task.time,
@@ -140,12 +140,12 @@ class TaskScreenState extends State<TaskScreen> {
                       decoration: const InputDecoration(
                         labelText: 'Add Task',
                       ),
-                      onChanged: (String text) {
-                        setState(() => task.text = text);
+                      onChanged: (String title) {
+                        setState(() => task.title = title);
                       },
-                      onSubmitted: (String text) {
+                      onSubmitted: (String title) {
                         setState(() {
-                          task.text = text;
+                          task.title = title;
                           createTask();
                         });
                         Navigator.pop(context);
@@ -331,7 +331,7 @@ class TaskScreenState extends State<TaskScreen> {
                                   },
                                 ),
                                 title: Text(widget
-                                    .user.taskMap[appBarTitle]![index].text),
+                                    .user.taskMap[appBarTitle]![index].title),
                               ),
                             ),
                             StatementWidget(

@@ -1,5 +1,3 @@
-import 'dart:io';
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:todo_list/Models/file_header.dart';
 import 'package:todo_list/Screens/Calender/calender_screen.dart';
@@ -14,7 +12,7 @@ class MainScreen extends StatefulWidget {
 
 class MainScreenState extends State<MainScreen> {
   FileHandler fileHandler = FileHandler.instance;
-  late User user = User(
+  late User user = const User(
       id: 0,
       name: "",
       email: "",

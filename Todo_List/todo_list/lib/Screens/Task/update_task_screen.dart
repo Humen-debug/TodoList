@@ -27,7 +27,7 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
 
   void setDefault() {
     setState(() => subtask = Task(
-        text: "",
+        title: "",
         date: null,
         isCompleted: false,
         time: "",
@@ -38,9 +38,9 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
   }
 
   void createTask() {
-    if (subtask.text == '') return;
+    if (subtask.title == '') return;
     var newTask = Task(
-        text: subtask.text,
+        title: subtask.title,
         date: subtask.date,
         isCompleted: false,
         time: subtask.time,
@@ -72,12 +72,12 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
                       decoration: const InputDecoration(
                         labelText: 'Add Task',
                       ),
-                      onChanged: (String text) {
-                        setState(() => subtask.text = text);
+                      onChanged: (String title) {
+                        setState(() => subtask.title = title);
                       },
-                      onSubmitted: (String text) {
+                      onSubmitted: (String title) {
                         setState(() {
-                          subtask.text = text;
+                          subtask.title = title;
                           createTask();
                         });
                         Navigator.pop(context);
@@ -142,7 +142,7 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
             TextFormField(
               // controller: taskController,
               initialValue: widget.user
-                  .taskMap[MainScreenState.currentList]![widget.index].text,
+                  .taskMap[MainScreenState.currentList]![widget.index].title,
               decoration: const InputDecoration(
                 border: InputBorder.none,
               ),
@@ -150,10 +150,10 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
               ),
-              onFieldSubmitted: (String text) => setState(() => widget
+              onFieldSubmitted: (String title) => setState(() => widget
                   .user
                   .taskMap[MainScreenState.currentList]![widget.index]
-                  .text = text),
+                  .title = title),
             ),
             TextFormField(
               initialValue: widget.user
@@ -210,7 +210,7 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
                               .taskMap[MainScreenState.currentList]![
                                   widget.index]
                               .subtasks[index]
-                              .text,
+                              .title,
                         ),
                         leading: Checkbox(
                           value: widget

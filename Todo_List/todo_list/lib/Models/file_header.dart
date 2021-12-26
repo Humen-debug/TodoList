@@ -76,6 +76,7 @@ class FileHandler {
     await writeUser(updatedUser);
   }
 
+  @override
   String toString() {
     return '$_userSet $_file';
   }

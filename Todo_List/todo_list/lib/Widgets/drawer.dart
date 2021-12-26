@@ -19,6 +19,7 @@ class SideDrawer extends StatefulWidget {
 }
 
 class _SideDrawerState extends State<SideDrawer> {
+  void initState() {}
   Widget tasklistListView(BuildContext context, categories) {
     return ListView.builder(
         itemCount: categories.length,
@@ -114,9 +115,7 @@ class _SideDrawerState extends State<SideDrawer> {
                     context,
                     MaterialPageRoute(
                         builder: (context) => AddListScreen(
-                            taskMap: widget.user.taskMap,
-                            user: widget.user,
-                            file: widget.file))),
+                            user: widget.user, file: widget.file))),
                 icon: const Icon(Icons.add),
                 label: const Text("Add List"),
                 style: const ButtonStyle(

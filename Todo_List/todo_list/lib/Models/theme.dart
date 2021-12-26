@@ -18,7 +18,7 @@ class Themes {
   // ColorScheme lightColor;
   static int themeKey = 0;
   static void changeKey(int index) {
-    print("change $index");
+    // print("change $index");
     themeKey = index;
   }
 
