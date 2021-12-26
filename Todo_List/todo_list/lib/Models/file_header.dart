@@ -50,7 +50,6 @@ class FileHandler {
       final List<dynamic> _jsonData = jsonDecode(_content);
       final List<User> _users = _jsonData.map(
         (e) {
-          // print(e);
           return User.fromJson(e as Map<String, dynamic>);
         },
       ).toList();

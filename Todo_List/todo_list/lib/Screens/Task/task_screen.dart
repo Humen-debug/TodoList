@@ -75,6 +75,7 @@ class TaskScreenState extends State<TaskScreen> {
   @override
   void initState() {
     setState(() {
+      // print(widget.user.taskMap[appBarTitle]);
       list = widget.user.taskMap[appBarTitle] != null
           ? widget.user.taskMap[appBarTitle]!
           : [];
@@ -83,19 +84,31 @@ class TaskScreenState extends State<TaskScreen> {
   }
 
   void setDefault() {
-    setState(() => task =
-        Task("", null, false, "", DateTime.now(), "", "No Deadline", []));
+    setState(() => task = Task(
+        text: "",
+        date: null,
+        isCompleted: false,
+        time: "",
+        createdTime: DateTime.now(),
+        status: "",
+        deadline: "No Deadline",
+        subtasks: []));
   }
 
   void createTask() {
     if (task.text == '') return;
-    var newTask = Task(task.text, task.date, false, task.time, task.createdTime,
-        task.status, task.deadline, task.subtasks);
+    var newTask = Task(
+        text: task.text,
+        date: task.date,
+        isCompleted: false,
+        time: task.time,
+        createdTime: task.createdTime,
+        status: task.status,
+        deadline: task.deadline,
+        subtasks: task.subtasks);
     setDefault();
     list.add(newTask);
-    // print(jsonEncode(newTask));
     widget.user.taskMap[appBarTitle] = list;
-    print(jsonEncode(widget.user.taskMap));
     widget.file.writeUser(widget.user);
   }
 
@@ -105,9 +118,8 @@ class TaskScreenState extends State<TaskScreen> {
       if (widget.user.taskMap[appBarTitle]![index].isCompleted == true) {
         widget.user.taskMap['Completed']!
             .add(widget.user.taskMap[appBarTitle]![index]);
-        print(jsonEncode(widget.user.taskMap));
-
         widget.user.taskMap[appBarTitle]!.removeAt(index);
+        widget.file.writeUser(widget.user);
       }
     });
   }
@@ -294,8 +306,9 @@ class TaskScreenState extends State<TaskScreen> {
                               context,
                               MaterialPageRoute(
                                 builder: (context) => UpdateTaskScreen(
-                                  task:
-                                      widget.user.taskMap[appBarTitle]![index],
+                                  index: index,
+                                  user: widget.user,
+                                  file: widget.file,
                                 ),
                               ));
                         },
@@ -328,7 +341,7 @@ class TaskScreenState extends State<TaskScreen> {
                         ),
                       ));
                 }
-                print(widget.user.taskMap[appBarTitle]!);
+                // print(widget.user.taskMap[appBarTitle]!);
                 return const Text("Completed");
               },
               childCount: widget.user.taskMap[appBarTitle]!.isEmpty

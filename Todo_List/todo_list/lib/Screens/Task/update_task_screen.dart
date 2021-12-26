@@ -1,12 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:todo_list/Models/task.dart';
+import 'package:todo_list/Models/user.dart';
+import 'package:todo_list/Models/file_header.dart';
+
 import 'package:todo_list/Screens/main_screen.dart';
 import 'package:todo_list/Widgets/task_list_tile.dart';
 import 'package:todo_list/Widgets/time_picker_widget.dart';
 
 class UpdateTaskScreen extends StatefulWidget {
-  Task task;
-  UpdateTaskScreen({Key? key, required this.task}) : super(key: key);
+  int index;
+  User user;
+  FileHandler file;
+
+  UpdateTaskScreen(
+      {Key? key, required this.index, required this.user, required this.file})
+      : super(key: key);
 
   @override
   _UpdateTaskScreenState createState() => _UpdateTaskScreenState();
@@ -18,23 +26,33 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
   TextEditingController taskController = TextEditingController();
 
   void setDefault() {
-    setState(() => subtask =
-        Task("", null, false, "", DateTime.now(), "", "No Dealine", []));
+    setState(() => subtask = Task(
+        text: "",
+        date: null,
+        isCompleted: false,
+        time: "",
+        createdTime: DateTime.now(),
+        status: "",
+        deadline: "No Dealine",
+        subtasks: []));
   }
 
   void createTask() {
     if (subtask.text == '') return;
     var newTask = Task(
-        subtask.text,
-        subtask.date,
-        false,
-        subtask.time,
-        subtask.createdTime,
-        subtask.status,
-        subtask.deadline,
-        subtask.subtasks);
+        text: subtask.text,
+        date: subtask.date,
+        isCompleted: false,
+        time: subtask.time,
+        createdTime: subtask.createdTime,
+        status: subtask.status,
+        deadline: subtask.deadline,
+        subtasks: subtask.subtasks);
     setDefault();
-    widget.task.subtasks.add(newTask);
+    widget.user.taskMap[MainScreenState.currentList]![widget.index].subtasks
+        .add(newTask);
+    widget.file.writeUser(widget.user);
+    // widget.user.taskMap[MainScreenState.currentList]![widget.index].subtasks.add(newTask);
   }
 
   void buildTask(BuildContext context) {
@@ -123,7 +141,8 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
           child: Column(children: [
             TextFormField(
               // controller: taskController,
-              initialValue: widget.task.text,
+              initialValue: widget.user
+                  .taskMap[MainScreenState.currentList]![widget.index].text,
               decoration: const InputDecoration(
                 border: InputBorder.none,
               ),
@@ -131,25 +150,46 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
               ),
-              onFieldSubmitted: (String text) =>
-                  setState(() => widget.task.text = text),
+              onFieldSubmitted: (String text) => setState(() => widget
+                  .user
+                  .taskMap[MainScreenState.currentList]![widget.index]
+                  .text = text),
             ),
             TextFormField(
-              initialValue: widget.task.status,
+              initialValue: widget.user
+                  .taskMap[MainScreenState.currentList]![widget.index].status,
               decoration: const InputDecoration(
                   border: InputBorder.none, hintText: "Description"),
               onChanged: (String descript) => setState(
-                () => widget.task.status = descript,
+                () => widget
+                    .user
+                    .taskMap[MainScreenState.currentList]![widget.index]
+                    .status = descript,
               ),
             ),
             SizedBox(
               height: MediaQuery.of(context).size.height - 258,
               child: ListView.builder(
-                  itemCount: widget.task.subtasks.isEmpty
+                  itemCount: widget
+                          .user
+                          .taskMap[MainScreenState.currentList]![widget.index]
+                          .subtasks
+                          .isEmpty
                       ? 1
-                      : (widget.task.subtasks.length) + 1,
+                      : (widget
+                              .user
+                              .taskMap[MainScreenState.currentList]![
+                                  widget.index]
+                              .subtasks
+                              .length) +
+                          1,
                   itemBuilder: (context, index) {
-                    if (index == widget.task.subtasks.length) {
+                    if (index ==
+                        widget
+                            .user
+                            .taskMap[MainScreenState.currentList]![widget.index]
+                            .subtasks
+                            .length) {
                       return TextButton.icon(
                         onPressed: () => buildTask(context),
                         icon: const Icon(Icons.add),
@@ -161,17 +201,32 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
                     } else {
                       return
                           // TaskListTile(
-                          //     tasks: widget.task.subtasks,
-                          //     task: widget.task.subtasks[index]);
+                          //     tasks: widget.user.taskMap[MainScreenState.currentList]![widget.index].subtasks,
+                          //     task: widget.user.taskMap[MainScreenState.currentList]![widget.index].subtasks[index]);
                           ListTile(
                         title: Text(
-                          widget.task.subtasks[index].text,
+                          widget
+                              .user
+                              .taskMap[MainScreenState.currentList]![
+                                  widget.index]
+                              .subtasks[index]
+                              .text,
                         ),
                         leading: Checkbox(
-                          value: widget.task.subtasks[index].isCompleted,
+                          value: widget
+                              .user
+                              .taskMap[MainScreenState.currentList]![
+                                  widget.index]
+                              .subtasks[index]
+                              .isCompleted,
                           onChanged: (bool? value) {
                             setState(() {
-                              widget.task.subtasks[index].isCompleted = value!;
+                              widget
+                                  .user
+                                  .taskMap[MainScreenState.currentList]![
+                                      widget.index]
+                                  .subtasks[index]
+                                  .isCompleted = value!;
                             });
                           },
                         ),

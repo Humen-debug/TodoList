@@ -14,41 +14,43 @@ class MainScreen extends StatefulWidget {
 
 class MainScreenState extends State<MainScreen> {
   FileHandler fileHandler = FileHandler.instance;
-  late User user;
-  List<User> users = [];
+  late User user = User(
+      id: 0,
+      name: "",
+      email: "",
+      taskMap: <String, List<Task>>{'Inbox': [], 'Completed': []});
+  late List<User> users = [];
   int _selectedIndex = 0;
   static String currentList = "Inbox";
 
-  @mustCallSuper
   void initState() {
     // super.initState();
     fileHandler.readUsers().then((List<User> userList) {
       setState(() {
         users = userList;
+        int id = 0;
+
+        if (users.isNotEmpty) {
+          for (int i = 0; i < users.length; i++) {
+            if (id == i) {
+              user = users[i];
+              break;
+            }
+          }
+        } else {
+          user = User(
+              id: id,
+              name: "",
+              email: "",
+              taskMap: <String, List<Task>>{'Inbox': [], 'Completed': []});
+        }
       });
     });
-    int id = 0;
-
-    if (users.isNotEmpty) {
-      for (int i = 0; i < users.length; i++) {
-        if (id == i) {
-          user = users[i];
-        }
-      }
-    } else {
-      user = User(
-          id: id,
-          name: "",
-          email: "",
-          taskMap: <String, List<Task>>{'Inbox': [], 'Completed': []});
-    }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (user == null) initState();
-    // print(user);
-    // print(fileHandler.toString());
+    initState();
 
     final _pages = [
       TaskScreen(user: user, file: fileHandler),

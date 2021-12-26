@@ -4,8 +4,8 @@ import 'package:todo_list/Screens/Task/add_list_screen.dart';
 import 'package:todo_list/Models/user.dart';
 
 import 'package:todo_list/Screens/main_screen.dart';
-import 'package:todo_list/Screens/profile_screen.dart';
-import 'package:todo_list/Screens/setting_screen.dart';
+import 'package:todo_list/Screens/Settings/profile_screen.dart';
+import 'package:todo_list/Screens/Settings/setting_screen.dart';
 
 class SideDrawer extends StatefulWidget {
   User user;
