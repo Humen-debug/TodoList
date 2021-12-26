@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:todo_list/Models/file_header.dart';
 import 'package:todo_list/Screens/Task/add_list_screen.dart';
 // import 'package:todo_list/Models/task.dart';
 import 'package:todo_list/Models/user.dart';
-
 import 'package:todo_list/Screens/main_screen.dart';
 import 'package:todo_list/Screens/Settings/profile_screen.dart';
 import 'package:todo_list/Screens/Settings/setting_screen.dart';
 
 class SideDrawer extends StatefulWidget {
   User user;
+  FileHandler file;
   // Map<String, List<Task>> taskMap;
-  SideDrawer({Key? key, required this.user}) : super(key: key);
+  SideDrawer({Key? key, required this.user, required this.file})
+      : super(key: key);
 
   @override
   _SideDrawerState createState() => _SideDrawerState();
@@ -111,8 +113,10 @@ class _SideDrawerState extends State<SideDrawer> {
                 onPressed: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) =>
-                            AddListScreen(taskMap: widget.user.taskMap))),
+                        builder: (context) => AddListScreen(
+                            taskMap: widget.user.taskMap,
+                            user: widget.user,
+                            file: widget.file))),
                 icon: const Icon(Icons.add),
                 label: const Text("Add List"),
                 style: const ButtonStyle(

@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:reorderables/reorderables.dart';
 import 'package:todo_list/Models/file_header.dart';
@@ -10,7 +9,7 @@ import 'package:todo_list/Models/user.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_list/Screens/main_screen.dart';
 import 'package:todo_list/Widgets/statment_widget.dart';
-import 'package:todo_list/Widgets/task_list_tile.dart';
+// import 'package:todo_list/Widgets/task_list_tile.dart';
 import 'package:todo_list/Widgets/time_picker_widget.dart';
 
 class TaskScreen extends StatefulWidget {
@@ -209,6 +208,7 @@ class TaskScreenState extends State<TaskScreen> {
     return Scaffold(
       drawer: SideDrawer(
         user: widget.user,
+        file: widget.file,
         // taskMap: widget.user.taskMap,
       ),
       floatingActionButton: FloatingActionButton(
