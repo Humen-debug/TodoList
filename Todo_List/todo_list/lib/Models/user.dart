@@ -18,8 +18,6 @@ class User {
       id: map['id'] as int,
       email: map['email'] as String,
       name: map['name'] as String,
-      // taskMap: Map<String, List<Task>>.from(
-      //     Task.fromJson(map['taskMap']) as Map<String, dynamic>),
       taskMap:
           Map<String, List<Task>>.from(map['taskMap'].map((String name, value) {
         return MapEntry(

@@ -35,7 +35,7 @@ class _TaskListTileState extends State<TaskListTile> {
           updateComplete(value);
         },
       ),
-      title: Text(widget.task.title),
+      title: Text(widget.task.text),
     );
   }
 }

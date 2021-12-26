@@ -26,8 +26,8 @@ class MainScreenState extends State<MainScreen> {
     fileHandler.readUsers().then((List<User> userList) {
       setState(() {
         users = userList;
+        // print(users);
         int id = 0;
-
         if (users.isNotEmpty) {
           for (int i = 0; i < users.length; i++) {
             if (id == i) {

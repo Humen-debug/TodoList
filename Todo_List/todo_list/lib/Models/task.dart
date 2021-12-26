@@ -1,7 +1,7 @@
 class Task {
   int? id;
   bool isCompleted;
-  String title, time, status;
+  String text, time, status;
   DateTime? date;
   DateTime createdTime;
   String deadline;
@@ -9,11 +9,11 @@ class Task {
 
   @override
   String toString() {
-    return "$title: $date";
+    return "$text: $date";
   }
 
   Task(
-      {required this.title,
+      {required this.text,
       required this.date,
       required this.isCompleted,
       required this.time,
@@ -24,7 +24,7 @@ class Task {
 
   factory Task.fromJson(Map<String, dynamic> map) {
     return Task(
-        title: map['title'],
+        text: map['text'],
         date: map['date'] != null ? DateTime.parse(map['date']) : null,
         isCompleted: map['isCompleted'],
         time: map['time'],
@@ -33,12 +33,25 @@ class Task {
         deadline: map['deadline'],
         subtasks: map['subtasks'].map<Task>((s) => Task.fromJson(s)).toList());
   }
+  // Task.fromJson(Map<String, dynamic> map)
+  //     : text = map['text'] != null ? map['text'] as String : "",
+  //       date = map['date'] != null ? DateTime.parse(map['date']) : null,
+  //       isCompleted =
+  //           map['isCompleted'] != null ? map['isCompleted'] as bool : false,
+  //       time = map['time'] != null ? map['time'] as String : "",
+  //       createdTime = map['createdTime'] != null
+  //           ? DateTime.parse(map['createdTime'])
+  //           : DateTime.now(),
+  //       status = map['status'] != null ? map['status'] as String : "",
+  //       deadline =
+  //           map['deadline'] != null ? map['deadline'] as String : "No deadline",
+  //       subtasks = map['subtasks'] != null ? map['subtasks'] : [];
 
   Map<String, dynamic> toJson() {
     List<Map>? subtasks = this.subtasks.map((e) => e.toJson()).toList();
 
     return {
-      'title': title,
+      'text': text,
       'date': date?.toIso8601String(),
       'isCompleted': isCompleted,
       'time': time,
@@ -49,14 +62,6 @@ class Task {
     };
   }
 
-  List<Object> get prop => [
-        title,
-        date!,
-        isCompleted,
-        time,
-        createdTime,
-        status,
-        deadline,
-        subtasks
-      ];
+  List<Object> get prop =>
+      [text, date!, isCompleted, time, createdTime, status, deadline, subtasks];
 }
