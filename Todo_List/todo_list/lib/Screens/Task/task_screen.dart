@@ -253,9 +253,11 @@ class TaskScreenState extends State<TaskScreen> {
         // controller: _scrollController,
         slivers: <Widget>[
           SliverAppBar(
+            // title: Text(appBarTitle),
             pinned: true,
             elevation: 0.0,
-            expandedHeight: 100.0,
+            expandedHeight: 85.0,
+            // backgroundColor: Theme.of(context).backgroundColor,
             flexibleSpace: FlexibleSpaceBar(
               title: Text(appBarTitle),
             ),
@@ -331,7 +333,8 @@ class TaskScreenState extends State<TaskScreen> {
                           height: 50,
                           child: ElevatedButton(
                             style: ButtonStyle(
-                                alignment: Alignment.centerLeft,
+                                padding: MaterialStateProperty.all<
+                                    EdgeInsetsGeometry?>(EdgeInsets.zero),
                                 elevation:
                                     MaterialStateProperty.all<double>(0.0),
                                 backgroundColor: themeProvider.islight
@@ -378,7 +381,8 @@ class TaskScreenState extends State<TaskScreen> {
                                     .taskMap[appBarTitle]![index - 1].deadline),
                             // show the details subtasks or status (depends isExpand)
                             widget.user.taskMap[appBarTitle]![index - 1]
-                                    .isExpand
+                                        .isExpand &&
+                                    showComplete
                                 ? Flex(
                                     direction: Axis.vertical,
                                     children: [

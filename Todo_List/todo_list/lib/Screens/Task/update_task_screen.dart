@@ -54,7 +54,7 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
     widget.user.taskMap[MainScreenState.currentList]![widget.index].subtasks
         .add(newTask);
     widget.file.updateUser(id: widget.user.id, updatedUser: widget.user);
-    print(widget.file);
+    // print(widget.file);
     // widget.user.taskMap[MainScreenState.currentList]![widget.index].subtasks.add(newTask);
   }
 
