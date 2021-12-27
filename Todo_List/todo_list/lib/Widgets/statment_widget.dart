@@ -24,7 +24,7 @@ class StatementWidget extends StatelessWidget {
         children: <Widget>[
           Expanded(
               flex: 2,
-              child: deadline == 'No deadline'
+              child: deadline != 'No Deadline'
                   ? deadlineText()
                   : const SizedBox.shrink()),
         ],

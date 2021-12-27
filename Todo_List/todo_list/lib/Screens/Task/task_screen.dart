@@ -113,15 +113,14 @@ class TaskScreenState extends State<TaskScreen> {
     widget.file.updateUser(id: widget.user.id, updatedUser: widget.user);
   }
 
-  void updateComplete(int index, bool? flag) {
+  void updateComplete(List<Task> list, int index, bool? flag) {
     setState(() {
-      widget.user.taskMap[appBarTitle]![index].isCompleted = flag!;
-      if (widget.user.taskMap[appBarTitle]![index].isCompleted == true) {
-        widget.user.taskMap['Completed']!
-            .add(widget.user.taskMap[appBarTitle]![index]);
-        widget.user.taskMap[appBarTitle]!.removeAt(index);
+      list[index].isCompleted = flag!;
+      if (list[index].isCompleted == true) {
+        widget.user.taskMap['Completed']!.add(list[index]);
+        list.removeAt(index);
         // print(index);
-        print(widget.user.taskMap);
+        // print(widget.user.taskMap);
         widget.file.updateUser(id: widget.user.id, updatedUser: widget.user);
       }
     });
@@ -193,27 +192,29 @@ class TaskScreenState extends State<TaskScreen> {
 
   Widget expandTrailing(BuildContext context, int index) {
     Icon show = const Icon(Icons.expand_more);
-    return widget.user.taskMap[appBarTitle]![index].subtasks.isNotEmpty
-        ? IconButton(
-            onPressed: () => setState(
-              () {
-                widget.user.taskMap[appBarTitle]![index].isExpand =
-                    !widget.user.taskMap[appBarTitle]![index].isExpand;
-                widget.file
-                    .updateUser(id: widget.user.id, updatedUser: widget.user);
-              },
-            ),
-            icon: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 300),
-              transitionBuilder: (child, animation) => RotationTransition(
-                turns: widget.user.taskMap[appBarTitle]![index].isExpand
-                    ? Tween<double>(begin: 0, end: 1).animate(animation)
-                    : Tween<double>(begin: 1, end: 0.25).animate(animation),
-                child: FadeTransition(opacity: animation, child: child),
-              ),
-              child: show,
-            ),
-          )
+    return showComplete
+        ? widget.user.taskMap[appBarTitle]![index].subtasks.isNotEmpty
+            ? IconButton(
+                onPressed: () => setState(
+                  () {
+                    widget.user.taskMap[appBarTitle]![index].isExpand =
+                        !widget.user.taskMap[appBarTitle]![index].isExpand;
+                    widget.file.updateUser(
+                        id: widget.user.id, updatedUser: widget.user);
+                  },
+                ),
+                icon: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 300),
+                  transitionBuilder: (child, animation) => RotationTransition(
+                    turns: widget.user.taskMap[appBarTitle]![index].isExpand
+                        ? Tween<double>(begin: 0, end: 1).animate(animation)
+                        : Tween<double>(begin: 1, end: 0.25).animate(animation),
+                    child: FadeTransition(opacity: animation, child: child),
+                  ),
+                  child: show,
+                ),
+              )
+            : const SizedBox.shrink()
         : const SizedBox.shrink();
   }
 
@@ -291,14 +292,14 @@ class TaskScreenState extends State<TaskScreen> {
                           value: 0,
                           child: Row(
                             children: [
-                              showComplete == true
+                              !showComplete
                                   ? const Icon(Icons.preview)
                                   : const Icon(
                                       Icons.disabled_by_default_outlined),
                               const SizedBox(width: 10),
-                              showComplete == true
-                                  ? const Text("Show Completed")
-                                  : const Text("Hide Completed"),
+                              !showComplete
+                                  ? const Text("Show Details")
+                                  : const Text("Hide Details"),
                             ],
                           ),
                         ),
@@ -323,51 +324,113 @@ class TaskScreenState extends State<TaskScreen> {
 
                 if (index <= widget.user.taskMap[appBarTitle]!.length) {
                   return Card(
-                      elevation: 0.0,
-                      child: ElevatedButton(
-                        style: ButtonStyle(
-                            backgroundColor: themeProvider.islight
-                                ? MaterialStateProperty.all<Color>(Colors.white)
-                                : MaterialStateProperty.all<Color>(
-                                    Colors.grey.shade800)),
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => UpdateTaskScreen(
-                                  index: index - 1,
-                                  user: widget.user,
-                                  file: widget.file,
-                                ),
-                              ));
-                        },
-                        child: Column(
-                          children: <Widget>[
-                            SizedBox(
-                              height: 45,
-                              child: ListTile(
-                                leading: Checkbox(
-                                  value: widget
-                                      .user
-                                      .taskMap[appBarTitle]![index - 1]
-                                      .isCompleted,
-                                  onChanged: (bool? value) {
-                                    updateComplete(index - 1, value);
-                                  },
-                                ),
-                                trailing: expandTrailing(context, index - 1),
-                                title: Text(widget.user
-                                    .taskMap[appBarTitle]![index - 1].title),
+                    elevation: 0.0,
+                    child: Column(
+                      children: <Widget>[
+                        SizedBox(
+                          height: 50,
+                          child: ElevatedButton(
+                            style: ButtonStyle(
+                                alignment: Alignment.centerLeft,
+                                elevation:
+                                    MaterialStateProperty.all<double>(0.0),
+                                backgroundColor: themeProvider.islight
+                                    ? MaterialStateProperty.all<Color>(
+                                        Colors.white)
+                                    : MaterialStateProperty.all<Color>(
+                                        Colors.grey.shade800)),
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => UpdateTaskScreen(
+                                      index: index - 1,
+                                      user: widget.user,
+                                      file: widget.file,
+                                    ),
+                                  ));
+                            },
+                            child: ListTile(
+                              leading: Checkbox(
+                                value: widget
+                                    .user
+                                    .taskMap[appBarTitle]![index - 1]
+                                    .isCompleted,
+                                onChanged: (bool? value) {
+                                  updateComplete(
+                                      widget.user.taskMap[appBarTitle]!,
+                                      index - 1,
+                                      value);
+                                },
                               ),
+                              trailing: expandTrailing(context, index - 1),
+                              title: Text(widget
+                                  .user.taskMap[appBarTitle]![index - 1].title),
                             ),
+                          ),
+                        ),
+                        Column(
+                          children: [
+                            // show deadline, process, tomato clock (if has one)
+                            // and next line might show tags
                             StatementWidget(
                                 deadline: widget.user
                                     .taskMap[appBarTitle]![index - 1].deadline),
+                            // show the details subtasks or status (depends isExpand)
+                            widget.user.taskMap[appBarTitle]![index - 1]
+                                    .isExpand
+                                ? Flex(
+                                    direction: Axis.vertical,
+                                    children: [
+                                      ListView.builder(
+                                        physics:
+                                            const NeverScrollableScrollPhysics(),
+                                        shrinkWrap: true,
+                                        itemBuilder:
+                                            (BuildContext context, int num) {
+                                          return ListTile(
+                                            title: Text(widget
+                                                .user
+                                                .taskMap[appBarTitle]![
+                                                    index - 1]
+                                                .subtasks[num]
+                                                .title),
+                                            leading: Checkbox(
+                                              onChanged: (value) {
+                                                updateComplete(
+                                                    widget
+                                                        .user
+                                                        .taskMap[appBarTitle]![
+                                                            index - 1]
+                                                        .subtasks,
+                                                    num,
+                                                    value);
+                                              },
+                                              value: widget
+                                                  .user
+                                                  .taskMap[appBarTitle]![
+                                                      index - 1]
+                                                  .subtasks[num]
+                                                  .isCompleted,
+                                            ),
+                                          );
+                                        },
+                                        itemCount: widget
+                                            .user
+                                            .taskMap[appBarTitle]![index - 1]
+                                            .subtasks
+                                            .length,
+                                      ),
+                                    ],
+                                  )
+                                : const SizedBox.shrink(),
                           ],
                         ),
-                      ));
+                      ],
+                    ),
+                  );
                 }
-                // print(widget.user.taskMap[appBarTitle]!);
+
                 return const Text("Completed");
               },
               childCount: widget.user.taskMap[appBarTitle]!.isEmpty
