@@ -9,6 +9,7 @@ import 'package:todo_list/Models/user.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_list/Screens/main_screen.dart';
 import 'package:todo_list/Widgets/statment_widget.dart';
+import 'package:todo_list/Widgets/task_list_tile.dart';
 // import 'package:todo_list/Widgets/task_list_tile.dart';
 import 'package:todo_list/Widgets/time_picker_widget.dart';
 
@@ -28,7 +29,7 @@ class TaskScreenState extends State<TaskScreen> {
   late List<Task> list;
 
   TextEditingController taskController = TextEditingController();
-  bool showComplete = true;
+  static bool showComplete = true;
   bool reOrder = false;
   Icon sortIcon = const Icon(Icons.sort);
 
@@ -46,20 +47,26 @@ class TaskScreenState extends State<TaskScreen> {
   ];
 
   void filterTasks(BuildContext context, int item) {
-    setState(() => sortIcon = sortIcons[item]);
-    switch (item) {
-      case 0:
-        setState(() => reOrder = !reOrder);
-        break;
-      case 1:
-        list.sort((a, b) => a.date!.compareTo(b.date!));
-        break;
-      case 2:
-        list.sort((a, b) => a.title.compareTo(b.title));
-        break;
-      case 3:
-        break;
-    }
+    setState(() {
+      sortIcon = sortIcons[item];
+      switch (item) {
+        case 0:
+          reOrder = !reOrder;
+          break;
+        case 1:
+          list.sort((a, b) {
+            return a.date!.compareTo(b.date!);
+          });
+          break;
+        case 2:
+          list.sort((a, b) => a.title.compareTo(b.title));
+          break;
+        case 3:
+          break;
+      }
+      widget.user.taskMap[appBarTitle] = list;
+      widget.file.updateUser(id: widget.user.id, updatedUser: widget.user);
+    });
   }
 
   void onSelected(BuildContext context, int item) {
@@ -111,19 +118,6 @@ class TaskScreenState extends State<TaskScreen> {
     list.add(newTask);
     widget.user.taskMap[appBarTitle] = list;
     widget.file.updateUser(id: widget.user.id, updatedUser: widget.user);
-  }
-
-  void updateComplete(List<Task> list, int index, bool? flag) {
-    setState(() {
-      list[index].isCompleted = flag!;
-      if (list[index].isCompleted == true) {
-        widget.user.taskMap['Completed']!.add(list[index]);
-        list.removeAt(index);
-        // print(index);
-        // print(widget.user.taskMap);
-        widget.file.updateUser(id: widget.user.id, updatedUser: widget.user);
-      }
-    });
   }
 
   void buildTask(BuildContext context) {
@@ -192,29 +186,28 @@ class TaskScreenState extends State<TaskScreen> {
 
   Widget expandTrailing(BuildContext context, int index) {
     Icon show = const Icon(Icons.expand_more);
-    return showComplete
-        ? widget.user.taskMap[appBarTitle]![index].subtasks.isNotEmpty
-            ? IconButton(
-                onPressed: () => setState(
-                  () {
-                    widget.user.taskMap[appBarTitle]![index].isExpand =
-                        !widget.user.taskMap[appBarTitle]![index].isExpand;
-                    widget.file.updateUser(
-                        id: widget.user.id, updatedUser: widget.user);
-                  },
-                ),
-                icon: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 300),
-                  transitionBuilder: (child, animation) => RotationTransition(
-                    turns: widget.user.taskMap[appBarTitle]![index].isExpand
-                        ? Tween<double>(begin: 0, end: 1).animate(animation)
-                        : Tween<double>(begin: 1, end: 0.25).animate(animation),
-                    child: FadeTransition(opacity: animation, child: child),
-                  ),
-                  child: show,
-                ),
-              )
-            : const SizedBox.shrink()
+    return showComplete &&
+            widget.user.taskMap[appBarTitle]![index].subtasks.isNotEmpty
+        ? IconButton(
+            onPressed: () => setState(
+              () {
+                widget.user.taskMap[appBarTitle]![index].isExpand =
+                    !widget.user.taskMap[appBarTitle]![index].isExpand;
+                widget.file
+                    .updateUser(id: widget.user.id, updatedUser: widget.user);
+              },
+            ),
+            icon: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 300),
+              transitionBuilder: (child, animation) => RotationTransition(
+                turns: widget.user.taskMap[appBarTitle]![index].isExpand
+                    ? Tween<double>(begin: 0, end: 1).animate(animation)
+                    : Tween<double>(begin: 1, end: 0.25).animate(animation),
+                child: FadeTransition(opacity: animation, child: child),
+              ),
+              child: show,
+            ),
+          )
         : const SizedBox.shrink();
   }
 
@@ -332,28 +325,33 @@ class TaskScreenState extends State<TaskScreen> {
                         SizedBox(
                           height: 50,
                           child: ElevatedButton(
-                            style: ButtonStyle(
-                                padding: MaterialStateProperty.all<
-                                    EdgeInsetsGeometry?>(EdgeInsets.zero),
-                                elevation:
-                                    MaterialStateProperty.all<double>(0.0),
-                                backgroundColor: themeProvider.islight
-                                    ? MaterialStateProperty.all<Color>(
-                                        Colors.white)
-                                    : MaterialStateProperty.all<Color>(
-                                        Colors.grey.shade800)),
-                            onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => UpdateTaskScreen(
-                                      index: index - 1,
-                                      user: widget.user,
-                                      file: widget.file,
-                                    ),
-                                  ));
-                            },
-                            child: ListTile(
+                              style: ButtonStyle(
+                                  padding: MaterialStateProperty.all<
+                                      EdgeInsetsGeometry?>(EdgeInsets.zero),
+                                  elevation:
+                                      MaterialStateProperty.all<double>(0.0),
+                                  backgroundColor: themeProvider.islight
+                                      ? MaterialStateProperty.all<Color>(
+                                          Colors.white)
+                                      : MaterialStateProperty.all<Color>(
+                                          Colors.grey.shade800)),
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => UpdateTaskScreen(
+                                        index: index - 1,
+                                        user: widget.user,
+                                        file: widget.file,
+                                      ),
+                                    ));
+                              },
+                              child: TaskListTile(
+                                  list: widget.user.taskMap[appBarTitle]!,
+                                  user: widget.user,
+                                  file: widget.file,
+                                  index: index - 1)
+                              /*ListTile(
                               horizontalTitleGap: 5,
                               minLeadingWidth: 10,
                               leading: Checkbox(
@@ -371,8 +369,8 @@ class TaskScreenState extends State<TaskScreen> {
                               trailing: expandTrailing(context, index - 1),
                               title: Text(widget
                                   .user.taskMap[appBarTitle]![index - 1].title),
-                            ),
-                          ),
+                            ),*/
+                              ),
                         ),
                         Column(
                           children: [
@@ -395,36 +393,16 @@ class TaskScreenState extends State<TaskScreen> {
                                       return TextButton(
                                         onPressed: () {},
                                         child: SizedBox(
-                                          height: 45,
-                                          child: ListTile(
-                                            horizontalTitleGap: 5,
-                                            // minLeadingWidth: 5,
-                                            title: Text(widget
-                                                .user
-                                                .taskMap[appBarTitle]![
-                                                    index - 1]
-                                                .subtasks[num]
-                                                .title),
-                                            leading: Checkbox(
-                                              onChanged: (value) {
-                                                updateComplete(
-                                                    widget
-                                                        .user
-                                                        .taskMap[appBarTitle]![
-                                                            index - 1]
-                                                        .subtasks,
-                                                    num,
-                                                    value);
-                                              },
-                                              value: widget
-                                                  .user
-                                                  .taskMap[appBarTitle]![
-                                                      index - 1]
-                                                  .subtasks[num]
-                                                  .isCompleted,
-                                            ),
-                                          ),
-                                        ),
+                                            height: 45,
+                                            child: TaskListTile(
+                                                list: widget
+                                                    .user
+                                                    .taskMap[appBarTitle]![
+                                                        index - 1]
+                                                    .subtasks,
+                                                user: widget.user,
+                                                file: widget.file,
+                                                index: num)),
                                       );
                                     },
                                     itemCount: widget

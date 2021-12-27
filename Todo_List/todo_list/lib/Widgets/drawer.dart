@@ -22,6 +22,7 @@ class _SideDrawerState extends State<SideDrawer> {
   void initState() {}
   Widget tasklistListView(BuildContext context, categories) {
     return ListView.builder(
+        padding: EdgeInsets.zero,
         itemCount: categories.length,
         itemBuilder: (BuildContext context, int index) {
           return categories[index];

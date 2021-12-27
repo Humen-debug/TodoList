@@ -76,7 +76,9 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
                         labelText: 'Add Task',
                       ),
                       onChanged: (String title) {
-                        setState(() => subtask.title = title);
+                        setState(() {
+                          subtask.title = title;
+                        });
                       },
                       onSubmitted: (String title) {
                         setState(() {
@@ -90,7 +92,6 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
                   Expanded(
                     flex: 1,
                     child: IconButton(
-                      // NOT WORK
                       onPressed: () {
                         setState(() => createTask());
                         Navigator.pop(context);
@@ -153,22 +154,24 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
               ),
-              onFieldSubmitted: (String title) => setState(() => widget
-                  .user
-                  .taskMap[MainScreenState.currentList]![widget.index]
-                  .title = title),
+              onFieldSubmitted: (String title) => setState(() {
+                widget.user.taskMap[MainScreenState.currentList]![widget.index]
+                    .title = title;
+                widget.file
+                    .updateUser(id: widget.user.id, updatedUser: widget.user);
+              }),
             ),
             TextFormField(
               initialValue: widget.user
                   .taskMap[MainScreenState.currentList]![widget.index].status,
               decoration: const InputDecoration(
                   border: InputBorder.none, hintText: "Description"),
-              onChanged: (String descript) => setState(
-                () => widget
-                    .user
-                    .taskMap[MainScreenState.currentList]![widget.index]
-                    .status = descript,
-              ),
+              onChanged: (String descript) => setState(() {
+                widget.user.taskMap[MainScreenState.currentList]![widget.index]
+                    .status = descript;
+                widget.file
+                    .updateUser(id: widget.user.id, updatedUser: widget.user);
+              }),
             ),
             SizedBox(
               height: MediaQuery.of(context).size.height - 258,
@@ -202,38 +205,15 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
                         ),
                       );
                     } else {
-                      return
-                          // TaskListTile(
-                          //     tasks: widget.user.taskMap[MainScreenState.currentList]![widget.index].subtasks,
-                          //     task: widget.user.taskMap[MainScreenState.currentList]![widget.index].subtasks[index]);
-                          ListTile(
-                        title: Text(
-                          widget
+                      return TaskListTile(
+                          list: widget
                               .user
                               .taskMap[MainScreenState.currentList]![
                                   widget.index]
-                              .subtasks[index]
-                              .title,
-                        ),
-                        leading: Checkbox(
-                          value: widget
-                              .user
-                              .taskMap[MainScreenState.currentList]![
-                                  widget.index]
-                              .subtasks[index]
-                              .isCompleted,
-                          onChanged: (bool? value) {
-                            setState(() {
-                              widget
-                                  .user
-                                  .taskMap[MainScreenState.currentList]![
-                                      widget.index]
-                                  .subtasks[index]
-                                  .isCompleted = value!;
-                            });
-                          },
-                        ),
-                      );
+                              .subtasks,
+                          user: widget.user,
+                          file: widget.file,
+                          index: index);
                     }
                   }),
             )
