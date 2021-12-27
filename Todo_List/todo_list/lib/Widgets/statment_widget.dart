@@ -18,7 +18,7 @@ class StatementWidget extends StatelessWidget {
     }
 
     return Container(
-      margin: const EdgeInsets.only(left: 80),
+      margin: const EdgeInsets.only(left: 65),
       child: Flex(
         direction: Axis.horizontal,
         children: <Widget>[

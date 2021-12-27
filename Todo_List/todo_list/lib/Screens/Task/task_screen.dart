@@ -354,6 +354,8 @@ class TaskScreenState extends State<TaskScreen> {
                                   ));
                             },
                             child: ListTile(
+                              horizontalTitleGap: 5,
+                              minLeadingWidth: 10,
                               leading: Checkbox(
                                 value: widget
                                     .user
@@ -383,16 +385,20 @@ class TaskScreenState extends State<TaskScreen> {
                             widget.user.taskMap[appBarTitle]![index - 1]
                                         .isExpand &&
                                     showComplete
-                                ? Flex(
-                                    direction: Axis.vertical,
-                                    children: [
-                                      ListView.builder(
-                                        physics:
-                                            const NeverScrollableScrollPhysics(),
-                                        shrinkWrap: true,
-                                        itemBuilder:
-                                            (BuildContext context, int num) {
-                                          return ListTile(
+                                ? ListView.builder(
+                                    padding: EdgeInsets.fromLTRB(25, 0, 0, 0),
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    shrinkWrap: true,
+                                    itemBuilder:
+                                        (BuildContext context, int num) {
+                                      return TextButton(
+                                        onPressed: () {},
+                                        child: SizedBox(
+                                          height: 45,
+                                          child: ListTile(
+                                            horizontalTitleGap: 5,
+                                            // minLeadingWidth: 5,
                                             title: Text(widget
                                                 .user
                                                 .taskMap[appBarTitle]![
@@ -417,15 +423,15 @@ class TaskScreenState extends State<TaskScreen> {
                                                   .subtasks[num]
                                                   .isCompleted,
                                             ),
-                                          );
-                                        },
-                                        itemCount: widget
-                                            .user
-                                            .taskMap[appBarTitle]![index - 1]
-                                            .subtasks
-                                            .length,
-                                      ),
-                                    ],
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    itemCount: widget
+                                        .user
+                                        .taskMap[appBarTitle]![index - 1]
+                                        .subtasks
+                                        .length,
                                   )
                                 : const SizedBox.shrink(),
                           ],
