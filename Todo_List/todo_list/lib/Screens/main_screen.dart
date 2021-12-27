@@ -16,31 +16,40 @@ class MainScreenState extends State<MainScreen> {
       id: 0,
       name: "",
       email: "",
-      taskMap: <String, List<Task>>{'Inbox': [], 'Completed': []});
+      taskMap: <String, List<Task>>{'All': [], 'Inbox': [], 'Completed': []});
   late List<User> users = [];
   int _selectedIndex = 0;
-  static String currentList = "Inbox";
+  static String currentList = "All";
 
   void initState() {
     // super.initState();
+    // fileHandler.deleteFile();
     fileHandler.readUsers().then((List<User> userList) {
       setState(() {
-        users = userList;
-        // print(users);
-        int id = 0;
-        if (users.isNotEmpty) {
-          for (int i = 0; i < users.length; i++) {
-            if (id == i) {
-              user = users[i];
-              break;
+        try {
+          users = userList;
+          int id = 0;
+          if (users.isNotEmpty) {
+            for (int i = 0; i < users.length; i++) {
+              if (id == i) {
+                user = users[i];
+                break;
+              }
             }
+          } else {
+            user = User(
+                id: id,
+                name: "",
+                email: "",
+                taskMap: <String, List<Task>>{
+                  'All': [],
+                  'Inbox': [],
+                  'Completed': []
+                });
           }
-        } else {
-          user = User(
-              id: id,
-              name: "",
-              email: "",
-              taskMap: <String, List<Task>>{'Inbox': [], 'Completed': []});
+        } on Exception catch (e) {
+          print(e);
+          // fileHandler.deleteUser(user);
         }
       });
     });

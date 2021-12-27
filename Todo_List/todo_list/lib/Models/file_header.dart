@@ -76,6 +76,16 @@ class FileHandler {
     await writeUser(updatedUser);
   }
 
+  Future<void> deleteFile() async {
+    try {
+      final File file = await _file!;
+
+      await file.delete();
+    } catch (e) {
+      return;
+    }
+  }
+
   @override
   String toString() {
     return '$_userSet $_file';

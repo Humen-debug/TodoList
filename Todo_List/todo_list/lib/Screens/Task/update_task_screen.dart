@@ -27,9 +27,10 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
 
   void setDefault() {
     setState(() => subtask = Task(
-        text: "",
+        title: "",
         date: null,
         isCompleted: false,
+        isExpand: false,
         time: "",
         createdTime: DateTime.now(),
         status: "",
@@ -38,11 +39,12 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
   }
 
   void createTask() {
-    if (subtask.text == '') return;
+    if (subtask.title == '') return;
     var newTask = Task(
-        text: subtask.text,
+        title: subtask.title,
         date: subtask.date,
         isCompleted: false,
+        isExpand: false,
         time: subtask.time,
         createdTime: subtask.createdTime,
         status: subtask.status,
@@ -51,7 +53,8 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
     setDefault();
     widget.user.taskMap[MainScreenState.currentList]![widget.index].subtasks
         .add(newTask);
-    widget.file.writeUser(widget.user);
+    widget.file.updateUser(id: widget.user.id, updatedUser: widget.user);
+    print(widget.file);
     // widget.user.taskMap[MainScreenState.currentList]![widget.index].subtasks.add(newTask);
   }
 
@@ -72,12 +75,12 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
                       decoration: const InputDecoration(
                         labelText: 'Add Task',
                       ),
-                      onChanged: (String text) {
-                        setState(() => subtask.text = text);
+                      onChanged: (String title) {
+                        setState(() => subtask.title = title);
                       },
-                      onSubmitted: (String text) {
+                      onSubmitted: (String title) {
                         setState(() {
-                          subtask.text = text;
+                          subtask.title = title;
                           createTask();
                         });
                         Navigator.pop(context);
@@ -131,7 +134,7 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
         appBar: AppBar(
           title: Text(appTitle),
           actions: <Widget>[
-            IconButton(onPressed: () {}, icon: Icon(Icons.more_horiz))
+            IconButton(onPressed: () {}, icon: const Icon(Icons.more_horiz))
           ],
           elevation: 0,
         ),
@@ -142,7 +145,7 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
             TextFormField(
               // controller: taskController,
               initialValue: widget.user
-                  .taskMap[MainScreenState.currentList]![widget.index].text,
+                  .taskMap[MainScreenState.currentList]![widget.index].title,
               decoration: const InputDecoration(
                 border: InputBorder.none,
               ),
@@ -150,10 +153,10 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
               ),
-              onFieldSubmitted: (String text) => setState(() => widget
+              onFieldSubmitted: (String title) => setState(() => widget
                   .user
                   .taskMap[MainScreenState.currentList]![widget.index]
-                  .text = text),
+                  .title = title),
             ),
             TextFormField(
               initialValue: widget.user
@@ -210,7 +213,7 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
                               .taskMap[MainScreenState.currentList]![
                                   widget.index]
                               .subtasks[index]
-                              .text,
+                              .title,
                         ),
                         leading: Checkbox(
                           value: widget

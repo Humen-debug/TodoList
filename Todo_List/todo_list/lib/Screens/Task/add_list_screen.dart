@@ -42,7 +42,8 @@ class AddListScreenState extends State<AddListScreen> {
                 }
                 setState(() {
                   widget.user.taskMap[newListName] = [];
-                  widget.file.writeUser(widget.user);
+                  widget.file
+                      .updateUser(id: widget.user.id, updatedUser: widget.user);
                   // print(widget.user.taskMap);
                 });
                 Navigator.pop(context);

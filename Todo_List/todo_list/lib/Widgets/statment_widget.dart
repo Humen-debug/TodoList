@@ -14,12 +14,6 @@ class StatementWidget extends StatelessWidget {
           style: const TextStyle(color: Colors.red),
         );
       }
-      // switch (deadline) {
-      //   case "":
-
-      //     break;
-      //   default:
-      // }
       return deadline_text;
     }
 
@@ -28,7 +22,11 @@ class StatementWidget extends StatelessWidget {
       child: Flex(
         direction: Axis.horizontal,
         children: <Widget>[
-          Expanded(flex: 2, child: deadlineText()),
+          Expanded(
+              flex: 2,
+              child: deadline == 'No deadline'
+                  ? deadlineText()
+                  : const SizedBox.shrink()),
         ],
       ),
     );
