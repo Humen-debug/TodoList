@@ -35,7 +35,8 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
         createdTime: DateTime.now(),
         status: "",
         deadline: "No Dealine",
-        subtasks: []));
+        subtasks: [],
+        completed: []));
   }
 
   void createTask() {
@@ -49,10 +50,11 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
         createdTime: subtask.createdTime,
         status: subtask.status,
         deadline: subtask.deadline,
-        subtasks: subtask.subtasks);
+        subtasks: subtask.subtasks,
+        completed: subtask.completed);
     setDefault();
     widget.user.taskMap[MainScreenState.currentList]![widget.index].subtasks
-        .add(newTask);
+        .insert(0, newTask);
     widget.file.updateUser(id: widget.user.id, updatedUser: widget.user);
     // print(widget.file);
     // widget.user.taskMap[MainScreenState.currentList]![widget.index].subtasks.add(newTask);

@@ -1,13 +1,14 @@
 class Task {
   int? id;
   bool isCompleted;
+  bool isExpand;
   String title, time, status;
   DateTime? date;
   DateTime createdTime;
   String deadline;
   List<Task> subtasks;
+  List<Task> completed;
   List<Tag>? tags;
-  bool isExpand;
 
   @override
   String toString() {
@@ -23,6 +24,7 @@ class Task {
       required this.status,
       required this.deadline,
       required this.subtasks,
+      required this.completed,
       required this.isExpand});
 
   factory Task.fromJson(Map<String, dynamic> map) {
@@ -35,7 +37,12 @@ class Task {
         createdTime: DateTime.parse(map['createdTime']),
         status: map['status'],
         deadline: map['deadline'],
-        subtasks: map['subtasks'].map<Task>((s) => Task.fromJson(s)).toList());
+        completed: map['completed'] != null
+            ? map['completed'].map<Task>((s) => Task.fromJson(s)).toList()
+            : [],
+        subtasks: map['completed'] != null
+            ? map['subtasks'].map<Task>((s) => Task.fromJson(s)).toList()
+            : []);
   }
 
   Map<String, dynamic> toJson() {
@@ -50,6 +57,7 @@ class Task {
       'status': status,
       'deadline': deadline,
       'subtasks': subtasks,
+      'completed': completed,
       'isExpand': isExpand,
     };
   }

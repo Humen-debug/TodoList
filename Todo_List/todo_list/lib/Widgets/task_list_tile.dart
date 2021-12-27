@@ -23,11 +23,19 @@ class TaskListTile extends StatefulWidget {
 
 class _TaskListTileState extends State<TaskListTile> {
   void updateComplete(List<Task> list, int index, bool? flag) {
+    Task temp = list[index];
     setState(() {
       list[index].isCompleted = flag!;
       if (list[index].isCompleted == true) {
         widget.user.taskMap['Completed']!.add(list[index]);
-        list.removeAt(index);
+        list.remove(list[index]);
+        list.add(temp);
+
+        widget.file.updateUser(id: widget.user.id, updatedUser: widget.user);
+      } else {
+        list.remove(list[index]);
+        list.insert(0, temp);
+        widget.user.taskMap['Completed']!.remove(temp);
         widget.file.updateUser(id: widget.user.id, updatedUser: widget.user);
       }
     });
@@ -35,8 +43,7 @@ class _TaskListTileState extends State<TaskListTile> {
 
   Widget expandTrailing(BuildContext context, int index) {
     Icon show = const Icon(Icons.expand_more);
-    return TaskScreenState.showComplete &&
-            widget.list[index].subtasks.isNotEmpty
+    return TaskScreenState.showDetails && widget.list[index].subtasks.isNotEmpty
         ? IconButton(
             onPressed: () => setState(
               () {
@@ -61,17 +68,20 @@ class _TaskListTileState extends State<TaskListTile> {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      horizontalTitleGap: 5,
-      minLeadingWidth: 10,
-      leading: Checkbox(
-        value: widget.list[widget.index].isCompleted,
-        onChanged: (bool? value) {
-          updateComplete(widget.list, widget.index, value);
-        },
+    return Opacity(
+      opacity: widget.list[widget.index].isCompleted ? 0.5 : 1,
+      child: ListTile(
+        horizontalTitleGap: 5,
+        minLeadingWidth: 10,
+        leading: Checkbox(
+          value: widget.list[widget.index].isCompleted,
+          onChanged: (bool? value) {
+            updateComplete(widget.list, widget.index, value);
+          },
+        ),
+        trailing: expandTrailing(context, widget.index),
+        title: Text(widget.list[widget.index].title),
       ),
-      trailing: expandTrailing(context, widget.index),
-      title: Text(widget.list[widget.index].title),
     );
   }
 }
