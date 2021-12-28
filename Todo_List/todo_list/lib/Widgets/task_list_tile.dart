@@ -28,6 +28,7 @@ class _TaskListTileState extends State<TaskListTile> {
   int taskIndex(List<Task> list, String title) =>
       list.indexWhere((task) => task.title == title);
 
+// list:widget.list
   void updateComplete(List<Task> list, int index, bool? flag) {
     setState(() {
       list[index].isCompleted = flag!;
@@ -36,11 +37,12 @@ class _TaskListTileState extends State<TaskListTile> {
       } else {
         widget.user.taskMap['Completed']!.remove(list[index]);
       }
+      // problem seems to be here
       list.sort((a, b) {
         return !b.isCompleted ? 1 : -1;
       });
       // might be useless
-      list[index].setProgress();
+      // list[index].setProgress();
 
       widget.file.updateUser(id: widget.user.id, updatedUser: widget.user);
     });

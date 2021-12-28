@@ -63,13 +63,19 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
     widget.file.updateUser(id: widget.user.id, updatedUser: widget.user);
   }
 
+  // list: widget.user.taskMap[MainScreenState.currentList]![widget.index].subtasks
   void reload(List list) {
-    widget.user.taskMap[MainScreenState.currentList]![widget.index]
-        .setProgress();
-    list.sort((a, b) {
-      return !b.isCompleted ? 1 : -1;
+    setState(() {
+      list.sort((a, b) {
+        return !b.isCompleted ? 1 : -1;
+      });
+      widget.user.taskMap[MainScreenState.currentList]![widget.index]
+          .setProgress();
+      list.sort((a, b) {
+        return !b.isCompleted ? 1 : -1;
+      });
+      widget.file.updateUser(id: widget.user.id, updatedUser: widget.user);
     });
-    widget.file.updateUser(id: widget.user.id, updatedUser: widget.user);
   }
 
   void buildTask(BuildContext context) {
@@ -144,9 +150,7 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
   @override
   Widget build(BuildContext context) {
     String appTitle = MainScreenState.currentList;
-    reload(widget
-        .user.taskMap[MainScreenState.currentList]![widget.index].subtasks);
-    print("reload!");
+
     return Scaffold(
         appBar: AppBar(
           title: Text(appTitle),
@@ -162,7 +166,7 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
                   .user
                   .taskMap[MainScreenState.currentList]![widget.index]
                   .progress!,
-              minHeight: 40,
+              minHeight: 48,
               valueColor:
                   MediaQuery.of(context).platformBrightness == Brightness.light
                       ? AlwaysStoppedAnimation<Color>(Colors.grey.shade200)
@@ -174,6 +178,9 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
               padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
               child: Column(children: [
                 TextFormField(
+                  maxLines: null,
+                  minLines: null,
+                  // expands: true,
                   // controller: taskController,
                   initialValue: widget
                       .user

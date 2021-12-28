@@ -198,33 +198,6 @@ class TaskScreenState extends State<TaskScreen> {
         });
   }
 
-  Widget expandTrailing(BuildContext context, int index) {
-    Icon show = const Icon(Icons.expand_more);
-    return showDetails &&
-            widget.user.taskMap[appBarTitle]![index].subtasks.isNotEmpty
-        ? IconButton(
-            onPressed: () => setState(
-              () {
-                widget.user.taskMap[appBarTitle]![index].isExpand =
-                    !widget.user.taskMap[appBarTitle]![index].isExpand;
-                widget.file
-                    .updateUser(id: widget.user.id, updatedUser: widget.user);
-              },
-            ),
-            icon: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 300),
-              transitionBuilder: (child, animation) => RotationTransition(
-                turns: widget.user.taskMap[appBarTitle]![index].isExpand
-                    ? Tween<double>(begin: 0, end: 1).animate(animation)
-                    : Tween<double>(begin: 1, end: 0.25).animate(animation),
-                child: FadeTransition(opacity: animation, child: child),
-              ),
-              child: show,
-            ),
-          )
-        : const SizedBox.shrink();
-  }
-
   @override
   Widget build(BuildContext context) {
     initState();
@@ -341,8 +314,9 @@ class TaskScreenState extends State<TaskScreen> {
           ),
           ReorderableSliverList(
             delegate: ReorderableSliverChildBuilderDelegate(
-              // index: taskMap[currentList][index]
               (context, index) {
+                int completeIndex = widget.user.taskMap[appBarTitle]!
+                    .indexWhere((task) => task.isCompleted == true);
                 if (index == 0) return Text("Tasks");
                 if (index <= widget.user.taskMap[appBarTitle]!.length) {
                   if (!showComplete &&
@@ -438,8 +412,8 @@ class TaskScreenState extends State<TaskScreen> {
                 return const Text("Completed");
               },
               childCount: widget.user.taskMap[appBarTitle]!.isEmpty
-                  ? 1
-                  : widget.user.taskMap[appBarTitle]!.length + 1,
+                  ? 2
+                  : widget.user.taskMap[appBarTitle]!.length + 2,
             ),
             onReorder: _onReorder,
           )
