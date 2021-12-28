@@ -163,17 +163,28 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
         ),
         body: Column(
           children: [
-            LinearProgressIndicator(
-              value: widget
-                  .user
-                  .taskMap[MainScreenState.currentList]![widget.index]
-                  .setProgress,
-              minHeight: 48,
-              valueColor:
-                  MediaQuery.of(context).platformBrightness == Brightness.light
+            Stack(
+              alignment: Alignment.centerLeft,
+              children: [
+                LinearProgressIndicator(
+                  value: widget
+                      .user
+                      .taskMap[MainScreenState.currentList]![widget.index]
+                      .setProgress,
+                  minHeight: 48,
+                  valueColor: MediaQuery.of(context).platformBrightness ==
+                          Brightness.light
                       ? AlwaysStoppedAnimation<Color>(Colors.grey.shade200)
                       : AlwaysStoppedAnimation<Color>(Colors.grey.shade700),
-              backgroundColor: Colors.transparent,
+                  backgroundColor: Colors.transparent,
+                ),
+                Checkbox(
+                    value: widget
+                        .user
+                        .taskMap[MainScreenState.currentList]![widget.index]
+                        .isCompleted,
+                    onChanged: (value) {}),
+              ],
             ),
             SafeArea(
                 child: Padding(
