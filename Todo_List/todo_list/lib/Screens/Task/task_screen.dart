@@ -49,10 +49,12 @@ class TaskScreenState extends State<TaskScreen> {
   void filterTasks(BuildContext context, int item) {
     setState(() {
       sortIcon = sortIcons[item];
-
+      list.sort((a, b) {
+        return !b.isCompleted ? 1 : -1;
+      });
       switch (item) {
         case 0:
-          reOrder = !reOrder;
+          // reOrder = !reOrder;
           break;
         case 1:
           list.sort((a, b) {
@@ -107,6 +109,7 @@ class TaskScreenState extends State<TaskScreen> {
         createdTime: DateTime.now(),
         status: "",
         deadline: "No Deadline",
+        progress: 0,
         subtasks: [],
         completed: []));
   }
@@ -122,6 +125,7 @@ class TaskScreenState extends State<TaskScreen> {
         createdTime: task.createdTime,
         status: task.status,
         deadline: task.deadline,
+        progress: task.progress,
         subtasks: task.subtasks,
         completed: task.completed);
     setDefault();
@@ -260,7 +264,7 @@ class TaskScreenState extends State<TaskScreen> {
             pinned: true,
             elevation: 0.0,
             expandedHeight: 85.0,
-            // backgroundColor: Theme.of(context).backgroundColor,
+
             flexibleSpace: FlexibleSpaceBar(
               title: Text(appBarTitle),
             ),
@@ -344,7 +348,7 @@ class TaskScreenState extends State<TaskScreen> {
                   if (!showComplete &&
                       widget
                           .user.taskMap[appBarTitle]![index - 1].isCompleted) {
-                    return SizedBox.shrink();
+                    return const SizedBox.shrink();
                   } else {
                     return Card(
                       elevation: 0.0,

@@ -22,22 +22,27 @@ class TaskListTile extends StatefulWidget {
 }
 
 class _TaskListTileState extends State<TaskListTile> {
+  Task findTaskByTitle(String title, List<Task> list) =>
+      list.firstWhere((task) => task.title == title);
+
+  int taskIndex(List<Task> list, String title) =>
+      list.indexWhere((task) => task.title == title);
+
   void updateComplete(List<Task> list, int index, bool? flag) {
-    Task temp = list[index];
     setState(() {
       list[index].isCompleted = flag!;
       if (list[index].isCompleted == true) {
         widget.user.taskMap['Completed']!.add(list[index]);
-        list.remove(list[index]);
-        list.add(temp);
-
-        widget.file.updateUser(id: widget.user.id, updatedUser: widget.user);
       } else {
-        list.remove(list[index]);
-        list.insert(0, temp);
-        widget.user.taskMap['Completed']!.remove(temp);
-        widget.file.updateUser(id: widget.user.id, updatedUser: widget.user);
+        widget.user.taskMap['Completed']!.remove(list[index]);
       }
+      list.sort((a, b) {
+        return !b.isCompleted ? 1 : -1;
+      });
+      // might be useless
+      list[index].setProgress();
+
+      widget.file.updateUser(id: widget.user.id, updatedUser: widget.user);
     });
   }
 
@@ -68,6 +73,7 @@ class _TaskListTileState extends State<TaskListTile> {
 
   @override
   Widget build(BuildContext context) {
+    // int widget.index = taskIndex(widget.list, widget.list[widget.index].title);
     return Opacity(
       opacity: widget.list[widget.index].isCompleted ? 0.5 : 1,
       child: ListTile(

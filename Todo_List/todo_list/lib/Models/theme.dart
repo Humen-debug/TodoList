@@ -83,6 +83,7 @@ class Themes {
 
   static final darktheme = ThemeData(
     scaffoldBackgroundColor: Colors.grey.shade900,
+    brightness: Brightness.dark,
     colorScheme: ColorScheme.dark(
       primary: themeColors[themeKey][0],
       primaryVariant: themeColors[themeKey][1],
@@ -94,6 +95,7 @@ class Themes {
     ),
   );
   static final lighttheme = ThemeData(
+    brightness: Brightness.light,
     // scaffoldBackgroundColor: themeColors[themeKey]
     //     [themeColors[themeKey].length - 1],
     colorScheme: ColorScheme.light(

@@ -1,18 +1,24 @@
 class Task {
   int? id;
+  double? progress;
   bool isCompleted;
   bool isExpand;
-  String title, time, status;
+  String title, time, status, deadline;
   DateTime? date;
   DateTime createdTime;
-  String deadline;
   List<Task> subtasks;
   List<Task> completed;
+
   List<Tag>? tags;
 
   @override
   String toString() {
     return "$title: $date, $subtasks";
+  }
+
+  void setProgress() {
+    int complete = subtasks.where((s) => s.isCompleted == true).toList().length;
+    progress = subtasks.isNotEmpty ? complete / subtasks.length : 0;
   }
 
   Task(
@@ -25,7 +31,8 @@ class Task {
       required this.deadline,
       required this.subtasks,
       required this.completed,
-      required this.isExpand});
+      required this.isExpand,
+      required this.progress});
 
   factory Task.fromJson(Map<String, dynamic> map) {
     return Task(
@@ -33,6 +40,7 @@ class Task {
         date: map['date'] != null ? DateTime.parse(map['date']) : null,
         isCompleted: map['isCompleted'],
         isExpand: map['isExpand'] as bool,
+        progress: map['progress'] as double,
         time: map['time'],
         createdTime: DateTime.parse(map['createdTime']),
         status: map['status'],
@@ -59,6 +67,7 @@ class Task {
       'subtasks': subtasks,
       'completed': completed,
       'isExpand': isExpand,
+      'progress': progress,
     };
   }
 
