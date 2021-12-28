@@ -27,6 +27,7 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
   late Task subtask;
   final deadline = Text('No deadline');
   TextEditingController taskController = TextEditingController();
+  // double get progress => subtask.progress!;
 
   void setDefault() {
     setState(() => subtask = Task(
@@ -69,8 +70,8 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
       list.sort((a, b) {
         return !b.isCompleted ? 1 : -1;
       });
-      widget.user.taskMap[MainScreenState.currentList]![widget.index]
-          .setProgress();
+      widget
+          .user.taskMap[MainScreenState.currentList]![widget.index].setProgress;
       list.sort((a, b) {
         return !b.isCompleted ? 1 : -1;
       });
@@ -150,7 +151,8 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
   @override
   Widget build(BuildContext context) {
     String appTitle = MainScreenState.currentList;
-
+    reload(widget
+        .user.taskMap[MainScreenState.currentList]![widget.index].subtasks);
     return Scaffold(
         appBar: AppBar(
           title: Text(appTitle),
@@ -165,7 +167,7 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
               value: widget
                   .user
                   .taskMap[MainScreenState.currentList]![widget.index]
-                  .progress!,
+                  .setProgress,
               minHeight: 48,
               valueColor:
                   MediaQuery.of(context).platformBrightness == Brightness.light
@@ -252,6 +254,8 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
                             ),
                           );
                         } else {
+                          print(
+                              "old index: $index, task: ${widget.user.taskMap[MainScreenState.currentList]![widget.index].subtasks[index].title}");
                           return TaskListTile(
                               list: widget
                                   .user

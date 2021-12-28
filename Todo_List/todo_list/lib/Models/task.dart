@@ -16,10 +16,14 @@ class Task {
     return "$title: $date, $subtasks";
   }
 
-  void setProgress() {
-    int complete = subtasks.where((s) => s.isCompleted == true).toList().length;
-    progress = subtasks.isNotEmpty ? complete / subtasks.length : 0;
-  }
+  double get setProgress => subtasks.isNotEmpty
+      ? subtasks.where((s) => s.isCompleted == true).toList().length /
+          subtasks.length
+      : 0;
+  // void setProgress() {
+  //   int complete = subtasks.where((s) => s.isCompleted == true).toList().length;
+  //   progress = subtasks.isNotEmpty ? complete / subtasks.length : 0;
+  // }
 
   Task(
       {required this.title,

@@ -41,6 +41,7 @@ class _TaskListTileState extends State<TaskListTile> {
       list.sort((a, b) {
         return !b.isCompleted ? 1 : -1;
       });
+      print("new index: $index");
       // might be useless
       // list[index].setProgress();
 
@@ -75,7 +76,6 @@ class _TaskListTileState extends State<TaskListTile> {
 
   @override
   Widget build(BuildContext context) {
-    // int widget.index = taskIndex(widget.list, widget.list[widget.index].title);
     return Opacity(
       opacity: widget.list[widget.index].isCompleted ? 0.5 : 1,
       child: ListTile(

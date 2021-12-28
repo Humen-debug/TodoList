@@ -318,6 +318,7 @@ class TaskScreenState extends State<TaskScreen> {
                 int completeIndex = widget.user.taskMap[appBarTitle]!
                     .indexWhere((task) => task.isCompleted == true);
                 if (index == 0) return Text("Tasks");
+
                 if (index <= widget.user.taskMap[appBarTitle]!.length) {
                   if (!showComplete &&
                       widget
@@ -353,20 +354,20 @@ class TaskScreenState extends State<TaskScreen> {
                                       ));
                                 },
                                 child: TaskListTile(
-                                    list: widget.user.taskMap[appBarTitle]!,
-                                    user: widget.user,
-                                    file: widget.file,
-                                    index: index - 1)),
+                                  list: widget.user.taskMap[appBarTitle]!,
+                                  user: widget.user,
+                                  file: widget.file,
+                                  index: index - 1,
+                                )),
                           ),
                           Column(
                             children: [
                               // show deadline, process, tomato clock (if has one)
                               // and next line might show tags
                               StatementWidget(
-                                  deadline: widget
-                                      .user
-                                      .taskMap[appBarTitle]![index - 1]
-                                      .deadline),
+                                task: widget
+                                    .user.taskMap[appBarTitle]![index - 1],
+                              ),
 
                               widget.user.taskMap[appBarTitle]![index - 1]
                                           .isExpand &&
