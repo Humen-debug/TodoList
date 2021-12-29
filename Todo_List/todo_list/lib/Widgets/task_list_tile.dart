@@ -3,6 +3,7 @@ import 'package:todo_list/Models/file_header.dart';
 import 'package:todo_list/Screens/Task/task_screen.dart';
 import 'package:todo_list/Models/task.dart';
 import 'package:todo_list/Models/user.dart';
+import 'package:todo_list/Screens/main_screen.dart';
 
 class TaskListTile extends StatefulWidget {
   int index;
@@ -28,19 +29,24 @@ class _TaskListTileState extends State<TaskListTile> {
   int taskIndex(List<Task> list, String title) =>
       list.indexWhere((task) => task.title == title);
 
+  int get completeIndex =>
+      widget.list.indexWhere((task) => task.isCompleted == true);
+
 // list:widget.list
   void updateComplete(List<Task> list, int index, bool? flag) {
+    Task temp = list[index];
     setState(() {
       list[index].isCompleted = flag!;
       if (list[index].isCompleted == true) {
         widget.user.taskMap['Completed']!.add(list[index]);
+        list.removeAt(index);
+        list.add(temp);
       } else {
         widget.user.taskMap['Completed']!.remove(list[index]);
+        list.removeAt(index);
+        completeIndex != -1 ? list.insert(completeIndex, temp) : list.add(temp);
       }
-      // problem seems to be here
-      list.sort((a, b) {
-        return !b.isCompleted ? 1 : -1;
-      });
+
       print("new index: $index");
       // might be useless
       // list[index].setProgress();

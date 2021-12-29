@@ -32,6 +32,8 @@ class TaskScreenState extends State<TaskScreen> {
   static bool showComplete = false;
   bool reOrder = false;
   Icon sortIcon = const Icon(Icons.sort);
+  int get completeIndex => widget.user.taskMap[appBarTitle]!
+      .indexWhere((task) => task.isCompleted == true);
 
   static const sortIcons = <Icon>[
     Icon(Icons.sort),
@@ -90,11 +92,13 @@ class TaskScreenState extends State<TaskScreen> {
 
   @override
   void initState() {
+    super.initState();
     setState(() {
       // print(widget.user.taskMap[appBarTitle]);
       list = widget.user.taskMap[appBarTitle] != null
           ? widget.user.taskMap[appBarTitle]!
           : [];
+
       // setDefault();
     });
   }
@@ -137,70 +141,74 @@ class TaskScreenState extends State<TaskScreen> {
   void buildTask(BuildContext context) {
     setDefault();
     showModalBottomSheet(
+        isScrollControlled: true,
         context: context,
         builder: (BuildContext bottomContext) {
           return StatefulBuilder(builder: (buttomContext, state) {
-            return Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-              Flex(
-                direction: Axis.horizontal,
-                children: <Widget>[
-                  Expanded(
-                    flex: 6,
-                    child: TextField(
-                      controller: taskController,
-                      decoration: const InputDecoration(
-                        labelText: 'Add Task',
+            return Padding(
+              padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom),
+              child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+                Flex(
+                  direction: Axis.horizontal,
+                  children: <Widget>[
+                    Expanded(
+                      flex: 6,
+                      child: TextField(
+                        controller: taskController,
+                        decoration: const InputDecoration(
+                          labelText: 'Add Task',
+                        ),
+                        onChanged: (String title) {
+                          setState(() => task.title = title);
+                        },
+                        onSubmitted: (String title) {
+                          setState(() {
+                            task.title = title;
+                            createTask();
+                          });
+                          Navigator.pop(context);
+                        },
                       ),
-                      onChanged: (String title) {
-                        setState(() => task.title = title);
-                      },
-                      onSubmitted: (String title) {
-                        setState(() {
-                          task.title = title;
-                          createTask();
-                        });
-                        Navigator.pop(context);
-                      },
                     ),
+                    Expanded(
+                      flex: 1,
+                      child: IconButton(
+                        // NOT WORK
+                        onPressed: () {
+                          setState(() => createTask());
+                          Navigator.pop(context);
+                        },
+                        icon: const Icon(Icons.arrow_upward_outlined),
+                      ),
+                    )
+                  ],
+                ),
+                Flex(direction: Axis.horizontal, children: <Widget>[
+                  Expanded(
+                    flex: 1,
+                    child: TimePickerWidget(task: task, type: "Date"),
                   ),
                   Expanded(
                     flex: 1,
-                    child: IconButton(
-                      // NOT WORK
-                      onPressed: () {
-                        setState(() => createTask());
-                        Navigator.pop(context);
-                      },
-                      icon: const Icon(Icons.arrow_upward_outlined),
-                    ),
-                  )
-                ],
-              ),
-              Flex(direction: Axis.horizontal, children: <Widget>[
-                Expanded(
-                  flex: 1,
-                  child: TimePickerWidget(task: task, type: "Date"),
-                ),
-                Expanded(
-                  flex: 1,
-                  child: TimePickerWidget(task: task, type: 'Time'),
-                ),
-                Expanded(
-                    flex: 1,
-                    child: TextButton.icon(
-                        // add daily / weekly / monthly options
-                        onPressed: () {},
-                        icon: const Icon(Icons.repeat_rounded),
-                        label: const Text('Repeat'))),
-              ])
-            ]);
+                    child: TimePickerWidget(task: task, type: 'Time'),
+                  ),
+                  Expanded(
+                      flex: 1,
+                      child: TextButton.icon(
+                          // add daily / weekly / monthly options
+                          onPressed: () {},
+                          icon: const Icon(Icons.repeat_rounded),
+                          label: const Text('Repeat'))),
+                ])
+              ]),
+            );
           });
         });
   }
 
   @override
   Widget build(BuildContext context) {
-    initState();
     final themeProvider = Provider.of<ThemeProvider>(context);
 
     // ScrollController _scrollController =
@@ -315,10 +323,7 @@ class TaskScreenState extends State<TaskScreen> {
           ReorderableSliverList(
             delegate: ReorderableSliverChildBuilderDelegate(
               (context, index) {
-                int completeIndex = widget.user.taskMap[appBarTitle]!
-                    .indexWhere((task) => task.isCompleted == true);
                 if (index == 0) return Text("Tasks");
-
                 if (index <= widget.user.taskMap[appBarTitle]!.length) {
                   if (!showComplete &&
                       widget

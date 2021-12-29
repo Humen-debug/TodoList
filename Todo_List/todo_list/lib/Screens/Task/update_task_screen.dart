@@ -5,10 +5,6 @@ import 'package:todo_list/Models/file_header.dart';
 import 'package:todo_list/Screens/main_screen.dart';
 import 'package:todo_list/Widgets/task_list_tile.dart';
 import 'package:todo_list/Widgets/time_picker_widget.dart';
-// MANY PROBLEMS
-// 1. can't upload task.progress instantly after clicking checkbox of subtasks
-// 2. order of subtasks cannot be sorted after updateCompleted
-// 3. subtaskListTile load the wrong widget.index, results in different subtasks
 
 class UpdateTaskScreen extends StatefulWidget {
   int index;
@@ -25,9 +21,11 @@ class UpdateTaskScreen extends StatefulWidget {
 
 class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
   late Task subtask;
-  final deadline = Text('No deadline');
+  int get completeIndex =>
+      widget.user.taskMap[MainScreenState.currentList]![widget.index].subtasks
+          .indexWhere((task) => task.isCompleted == true);
+
   TextEditingController taskController = TextEditingController();
-  // double get progress => subtask.progress!;
 
   void setDefault() {
     setState(() => subtask = Task(
@@ -59,22 +57,34 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
         subtasks: subtask.subtasks,
         completed: subtask.completed);
     setDefault();
-    widget.user.taskMap[MainScreenState.currentList]![widget.index].subtasks
-        .insert(0, newTask);
+    completeIndex != -1
+        ? widget
+            .user.taskMap[MainScreenState.currentList]![widget.index].subtasks
+            .insert(completeIndex, newTask)
+        : widget
+            .user.taskMap[MainScreenState.currentList]![widget.index].subtasks
+            .add(newTask);
     widget.file.updateUser(id: widget.user.id, updatedUser: widget.user);
   }
 
-  // list: widget.user.taskMap[MainScreenState.currentList]![widget.index].subtasks
-  void reload(List list) {
+  void updateComplete(List<Task> list, int index, bool? flag) {
+    Task temp = list[index];
     setState(() {
-      list.sort((a, b) {
-        return !b.isCompleted ? 1 : -1;
-      });
-      widget
-          .user.taskMap[MainScreenState.currentList]![widget.index].setProgress;
-      list.sort((a, b) {
-        return !b.isCompleted ? 1 : -1;
-      });
+      list[index].isCompleted = flag!;
+      if (list[index].isCompleted == true) {
+        widget.user.taskMap['Completed']!.add(list[index]);
+        list.removeAt(index);
+        list.add(temp);
+      } else {
+        widget.user.taskMap['Completed']!.remove(list[index]);
+        list.removeAt(index);
+        completeIndex != -1 ? list.insert(completeIndex, temp) : list.add(temp);
+      }
+
+      print("new index: $index");
+      // might be useless
+      // list[index].setProgress();
+
       widget.file.updateUser(id: widget.user.id, updatedUser: widget.user);
     });
   }
@@ -85,65 +95,69 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
         context: context,
         builder: (BuildContext bottomContext) {
           return StatefulBuilder(builder: (context, state) {
-            return Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-              Flex(
-                direction: Axis.horizontal,
-                children: <Widget>[
-                  Expanded(
-                    flex: 6,
-                    child: TextField(
-                      controller: taskController,
-                      decoration: const InputDecoration(
-                        labelText: 'Add Task',
+            return Padding(
+              padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom),
+              child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+                Flex(
+                  direction: Axis.horizontal,
+                  children: <Widget>[
+                    Expanded(
+                      flex: 6,
+                      child: TextField(
+                        controller: taskController,
+                        decoration: const InputDecoration(
+                          labelText: 'Add Task',
+                        ),
+                        onChanged: (String title) {
+                          setState(() {
+                            subtask.title = title;
+                          });
+                        },
+                        onSubmitted: (String title) {
+                          setState(() {
+                            subtask.title = title;
+                            createTask();
+                          });
+                          Navigator.pop(context);
+                        },
                       ),
-                      onChanged: (String title) {
-                        setState(() {
-                          subtask.title = title;
-                        });
-                      },
-                      onSubmitted: (String title) {
-                        setState(() {
-                          subtask.title = title;
-                          createTask();
-                        });
-                        Navigator.pop(context);
-                      },
                     ),
-                  ),
+                    Expanded(
+                      flex: 1,
+                      child: IconButton(
+                        onPressed: () {
+                          setState(() => createTask());
+                          Navigator.pop(context);
+                        },
+                        icon: const Icon(Icons.arrow_upward_outlined),
+                      ),
+                    )
+                  ],
+                ),
+                Flex(direction: Axis.horizontal, children: <Widget>[
                   Expanded(
-                    flex: 1,
-                    child: IconButton(
-                      onPressed: () {
-                        setState(() => createTask());
-                        Navigator.pop(context);
-                      },
-                      icon: const Icon(Icons.arrow_upward_outlined),
-                    ),
-                  )
-                ],
-              ),
-              Flex(direction: Axis.horizontal, children: <Widget>[
-                Expanded(
-                    flex: 1,
-                    child: TimePickerWidget(
-                      task: subtask,
-                      type: 'Date',
-                    )),
-                Expanded(
-                    flex: 1,
-                    child: TimePickerWidget(
-                      task: subtask,
-                      type: 'Time',
-                    )),
-                Expanded(
-                    flex: 1,
-                    child: TextButton.icon(
-                        // add daily / weekly / monthly options
-                        onPressed: () {},
-                        icon: const Icon(Icons.repeat_rounded),
-                        label: const Text('Repeat'))),
-              ])
-            ]);
+                      flex: 1,
+                      child: TimePickerWidget(
+                        task: subtask,
+                        type: 'Date',
+                      )),
+                  Expanded(
+                      flex: 1,
+                      child: TimePickerWidget(
+                        task: subtask,
+                        type: 'Time',
+                      )),
+                  Expanded(
+                      flex: 1,
+                      child: TextButton.icon(
+                          // add daily / weekly / monthly options
+                          onPressed: () {},
+                          icon: const Icon(Icons.repeat_rounded),
+                          label: const Text('Repeat'))),
+                ])
+              ]),
+            );
           });
         });
   }
@@ -151,137 +165,152 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
   @override
   Widget build(BuildContext context) {
     String appTitle = MainScreenState.currentList;
-    reload(widget
-        .user.taskMap[MainScreenState.currentList]![widget.index].subtasks);
+
     return Scaffold(
-        appBar: AppBar(
-          title: Text(appTitle),
-          actions: <Widget>[
-            IconButton(onPressed: () {}, icon: const Icon(Icons.more_horiz))
-          ],
-          elevation: 0,
-        ),
-        body: Column(
-          children: [
-            Stack(
-              alignment: Alignment.centerLeft,
-              children: [
-                LinearProgressIndicator(
+        body: CustomScrollView(slivers: <Widget>[
+      SliverAppBar(
+        elevation: 0.0,
+        title: Text(appTitle),
+        actions: <Widget>[
+          IconButton(onPressed: () {}, icon: const Icon(Icons.more_horiz))
+        ],
+      ),
+      SliverList(
+        delegate: SliverChildListDelegate([
+          Stack(
+            alignment: Alignment.centerLeft,
+            children: [
+              LinearProgressIndicator(
+                value: widget
+                    .user
+                    .taskMap[MainScreenState.currentList]![widget.index]
+                    .setProgress,
+                minHeight: 48,
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.grey),
+                backgroundColor: Colors.transparent,
+              ),
+              Checkbox(
                   value: widget
                       .user
                       .taskMap[MainScreenState.currentList]![widget.index]
-                      .setProgress,
-                  minHeight: 48,
-                  valueColor: MediaQuery.of(context).platformBrightness ==
-                          Brightness.light
-                      ? AlwaysStoppedAnimation<Color>(Colors.grey.shade200)
-                      : AlwaysStoppedAnimation<Color>(Colors.grey.shade700),
-                  backgroundColor: Colors.transparent,
+                      .isCompleted,
+                  onChanged: (value) {}),
+            ],
+          ),
+          Column(
+            children: [
+              TextFormField(
+                initialValue: widget.user
+                    .taskMap[MainScreenState.currentList]![widget.index].title,
+                decoration: const InputDecoration(
+                  border: InputBorder.none,
                 ),
-                Checkbox(
-                    value: widget
-                        .user
-                        .taskMap[MainScreenState.currentList]![widget.index]
-                        .isCompleted,
-                    onChanged: (value) {}),
-              ],
-            ),
-            SafeArea(
-                child: Padding(
-              padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-              child: Column(children: [
-                TextFormField(
-                  maxLines: null,
-                  minLines: null,
-                  // expands: true,
-                  // controller: taskController,
-                  initialValue: widget
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+                onFieldSubmitted: (String title) => setState(() {
+                  widget
                       .user
                       .taskMap[MainScreenState.currentList]![widget.index]
-                      .title,
-                  decoration: const InputDecoration(
-                    border: InputBorder.none,
-                  ),
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  onFieldSubmitted: (String title) => setState(() {
-                    widget
-                        .user
-                        .taskMap[MainScreenState.currentList]![widget.index]
-                        .title = title;
-                    widget.file.updateUser(
-                        id: widget.user.id, updatedUser: widget.user);
-                  }),
-                ),
-                TextFormField(
-                  initialValue: widget
+                      .title = title;
+                  widget.file
+                      .updateUser(id: widget.user.id, updatedUser: widget.user);
+                }),
+              ),
+              TextFormField(
+                maxLines: null,
+                minLines: null,
+                initialValue: widget.user
+                    .taskMap[MainScreenState.currentList]![widget.index].status,
+                decoration: const InputDecoration(
+                    border: InputBorder.none, hintText: "Description"),
+                onChanged: (String descript) => setState(() {
+                  widget
                       .user
                       .taskMap[MainScreenState.currentList]![widget.index]
-                      .status,
-                  decoration: const InputDecoration(
-                      border: InputBorder.none, hintText: "Description"),
-                  onChanged: (String descript) => setState(() {
-                    widget
-                        .user
-                        .taskMap[MainScreenState.currentList]![widget.index]
-                        .status = descript;
-                    widget.file.updateUser(
-                        id: widget.user.id, updatedUser: widget.user);
-                  }),
-                ),
-                SizedBox(
-                  height: MediaQuery.of(context).size.height - 298,
-                  child: ListView.builder(
-                      itemCount: widget
-                              .user
-                              .taskMap[MainScreenState.currentList]![
-                                  widget.index]
-                              .subtasks
-                              .isEmpty
-                          ? 1
-                          : (widget
-                                  .user
-                                  .taskMap[MainScreenState.currentList]![
-                                      widget.index]
-                                  .subtasks
-                                  .length) +
-                              1,
-                      itemBuilder: (context, index) {
-                        if (index ==
-                            widget
+                      .status = descript;
+                  widget.file
+                      .updateUser(id: widget.user.id, updatedUser: widget.user);
+                }),
+              ),
+              // reload(widget.user.taskMap[MainScreenState.currentList]![widget.index].subtasks),
+              SizedBox(
+                height: MediaQuery.of(context).size.height,
+                child: ListView.builder(
+                    padding: EdgeInsets.zero,
+                    itemCount: widget
+                            .user
+                            .taskMap[MainScreenState.currentList]![widget.index]
+                            .subtasks
+                            .isEmpty
+                        ? 1
+                        : (widget
                                 .user
                                 .taskMap[MainScreenState.currentList]![
                                     widget.index]
                                 .subtasks
-                                .length) {
-                          return TextButton.icon(
-                            onPressed: () => buildTask(context),
-                            icon: const Icon(Icons.add),
-                            label: const Text("Add subtask"),
-                            style: const ButtonStyle(
-                              alignment: Alignment.centerLeft,
-                            ),
-                          );
-                        } else {
-                          print(
-                              "old index: $index, task: ${widget.user.taskMap[MainScreenState.currentList]![widget.index].subtasks[index].title}");
-                          return TaskListTile(
-                              list: widget
+                                .length) +
+                            1,
+                    itemBuilder: (context, index) {
+                      if (index ==
+                          widget
+                              .user
+                              .taskMap[MainScreenState.currentList]![
+                                  widget.index]
+                              .subtasks
+                              .length) {
+                        return TextButton.icon(
+                          onPressed: () => buildTask(context),
+                          icon: const Icon(Icons.add),
+                          label: const Text("Add subtask"),
+                          style: const ButtonStyle(
+                            alignment: Alignment.centerLeft,
+                          ),
+                        );
+                      } else {
+                        return Opacity(
+                            opacity: widget
+                                    .user
+                                    .taskMap[MainScreenState.currentList]![
+                                        widget.index]
+                                    .subtasks[index]
+                                    .isCompleted
+                                ? 0.5
+                                : 1,
+                            child: ListTile(
+                              horizontalTitleGap: 5,
+                              minLeadingWidth: 10,
+                              leading: Checkbox(
+                                value: widget
+                                    .user
+                                    .taskMap[MainScreenState.currentList]![
+                                        widget.index]
+                                    .subtasks[index]
+                                    .isCompleted,
+                                onChanged: (value) => updateComplete(
+                                    widget
+                                        .user
+                                        .taskMap[MainScreenState.currentList]![
+                                            widget.index]
+                                        .subtasks,
+                                    index,
+                                    value),
+                              ),
+                              title: Text(widget
                                   .user
                                   .taskMap[MainScreenState.currentList]![
                                       widget.index]
-                                  .subtasks,
-                              user: widget.user,
-                              file: widget.file,
-                              index: index);
-                        }
-                      }),
-                )
-              ]),
-            )),
-          ],
-        ));
+                                  .subtasks[index]
+                                  .title),
+                            ));
+                      }
+                    }),
+              ),
+            ],
+          )
+        ]),
+      ),
+    ]));
   }
 }

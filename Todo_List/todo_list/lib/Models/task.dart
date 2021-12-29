@@ -20,10 +20,6 @@ class Task {
       ? subtasks.where((s) => s.isCompleted == true).toList().length /
           subtasks.length
       : 0;
-  // void setProgress() {
-  //   int complete = subtasks.where((s) => s.isCompleted == true).toList().length;
-  //   progress = subtasks.isNotEmpty ? complete / subtasks.length : 0;
-  // }
 
   Task(
       {required this.title,
