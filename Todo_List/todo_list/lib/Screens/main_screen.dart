@@ -20,7 +20,7 @@ class MainScreenState extends State<MainScreen> {
   late List<User> users = [];
   int _selectedIndex = 0;
   static String currentList = "All";
-
+  @override
   void initState() {
     // super.initState();
     // fileHandler.deleteFile();
@@ -58,7 +58,8 @@ class MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     initState();
-
+    print('${MediaQuery.of(context).platformBrightness}');
+    print('${Theme.of(context).brightness}');
     final _pages = [
       TaskScreen(user: user, file: fileHandler),
       Center(child: Text('Home')),

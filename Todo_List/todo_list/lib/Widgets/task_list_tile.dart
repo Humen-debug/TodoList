@@ -39,12 +39,13 @@ class _TaskListTileState extends State<TaskListTile> {
       list[index].isCompleted = flag!;
       if (list[index].isCompleted == true) {
         widget.user.taskMap['Completed']!.add(list[index]);
-        list.removeAt(index);
+
         list.add(temp);
+        list.removeAt(index);
       } else {
         widget.user.taskMap['Completed']!.remove(list[index]);
-        list.removeAt(index);
         completeIndex != -1 ? list.insert(completeIndex, temp) : list.add(temp);
+        list.removeAt(index);
       }
 
       print("new index: $index");
