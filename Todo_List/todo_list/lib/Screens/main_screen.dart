@@ -58,8 +58,8 @@ class MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     initState();
-    print('${MediaQuery.of(context).platformBrightness}');
-    print('${Theme.of(context).brightness}');
+    // print('${MediaQuery.of(context).platformBrightness}');
+    // print('${Theme.of(context).brightness}');
     final _pages = [
       TaskScreen(user: user, file: fileHandler),
       Center(child: Text('Home')),
