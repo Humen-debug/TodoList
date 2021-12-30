@@ -1,14 +1,11 @@
 class Task {
   int? id;
-  double? progress;
   bool isCompleted;
   bool isExpand;
   String title, time, status, deadline;
   DateTime? date;
   DateTime createdTime;
   List<Task> subtasks;
-  List<Task> completed;
-
   List<Tag>? tags;
 
   @override
@@ -21,18 +18,17 @@ class Task {
           subtasks.length
       : 0;
 
-  Task(
-      {required this.title,
-      required this.date,
-      required this.isCompleted,
-      required this.time,
-      required this.createdTime,
-      required this.status,
-      required this.deadline,
-      required this.subtasks,
-      required this.completed,
-      required this.isExpand,
-      required this.progress});
+  Task({
+    required this.title,
+    required this.date,
+    required this.isCompleted,
+    required this.time,
+    required this.createdTime,
+    required this.status,
+    required this.deadline,
+    required this.subtasks,
+    required this.isExpand,
+  });
 
   factory Task.fromJson(Map<String, dynamic> map) {
     return Task(
@@ -40,15 +36,11 @@ class Task {
         date: map['date'] != null ? DateTime.parse(map['date']) : null,
         isCompleted: map['isCompleted'],
         isExpand: map['isExpand'] as bool,
-        progress: map['progress'] as double,
         time: map['time'],
         createdTime: DateTime.parse(map['createdTime']),
         status: map['status'],
         deadline: map['deadline'],
-        completed: map['completed'] != null
-            ? map['completed'].map<Task>((s) => Task.fromJson(s)).toList()
-            : [],
-        subtasks: map['completed'] != null
+        subtasks: map['subtasks'] != null
             ? map['subtasks'].map<Task>((s) => Task.fromJson(s)).toList()
             : []);
   }
@@ -65,9 +57,7 @@ class Task {
       'status': status,
       'deadline': deadline,
       'subtasks': subtasks,
-      'completed': completed,
       'isExpand': isExpand,
-      'progress': progress,
     };
   }
 

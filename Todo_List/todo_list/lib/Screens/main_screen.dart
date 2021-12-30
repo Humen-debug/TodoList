@@ -49,7 +49,7 @@ class MainScreenState extends State<MainScreen> {
           }
         } on Exception catch (e) {
           print(e);
-          // fileHandler.deleteUser(user);
+          fileHandler.deleteUser(user);
         }
       });
     });

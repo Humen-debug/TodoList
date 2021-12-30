@@ -33,8 +33,8 @@ class TaskScreenState extends State<TaskScreen> {
   static bool showComplete = false;
   bool reOrder = false;
   Icon sortIcon = const Icon(Icons.sort);
-  int get completeIndex => widget.user.taskMap[appBarTitle]!
-      .indexWhere((task) => task.isCompleted == true);
+  // int get completeIndex => widget.user.taskMap[appBarTitle]!
+  //     .indexWhere((task) => task.isCompleted == true);
 
   static const sortIcons = <Icon>[
     Icon(Icons.sort),
@@ -105,33 +105,31 @@ class TaskScreenState extends State<TaskScreen> {
 
   void setDefault() {
     setState(() => task = Task(
-        title: "",
-        date: null,
-        isCompleted: false,
-        isExpand: false,
-        time: "",
-        createdTime: DateTime.now(),
-        status: "",
-        deadline: "No Deadline",
-        progress: 0,
-        subtasks: [],
-        completed: []));
+          title: "",
+          date: null,
+          isCompleted: false,
+          isExpand: false,
+          time: "",
+          createdTime: DateTime.now(),
+          status: "",
+          deadline: "No Deadline",
+          subtasks: [],
+        ));
   }
 
   void createTask() {
     if (task.title == '') return;
     var newTask = Task(
-        title: task.title,
-        date: task.date,
-        isCompleted: false,
-        isExpand: false,
-        time: task.time,
-        createdTime: task.createdTime,
-        status: task.status,
-        deadline: task.deadline,
-        progress: task.progress,
-        subtasks: task.subtasks,
-        completed: task.completed);
+      title: task.title,
+      date: task.date,
+      isCompleted: false,
+      isExpand: false,
+      time: task.time,
+      createdTime: task.createdTime,
+      status: task.status,
+      deadline: task.deadline,
+      subtasks: task.subtasks,
+    );
     setDefault();
     list.insert(0, newTask);
     widget.user.taskMap[appBarTitle] = list;
@@ -144,13 +142,17 @@ class TaskScreenState extends State<TaskScreen> {
       list[index].isCompleted = flag!;
       if (list[index].isCompleted == true) {
         widget.user.taskMap['Completed']!.add(list[index]);
+        list.removeAt(index);
 
         list.add(temp);
-        list.removeAt(index);
       } else {
+        int completeIndex = list.indexWhere((task) => task.isCompleted == true);
+
+        print(completeIndex);
+        print(index);
         widget.user.taskMap['Completed']!.remove(list[index]);
+        list.remove(temp);
         completeIndex != -1 ? list.insert(completeIndex, temp) : list.add(temp);
-        list.removeAt(index);
       }
       widget.file.updateUser(id: widget.user.id, updatedUser: widget.user);
     });
@@ -226,7 +228,7 @@ class TaskScreenState extends State<TaskScreen> {
   }
 
   Widget expandTrailing(int index, List<Task> list) {
-    Icon show = const Icon(Icons.expand_more);
+    const Icon show = Icon(Icons.expand_more);
     return TaskScreenState.showDetails && list[index].subtasks.isNotEmpty
         ? IconButton(
             onPressed: () => setState(
@@ -393,9 +395,13 @@ class TaskScreenState extends State<TaskScreen> {
                     return const SizedBox.shrink();
                   } else {
                     final item = widget.user.taskMap[appBarTitle]![index - 1];
+                    // print(item);
                     return Dismissible(
                       key: Key(
-                          widget.user.taskMap[appBarTitle]![index - 1].title),
+                          widget.user.taskMap[appBarTitle]![index - 1].title +
+                              widget.user.taskMap[appBarTitle]![index - 1]
+                                  .createdTime
+                                  .toString()),
                       onDismissed: (direction) {
                         setState(() {
                           widget.user.taskMap[appBarTitle]!.removeAt(index - 1);
@@ -449,7 +455,6 @@ class TaskScreenState extends State<TaskScreen> {
                                   task: widget
                                       .user.taskMap[appBarTitle]![index - 1],
                                 ),
-
                                 widget.user.taskMap[appBarTitle]![index - 1]
                                             .isExpand &&
                                         showDetails
