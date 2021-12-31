@@ -281,10 +281,72 @@ class TaskScreenState extends State<TaskScreen> {
     );
   }
 
+  PopupMenuButton<int> sortButton() {
+    return PopupMenuButton<int>(
+        onSelected: (item) => filterTasks(context, item),
+        icon: sortIcon,
+        itemBuilder: (context) {
+          return List.generate(sortIcons.length, (index) {
+            return PopupMenuItem(
+                value: index,
+                child: Row(children: [
+                  sortIcons[index],
+                  const SizedBox(width: 10),
+                  sortTitle[index]
+                ]));
+          });
+        });
+  }
+
+  PopupMenuButton<int> menuButton() {
+    return PopupMenuButton<int>(
+        onSelected: (item) => onSelected(context, item),
+        icon: const Icon(Icons.more_vert),
+        itemBuilder: (context) => [
+              PopupMenuItem<int>(
+                value: 0,
+                child: Row(
+                  children: [
+                    !showDetails
+                        ? const Icon(Icons.preview)
+                        : const Icon(Icons.disabled_by_default_outlined),
+                    const SizedBox(width: 10),
+                    !showDetails
+                        ? const Text("Show Details")
+                        : const Text("Hide Details"),
+                  ],
+                ),
+              ),
+              PopupMenuItem<int>(
+                  value: 1,
+                  child: Row(
+                    children: [
+                      !showComplete
+                          ? const Icon(Icons.preview)
+                          : const Icon(Icons.disabled_by_default_outlined),
+                      const SizedBox(width: 10),
+                      !showComplete
+                          ? const Text("Show Completed")
+                          : const Text("Hide Completed"),
+                    ],
+                  )),
+              PopupMenuItem<int>(
+                value: 2,
+                child: Row(
+                  children: const [
+                    Icon(Icons.edit),
+                    SizedBox(width: 10),
+                    Text("Select")
+                  ],
+                ),
+              ),
+            ]);
+  }
+
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
-    // print(Theme.of(context).backgroundColor);
+
     // ScrollController _scrollController =
     //     PrimaryScrollController.of(context) ?? ScrollController();
 
@@ -306,85 +368,20 @@ class TaskScreenState extends State<TaskScreen> {
         // controller: _scrollController,
         slivers: <Widget>[
           SliverAppBar(
-            // title: Text(appBarTitle),
             pinned: true,
             elevation: 0.0,
             expandedHeight: 85.0,
-
             flexibleSpace: FlexibleSpaceBar(
-              title: Text(appBarTitle,
-                  style: TextStyle(
-                      color: themeProvider.lighttheme.colorScheme.primary)),
-            ),
+                title: Text(appBarTitle,
+                    style: TextStyle(
+                        color: themeProvider.lighttheme.colorScheme.primary))),
             leading: Builder(
-              builder: (context) {
-                return IconButton(
-                  onPressed: () {
-                    Scaffold.of(context).openDrawer();
-                  },
-                  icon: const Icon(Icons.menu),
-                );
-              },
-            ),
+                builder: (context) => IconButton(
+                    onPressed: () => Scaffold.of(context).openDrawer(),
+                    icon: const Icon(Icons.menu))),
             actions: <Widget>[
-              PopupMenuButton<int>(
-                  onSelected: (item) => filterTasks(context, item),
-                  icon: sortIcon,
-                  itemBuilder: (context) {
-                    return List.generate(sortIcons.length, (index) {
-                      return PopupMenuItem(
-                          value: index,
-                          child: Row(children: [
-                            sortIcons[index],
-                            const SizedBox(width: 10),
-                            sortTitle[index]
-                          ]));
-                    });
-                  }),
-              PopupMenuButton<int>(
-                  onSelected: (item) => onSelected(context, item),
-                  icon: const Icon(Icons.more_vert),
-                  itemBuilder: (context) => [
-                        PopupMenuItem<int>(
-                          value: 0,
-                          child: Row(
-                            children: [
-                              !showDetails
-                                  ? const Icon(Icons.preview)
-                                  : const Icon(
-                                      Icons.disabled_by_default_outlined),
-                              const SizedBox(width: 10),
-                              !showDetails
-                                  ? const Text("Show Details")
-                                  : const Text("Hide Details"),
-                            ],
-                          ),
-                        ),
-                        PopupMenuItem<int>(
-                            value: 1,
-                            child: Row(
-                              children: [
-                                !showComplete
-                                    ? const Icon(Icons.preview)
-                                    : const Icon(
-                                        Icons.disabled_by_default_outlined),
-                                const SizedBox(width: 10),
-                                !showComplete
-                                    ? const Text("Show Completed")
-                                    : const Text("Hide Completed"),
-                              ],
-                            )),
-                        PopupMenuItem<int>(
-                          value: 2,
-                          child: Row(
-                            children: const [
-                              Icon(Icons.edit),
-                              SizedBox(width: 10),
-                              Text("Select")
-                            ],
-                          ),
-                        ),
-                      ])
+              sortButton(),
+              menuButton(),
             ],
           ),
           ReorderableSliverList(
@@ -398,7 +395,6 @@ class TaskScreenState extends State<TaskScreen> {
                     return const SizedBox.shrink();
                   } else {
                     final item = widget.user.taskMap[appBarTitle]![index - 1];
-                    // print(item);
                     return Dismissible(
                       key: Key(
                           widget.user.taskMap[appBarTitle]![index - 1].title +
@@ -407,16 +403,14 @@ class TaskScreenState extends State<TaskScreen> {
                                   .toString()),
                       onDismissed: (direction) {
                         setState(() {
-                          widget.user.taskMap[appBarTitle]!.removeAt(index - 1);
+                          widget.user.taskMap[appBarTitle]!.remove(item);
                           widget.file.updateUser(
                               id: widget.user.id, updatedUser: widget.user);
                         });
                         ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text('${item.title} dismissed')));
                       },
-                      background: const Card(
-                        color: Colors.red,
-                      ),
+                      background: const Card(color: Colors.red),
                       child: Card(
                         elevation: 0.0,
                         child: Column(
@@ -435,18 +429,15 @@ class TaskScreenState extends State<TaskScreen> {
                                               Colors.white)
                                           : MaterialStateProperty.all<Color>(
                                               Colors.grey.shade800)),
-                                  onPressed: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              UpdateTaskScreen(
-                                            index: index - 1,
-                                            user: widget.user,
-                                            file: widget.file,
-                                          ),
-                                        ));
-                                  },
+                                  onPressed: () => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => UpdateTaskScreen(
+                                          index: index - 1,
+                                          user: widget.user,
+                                          file: widget.file,
+                                        ),
+                                      )),
                                   child: taskListTile(index - 1,
                                       widget.user.taskMap[appBarTitle]!)),
                             ),
@@ -498,7 +489,6 @@ class TaskScreenState extends State<TaskScreen> {
                     );
                   }
                 }
-
                 return const Text("Completed");
               },
               childCount: widget.user.taskMap[appBarTitle]!.isEmpty
