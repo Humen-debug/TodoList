@@ -8,15 +8,16 @@ void main() => runApp(MyApp());
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) => ChangeNotifierProvider(
-      create: (context) => ThemeProvider(Themes.lighttheme),
+      create: (context) => ThemeProvider(),
       builder: (context, _) {
         final theme = Provider.of<ThemeProvider>(context);
+
         return MaterialApp(
           debugShowCheckedModeBanner: false,
           title: 'Todo List',
-          themeMode: ThemeProvider.themeMode,
-          theme: Themes.lighttheme,
-          darkTheme: Themes.darktheme,
+          themeMode: theme.themeMode,
+          theme: theme.lighttheme,
+          darkTheme: theme.darktheme,
           home: MainScreen(),
         );
       });

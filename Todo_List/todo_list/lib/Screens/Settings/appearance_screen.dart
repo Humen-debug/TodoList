@@ -20,45 +20,37 @@ class _AppearanceScreenState extends State<AppearanceScreen> {
     Colors.greenAccent,
     Colors.purpleAccent,
     Colors.red,
+    Colors.grey,
   ];
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
 
     return Scaffold(
-      // backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         shadowColor: Colors.transparent,
         leading: IconButton(
             onPressed: () => Navigator.pop(context),
-            icon: const Icon(
-              Icons.arrow_back_ios,
-              color: Colors.grey,
-            )),
+            icon: const Icon(Icons.arrow_back_ios, color: Colors.grey)),
       ),
       body: Column(
         // crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: <Widget>[
-                const Text("Switch mode"),
-                FlutterSwitch(
-                    value: themeProvider.islight,
-                    activeColor: Colors.amber.shade800,
-                    activeIcon: const Icon(
-                      Icons.light_mode,
-                      color: Colors.amber,
-                    ),
-                    inactiveIcon:
-                        const Icon(Icons.dark_mode, color: Colors.black),
-                    onToggle: (value) {
-                      final provider =
-                          Provider.of<ThemeProvider>(context, listen: false);
-                      provider.toggleTheme(value);
-                    })
-              ]),
+          Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: <
+              Widget>[
+            const Text("Switch mode"),
+            FlutterSwitch(
+                value: themeProvider.islight,
+                activeColor: Colors.amber.shade800,
+                activeIcon: const Icon(Icons.light_mode, color: Colors.amber),
+                inactiveIcon: const Icon(Icons.dark_mode, color: Colors.black),
+                onToggle: (value) {
+                  final provider =
+                      Provider.of<ThemeProvider>(context, listen: false);
+                  provider.toggleTheme(value);
+                })
+          ]),
           GridView.count(
             physics: const NeverScrollableScrollPhysics(),
             shrinkWrap: true,
@@ -69,7 +61,11 @@ class _AppearanceScreenState extends State<AppearanceScreen> {
             children: List.generate(_baseColors.length, (index) {
               return ElevatedButton(
                 onPressed: () {
-                  Themes.changeKey(index);
+                  setState(() {
+                    final provider =
+                        Provider.of<ThemeProvider>(context, listen: false);
+                    provider.setThemeKey(index);
+                  });
                 },
                 child: const SizedBox(),
                 style: ElevatedButton.styleFrom(

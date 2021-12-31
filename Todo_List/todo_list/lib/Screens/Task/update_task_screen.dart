@@ -5,6 +5,8 @@ import 'package:todo_list/Models/file_header.dart';
 import 'package:todo_list/Screens/main_screen.dart';
 import 'package:todo_list/Widgets/task_list_tile.dart';
 import 'package:todo_list/Widgets/time_picker_widget.dart';
+import 'package:provider/provider.dart';
+import 'package:todo_list/Models/theme.dart';
 
 class UpdateTaskScreen extends StatefulWidget {
   int index;
@@ -78,9 +80,6 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
         list.removeAt(index);
         completeIndex != -1 ? list.insert(completeIndex, temp) : list.add(temp);
       }
-
-      print("new index: $index");
-
       widget.file.updateUser(id: widget.user.id, updatedUser: widget.user);
     });
   }
@@ -114,11 +113,6 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
                           setState(() {
                             subtask.title = title;
                             createTask();
-                            print(widget
-                                .user
-                                .taskMap[MainScreenState.currentList]![
-                                    widget.index]
-                                .subtasks);
                           });
                           Navigator.pop(context);
                         },
@@ -166,6 +160,7 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
   @override
   Widget build(BuildContext context) {
     String appTitle = MainScreenState.currentList;
+    final themeProvider = Provider.of<ThemeProvider>(context);
 
     return Scaffold(
         body: CustomScrollView(slivers: <Widget>[
@@ -187,7 +182,9 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
                     .taskMap[MainScreenState.currentList]![widget.index]
                     .setProgress,
                 minHeight: 48,
-                valueColor: const AlwaysStoppedAnimation<Color>(Colors.grey),
+                valueColor: AlwaysStoppedAnimation<Color>(themeProvider.islight
+                    ? Colors.grey.shade300
+                    : Colors.grey.shade800),
                 backgroundColor: Colors.transparent,
               ),
               Checkbox(

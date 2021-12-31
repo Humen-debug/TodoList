@@ -23,29 +23,23 @@ class TaskListTile extends StatefulWidget {
 }
 
 class _TaskListTileState extends State<TaskListTile> {
-  Task findTaskByTitle(String title, List<Task> list) =>
-      list.firstWhere((task) => task.title == title);
-
-  int taskIndex(List<Task> list, String title) =>
-      list.indexWhere((task) => task.title == title);
-
   int get completeIndex =>
       widget.list.indexWhere((task) => task.isCompleted == true);
 
 // list:widget.list
   void updateComplete(List<Task> list, int index, bool? flag) {
-    Task temp = list[index];
+    final Task temp = list[index];
     setState(() {
       list[index].isCompleted = flag!;
       if (list[index].isCompleted == true) {
-        widget.user.taskMap['Completed']!.add(list[index]);
+        widget.user.taskMap['Completed']!.add(temp);
 
         list.add(temp);
-        list.removeAt(index);
+        list.remove(temp);
       } else {
-        widget.user.taskMap['Completed']!.remove(list[index]);
+        widget.user.taskMap['Completed']!.remove(temp);
         completeIndex != -1 ? list.insert(completeIndex, temp) : list.add(temp);
-        list.removeAt(index);
+        list.remove(temp);
       }
 
       print("new index: $index");

@@ -10,11 +10,9 @@ import 'package:provider/provider.dart';
 import 'package:todo_list/Screens/main_screen.dart';
 import 'package:todo_list/Widgets/statment_widget.dart';
 import 'package:todo_list/Widgets/task_list_tile.dart';
-// import 'package:todo_list/Widgets/task_list_tile.dart';
 import 'package:todo_list/Widgets/time_picker_widget.dart';
 
 class TaskScreen extends StatefulWidget {
-  // Map<String, List<Task>> taskMap;
   User user;
   FileHandler file;
   TaskScreen({Key? key, required this.user, required this.file})
@@ -23,6 +21,10 @@ class TaskScreen extends StatefulWidget {
   TaskScreenState createState() => TaskScreenState();
 }
 
+// 1. Create temperoary map for sorting tasks into completed and processing/ Dates / Tags
+// 2. Tidy up the widgets plzzz
+// 3. wrap the tasks into card
+// 4. find way to move floating action button into sliver instead of scaffold
 class TaskScreenState extends State<TaskScreen> {
   final appBarTitle = MainScreenState.currentList;
   late Task task;
@@ -33,9 +35,6 @@ class TaskScreenState extends State<TaskScreen> {
   static bool showComplete = false;
   bool reOrder = false;
   Icon sortIcon = const Icon(Icons.sort);
-  // int get completeIndex => widget.user.taskMap[appBarTitle]!
-  //     .indexWhere((task) => task.isCompleted == true);
-
   static const sortIcons = <Icon>[
     Icon(Icons.sort),
     Icon(Icons.schedule),
@@ -61,7 +60,15 @@ class TaskScreenState extends State<TaskScreen> {
           break;
         case 1:
           list.sort((a, b) {
-            return a.date!.compareTo(b.date!);
+            if (a.date == b.date) {
+              return 0;
+            } else if ((a.date == null && b.date != null)) {
+              return -1;
+            } else if (a.date != null && b.date == null) {
+              return 1;
+            } else {
+              return a.date!.compareTo(b.date!);
+            }
           });
           break;
         case 2:
@@ -147,9 +154,6 @@ class TaskScreenState extends State<TaskScreen> {
         list.add(temp);
       } else {
         int completeIndex = list.indexWhere((task) => task.isCompleted == true);
-
-        print(completeIndex);
-        print(index);
         widget.user.taskMap['Completed']!.remove(list[index]);
         list.remove(temp);
         completeIndex != -1 ? list.insert(completeIndex, temp) : list.add(temp);
@@ -176,12 +180,10 @@ class TaskScreenState extends State<TaskScreen> {
                       flex: 6,
                       child: TextField(
                         controller: taskController,
-                        decoration: const InputDecoration(
-                          labelText: 'Add Task',
-                        ),
-                        onChanged: (String title) {
-                          setState(() => task.title = title);
-                        },
+                        decoration:
+                            const InputDecoration(labelText: 'Add Task'),
+                        onChanged: (String title) =>
+                            setState(() => task.title = title),
                         onSubmitted: (String title) {
                           setState(() {
                             task.title = title;
@@ -194,7 +196,6 @@ class TaskScreenState extends State<TaskScreen> {
                     Expanded(
                       flex: 1,
                       child: IconButton(
-                        // NOT WORK
                         onPressed: () {
                           setState(() => createTask());
                           Navigator.pop(context);
@@ -227,9 +228,19 @@ class TaskScreenState extends State<TaskScreen> {
         });
   }
 
+  void _onReorder(int oldIndex, int newIndex) {
+    setState(() {
+      if (newIndex > oldIndex) {
+        newIndex -= 1;
+      }
+      Task row = list.removeAt(oldIndex);
+      list.insert(newIndex, row);
+    });
+  }
+
   Widget expandTrailing(int index, List<Task> list) {
     const Icon show = Icon(Icons.expand_more);
-    return TaskScreenState.showDetails && list[index].subtasks.isNotEmpty
+    return showDetails && list[index].subtasks.isNotEmpty
         ? IconButton(
             onPressed: () => setState(
               () {
@@ -273,19 +284,9 @@ class TaskScreenState extends State<TaskScreen> {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
-
+    // print(Theme.of(context).backgroundColor);
     // ScrollController _scrollController =
     //     PrimaryScrollController.of(context) ?? ScrollController();
-
-    void _onReorder(int oldIndex, int newIndex) {
-      setState(() {
-        if (newIndex > oldIndex) {
-          newIndex -= 1;
-        }
-        Task row = list.removeAt(oldIndex);
-        list.insert(newIndex, row);
-      });
-    }
 
     initState();
     return Scaffold(
@@ -311,7 +312,9 @@ class TaskScreenState extends State<TaskScreen> {
             expandedHeight: 85.0,
 
             flexibleSpace: FlexibleSpaceBar(
-              title: Text(appBarTitle),
+              title: Text(appBarTitle,
+                  style: TextStyle(
+                      color: themeProvider.lighttheme.colorScheme.primary)),
             ),
             leading: Builder(
               builder: (context) {
