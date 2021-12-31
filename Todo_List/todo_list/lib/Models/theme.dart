@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 
 int themeKey = 0;
@@ -93,7 +91,8 @@ class ThemeProvider extends ChangeNotifier {
   ThemeData get darktheme => ThemeData(
         scaffoldBackgroundColor: Colors.grey.shade900,
         brightness: Brightness.dark,
-        appBarTheme: const AppBarTheme(backgroundColor: Color(0xff121212)),
+        appBarTheme: const AppBarTheme(
+            backgroundColor: Color(0xff121212), elevation: 0.0),
         colorScheme: ColorScheme.dark(
           primary: themeColors[themeKey][0],
           primaryVariant: themeColors[themeKey][1],

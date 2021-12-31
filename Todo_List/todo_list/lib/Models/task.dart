@@ -1,3 +1,6 @@
+import 'dart:collection';
+import 'package:table_calendar/table_calendar.dart';
+
 class Task {
   int? id;
   bool isCompleted;
@@ -60,20 +63,49 @@ class Task {
       'isExpand': isExpand,
     };
   }
-
-  List<Object> get prop => [
-        title,
-        date!,
-        isCompleted,
-        time,
-        createdTime,
-        status,
-        deadline,
-        subtasks
-      ];
 }
 
 class Tag {
   String name;
   Tag({required this.name});
 }
+
+int getHashCode(DateTime key) {
+  return key.day * 1000000 + key.month * 10000 + key.year;
+}
+
+final kEvents = LinkedHashMap<DateTime, List<Task>>(
+    equals: isSameDay, hashCode: getHashCode)
+  ..addAll(kEventSource);
+
+final kEventSource =
+    Map<DateTime, List<Task>>.fromIterable(List.generate(50, (index) => index),
+        key: (item) => DateTime.utc(kFirstDay.year, kFirstDay.month, item * 5),
+        value: (item) => List.generate(
+            item % 4 + 1,
+            (index) => Task(
+                  title: '$item | $index',
+                  date: null,
+                  isCompleted: false,
+                  isExpand: false,
+                  time: "",
+                  createdTime: DateTime.now(),
+                  status: "",
+                  deadline: "No Deadline",
+                  subtasks: [],
+                )))
+      ..addAll({
+        kToday: [],
+      });
+
+List<DateTime> daysInRange(DateTime first, DateTime last) {
+  final dayCount = last.difference(first).inDays + 1;
+  return List.generate(
+    dayCount,
+    (index) => DateTime.utc(first.year, first.month, first.day + index),
+  );
+}
+
+final kToday = DateTime.now();
+final kFirstDay = DateTime(kToday.year - 5);
+final kLastDay = DateTime(kToday.year + 5);

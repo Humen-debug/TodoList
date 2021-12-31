@@ -347,9 +347,6 @@ class TaskScreenState extends State<TaskScreen> {
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
 
-    // ScrollController _scrollController =
-    //     PrimaryScrollController.of(context) ?? ScrollController();
-
     initState();
     return Scaffold(
       drawer: SideDrawer(
@@ -365,7 +362,6 @@ class TaskScreenState extends State<TaskScreen> {
             buildTask(context);
           }),
       body: CustomScrollView(
-        // controller: _scrollController,
         slivers: <Widget>[
           SliverAppBar(
             pinned: true,
