@@ -4,12 +4,16 @@ class User {
   final int id;
   final String name;
   final String email;
+  bool showComplete;
+  bool showDetails;
   final Map<String, List<Task>> taskMap;
 
-  const User({
+  User({
     required this.id,
     required this.email,
     required this.name,
+    required this.showComplete,
+    required this.showDetails,
     required this.taskMap,
   });
 
@@ -18,6 +22,8 @@ class User {
       id: map['id'] as int,
       email: map['email'] as String,
       name: map['name'] as String,
+      showComplete: map['showComplete'] as bool,
+      showDetails: map['showComplete'] as bool,
       taskMap:
           Map<String, List<Task>>.from(map['taskMap'].map((String name, value) {
         return MapEntry(
@@ -34,6 +40,8 @@ class User {
       'id': id,
       'name': name,
       'email': email,
+      'showComplete': showComplete,
+      'showDetails': showDetails,
       'taskMap': taskMap,
     };
   }
@@ -42,6 +50,4 @@ class User {
   String toString() {
     return '$name ($email): $taskMap';
   }
-
-  List<Object> get props => [name, email, id, taskMap];
 }

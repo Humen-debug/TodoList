@@ -11,6 +11,8 @@ import 'package:todo_list/Screens/main_screen.dart';
 import 'package:todo_list/Widgets/statment_widget.dart';
 import 'package:todo_list/Widgets/task_list_tile.dart';
 import 'package:todo_list/Widgets/time_picker_widget.dart';
+import 'package:todo_list/Widgets/menu_button.dart';
+import 'package:todo_list/Widgets/sort_button.dart';
 
 class TaskScreen extends StatefulWidget {
   User user;
@@ -22,7 +24,7 @@ class TaskScreen extends StatefulWidget {
 }
 
 // 1. Create temperoary map for sorting tasks into completed and processing/ Dates / Tags
-// 2. Tidy up the widgets plzzz
+// 2. Tidy up the widgets plzzz (almost)
 // 3. wrap the tasks into card
 // 4. find way to move floating action button into sliver instead of scaffold
 class TaskScreenState extends State<TaskScreen> {
@@ -31,72 +33,6 @@ class TaskScreenState extends State<TaskScreen> {
   late List<Task> list;
 
   TextEditingController taskController = TextEditingController();
-  static bool showDetails = true;
-  static bool showComplete = false;
-  bool reOrder = false;
-  Icon sortIcon = const Icon(Icons.sort);
-  static const sortIcons = <Icon>[
-    Icon(Icons.sort),
-    Icon(Icons.schedule),
-    Icon(Icons.text_rotate_vertical),
-    Icon(Icons.tag),
-  ];
-  static const sortTitle = <Text>[
-    Text("Custom"),
-    Text("By Time"),
-    Text("By Title"),
-    Text("By Tags"),
-  ];
-
-  void filterTasks(BuildContext context, int item) {
-    setState(() {
-      sortIcon = sortIcons[item];
-      list.sort((a, b) {
-        return !b.isCompleted ? 1 : -1;
-      });
-      switch (item) {
-        case 0:
-          // reOrder = !reOrder;
-          break;
-        case 1:
-          list.sort((a, b) {
-            if (a.date == b.date) {
-              return 0;
-            } else if ((a.date == null && b.date != null)) {
-              return -1;
-            } else if (a.date != null && b.date == null) {
-              return 1;
-            } else {
-              return a.date!.compareTo(b.date!);
-            }
-          });
-          break;
-        case 2:
-          list.sort((a, b) => a.title.compareTo(b.title));
-          break;
-        case 3:
-          break;
-      }
-      list.sort((a, b) {
-        return !b.isCompleted ? 1 : -1;
-      });
-      widget.user.taskMap[appBarTitle] = list;
-      widget.file.updateUser(id: widget.user.id, updatedUser: widget.user);
-    });
-  }
-
-  void onSelected(BuildContext context, int item) {
-    setState(() {
-      switch (item) {
-        case 0:
-          showDetails = !showDetails;
-          break;
-        case 1:
-          showComplete = !showComplete;
-          break;
-      }
-    });
-  }
 
   @override
   void initState() {
@@ -125,6 +61,7 @@ class TaskScreenState extends State<TaskScreen> {
   }
 
   void createTask() {
+    int completeIndex = list.indexWhere((task) => task.isCompleted);
     if (task.title == '') return;
     var newTask = Task(
       title: task.title,
@@ -138,28 +75,11 @@ class TaskScreenState extends State<TaskScreen> {
       subtasks: task.subtasks,
     );
     setDefault();
-    list.insert(0, newTask);
+    completeIndex != -1
+        ? list.insert(completeIndex, newTask)
+        : list.add(newTask);
     widget.user.taskMap[appBarTitle] = list;
     widget.file.updateUser(id: widget.user.id, updatedUser: widget.user);
-  }
-
-  void updateComplete(List<Task> list, int index, bool? flag) {
-    final Task temp = list[index];
-    setState(() {
-      list[index].isCompleted = flag!;
-      if (list[index].isCompleted == true) {
-        widget.user.taskMap['Completed']!.add(list[index]);
-        list.removeAt(index);
-
-        list.add(temp);
-      } else {
-        int completeIndex = list.indexWhere((task) => task.isCompleted == true);
-        widget.user.taskMap['Completed']!.remove(list[index]);
-        list.remove(temp);
-        completeIndex != -1 ? list.insert(completeIndex, temp) : list.add(temp);
-      }
-      widget.file.updateUser(id: widget.user.id, updatedUser: widget.user);
-    });
   }
 
   void buildTask(BuildContext context) {
@@ -171,6 +91,7 @@ class TaskScreenState extends State<TaskScreen> {
           return StatefulBuilder(builder: (buttomContext, state) {
             return Padding(
               padding: EdgeInsets.only(
+                  // 330 as keyboard height
                   bottom: MediaQuery.of(context).viewInsets.bottom),
               child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
                 Flex(
@@ -238,121 +159,13 @@ class TaskScreenState extends State<TaskScreen> {
     });
   }
 
-  Widget expandTrailing(int index, List<Task> list) {
-    const Icon show = Icon(Icons.expand_more);
-    return showDetails && list[index].subtasks.isNotEmpty
-        ? IconButton(
-            onPressed: () => setState(
-              () {
-                list[index].isExpand = !list[index].isExpand;
-                widget.file
-                    .updateUser(id: widget.user.id, updatedUser: widget.user);
-              },
-            ),
-            icon: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 300),
-              transitionBuilder: (child, animation) => RotationTransition(
-                turns: list[index].isExpand
-                    ? Tween<double>(begin: 0, end: 1).animate(animation)
-                    : Tween<double>(begin: 1, end: 0.25).animate(animation),
-                child: FadeTransition(opacity: animation, child: child),
-              ),
-              child: show,
-            ),
-          )
-        : const SizedBox.shrink();
-  }
-
-  Widget taskListTile(int index, List<Task> list) {
-    return Opacity(
-      opacity: list[index].isCompleted ? 0.5 : 1,
-      child: ListTile(
-        horizontalTitleGap: 5,
-        minLeadingWidth: 10,
-        leading: Checkbox(
-          value: list[index].isCompleted,
-          onChanged: (bool? value) {
-            updateComplete(list, index, value);
-          },
-        ),
-        trailing: expandTrailing(index, list),
-        title: Text(list[index].title),
-      ),
-    );
-  }
-
-  PopupMenuButton<int> sortButton() {
-    return PopupMenuButton<int>(
-        onSelected: (item) => filterTasks(context, item),
-        icon: sortIcon,
-        itemBuilder: (context) {
-          return List.generate(sortIcons.length, (index) {
-            return PopupMenuItem(
-                value: index,
-                child: Row(children: [
-                  sortIcons[index],
-                  const SizedBox(width: 10),
-                  sortTitle[index]
-                ]));
-          });
-        });
-  }
-
-  PopupMenuButton<int> menuButton() {
-    return PopupMenuButton<int>(
-        onSelected: (item) => onSelected(context, item),
-        icon: const Icon(Icons.more_vert),
-        itemBuilder: (context) => [
-              PopupMenuItem<int>(
-                value: 0,
-                child: Row(
-                  children: [
-                    !showDetails
-                        ? const Icon(Icons.preview)
-                        : const Icon(Icons.disabled_by_default_outlined),
-                    const SizedBox(width: 10),
-                    !showDetails
-                        ? const Text("Show Details")
-                        : const Text("Hide Details"),
-                  ],
-                ),
-              ),
-              PopupMenuItem<int>(
-                  value: 1,
-                  child: Row(
-                    children: [
-                      !showComplete
-                          ? const Icon(Icons.preview)
-                          : const Icon(Icons.disabled_by_default_outlined),
-                      const SizedBox(width: 10),
-                      !showComplete
-                          ? const Text("Show Completed")
-                          : const Text("Hide Completed"),
-                    ],
-                  )),
-              PopupMenuItem<int>(
-                value: 2,
-                child: Row(
-                  children: const [
-                    Icon(Icons.edit),
-                    SizedBox(width: 10),
-                    Text("Select")
-                  ],
-                ),
-              ),
-            ]);
-  }
-
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
 
     initState();
     return Scaffold(
-      drawer: SideDrawer(
-        user: widget.user,
-        file: widget.file,
-      ),
+      drawer: SideDrawer(user: widget.user, file: widget.file),
       floatingActionButton: FloatingActionButton(
           splashColor: Colors.white60,
           elevation: 4.0,
@@ -376,8 +189,12 @@ class TaskScreenState extends State<TaskScreen> {
                     onPressed: () => Scaffold.of(context).openDrawer(),
                     icon: const Icon(Icons.menu))),
             actions: <Widget>[
-              sortButton(),
-              menuButton(),
+              // sortButton(),
+              SortButton(
+                  file: widget.file,
+                  user: widget.user,
+                  list: widget.user.taskMap[appBarTitle]!),
+              MenuButton(file: widget.file, user: widget.user)
             ],
           ),
           ReorderableSliverList(
@@ -385,7 +202,7 @@ class TaskScreenState extends State<TaskScreen> {
               (context, index) {
                 if (index == 0) return Text("Tasks");
                 if (index <= widget.user.taskMap[appBarTitle]!.length) {
-                  if (!showComplete &&
+                  if (!widget.user.showComplete &&
                       widget
                           .user.taskMap[appBarTitle]![index - 1].isCompleted) {
                     return const SizedBox.shrink();
@@ -434,8 +251,11 @@ class TaskScreenState extends State<TaskScreen> {
                                           file: widget.file,
                                         ),
                                       )),
-                                  child: taskListTile(index - 1,
-                                      widget.user.taskMap[appBarTitle]!)),
+                                  child: TaskListTile(
+                                      list: widget.user.taskMap[appBarTitle]!,
+                                      user: widget.user,
+                                      file: widget.file,
+                                      index: index - 1)),
                             ),
                             Column(
                               children: [
@@ -447,7 +267,7 @@ class TaskScreenState extends State<TaskScreen> {
                                 ),
                                 widget.user.taskMap[appBarTitle]![index - 1]
                                             .isExpand &&
-                                        showDetails
+                                        widget.user.showDetails
                                     ? ListView.builder(
                                         padding: const EdgeInsets.fromLTRB(
                                             25, 0, 0, 0),
@@ -460,13 +280,15 @@ class TaskScreenState extends State<TaskScreen> {
                                             onPressed: () {},
                                             child: SizedBox(
                                               height: 45,
-                                              child: taskListTile(
-                                                  num,
-                                                  widget
+                                              child: TaskListTile(
+                                                  list: widget
                                                       .user
                                                       .taskMap[appBarTitle]![
                                                           index - 1]
-                                                      .subtasks),
+                                                      .subtasks,
+                                                  user: widget.user,
+                                                  file: widget.file,
+                                                  index: num),
                                             ),
                                           );
                                         },

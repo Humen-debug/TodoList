@@ -112,7 +112,7 @@ class ThemeProvider extends ChangeNotifier {
           foregroundColor: themeColors[themeKey][0],
         ),
         colorScheme: ColorScheme.light(
-          onPrimary: themeColors[themeKey][0],
+          // onPrimary: themeColors[themeKey][0],
           primary: themeColors[themeKey][0],
           primaryVariant: themeColors[themeKey][1],
           secondary: themeColors[themeKey][2],

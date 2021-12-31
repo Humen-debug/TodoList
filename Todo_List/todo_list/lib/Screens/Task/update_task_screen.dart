@@ -72,11 +72,9 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
     setState(() {
       list[index].isCompleted = flag!;
       if (list[index].isCompleted == true) {
-        widget.user.taskMap['Completed']!.add(list[index]);
         list.removeAt(index);
         list.add(temp);
       } else {
-        widget.user.taskMap['Completed']!.remove(list[index]);
         list.removeAt(index);
         completeIndex != -1 ? list.insert(completeIndex, temp) : list.add(temp);
       }
@@ -266,20 +264,12 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
                           ),
                         );
                       } else {
+                        final item = widget
+                            .user
+                            .taskMap[MainScreenState.currentList]![widget.index]
+                            .subtasks[index];
                         return Dismissible(
-                          key: Key(widget
-                                  .user
-                                  .taskMap[MainScreenState.currentList]![
-                                      widget.index]
-                                  .subtasks[index]
-                                  .title +
-                              widget
-                                  .user
-                                  .taskMap[MainScreenState.currentList]![
-                                      widget.index]
-                                  .subtasks[index]
-                                  .createdTime
-                                  .toString()),
+                          key: Key(item.title + item.createdTime.toString()),
                           onDismissed: (direction) {
                             setState(() {
                               widget
@@ -287,7 +277,7 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
                                   .taskMap[MainScreenState.currentList]![
                                       widget.index]
                                   .subtasks
-                                  .removeAt(index);
+                                  .remove(item);
                               widget.file.updateUser(
                                   id: widget.user.id, updatedUser: widget.user);
                             });

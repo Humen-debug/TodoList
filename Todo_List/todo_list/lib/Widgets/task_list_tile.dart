@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:todo_list/Models/file_header.dart';
-import 'package:todo_list/Screens/Task/task_screen.dart';
 import 'package:todo_list/Models/task.dart';
 import 'package:todo_list/Models/user.dart';
-import 'package:todo_list/Screens/main_screen.dart';
+import 'package:todo_list/Widgets/expand_trailing.dart';
+import 'package:todo_list/Screens/Task/task_screen.dart';
 
 class TaskListTile extends StatefulWidget {
   int index;
@@ -26,53 +26,25 @@ class _TaskListTileState extends State<TaskListTile> {
   int get completeIndex =>
       widget.list.indexWhere((task) => task.isCompleted == true);
 
-// list:widget.list
   void updateComplete(List<Task> list, int index, bool? flag) {
     final Task temp = list[index];
+
     setState(() {
       list[index].isCompleted = flag!;
       if (list[index].isCompleted == true) {
         widget.user.taskMap['Completed']!.add(temp);
+        list.remove(temp);
 
         list.add(temp);
-        list.remove(temp);
       } else {
         widget.user.taskMap['Completed']!.remove(temp);
-        completeIndex != -1 ? list.insert(completeIndex, temp) : list.add(temp);
         list.remove(temp);
-      }
 
-      print("new index: $index");
-      // might be useless
-      // list[index].setProgress();
+        completeIndex != -1 ? list.insert(completeIndex, temp) : list.add(temp);
+      }
 
       widget.file.updateUser(id: widget.user.id, updatedUser: widget.user);
     });
-  }
-
-  Widget expandTrailing(BuildContext context, int index) {
-    Icon show = const Icon(Icons.expand_more);
-    return TaskScreenState.showDetails && widget.list[index].subtasks.isNotEmpty
-        ? IconButton(
-            onPressed: () => setState(
-              () {
-                widget.list[index].isExpand = !widget.list[index].isExpand;
-                widget.file
-                    .updateUser(id: widget.user.id, updatedUser: widget.user);
-              },
-            ),
-            icon: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 300),
-              transitionBuilder: (child, animation) => RotationTransition(
-                turns: widget.list[index].isExpand
-                    ? Tween<double>(begin: 0, end: 1).animate(animation)
-                    : Tween<double>(begin: 1, end: 0.25).animate(animation),
-                child: FadeTransition(opacity: animation, child: child),
-              ),
-              child: show,
-            ),
-          )
-        : const SizedBox.shrink();
   }
 
   @override
@@ -88,7 +60,13 @@ class _TaskListTileState extends State<TaskListTile> {
             updateComplete(widget.list, widget.index, value);
           },
         ),
-        trailing: expandTrailing(context, widget.index),
+        trailing: ExpandTrailing(
+            index: widget.index,
+            list: widget.list,
+            file: widget.file,
+            user: widget.user,
+            flag: widget.user.showDetails &&
+                widget.list[widget.index].subtasks.isNotEmpty),
         title: Text(widget.list[widget.index].title),
       ),
     );

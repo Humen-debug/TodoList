@@ -12,10 +12,12 @@ class MainScreen extends StatefulWidget {
 
 class MainScreenState extends State<MainScreen> {
   FileHandler fileHandler = FileHandler.instance;
-  late User user = const User(
+  late User user = User(
       id: 0,
       name: "",
       email: "",
+      showComplete: true,
+      showDetails: false,
       taskMap: <String, List<Task>>{'All': [], 'Inbox': [], 'Completed': []});
   late List<User> users = [];
   int _selectedIndex = 0;
@@ -41,6 +43,8 @@ class MainScreenState extends State<MainScreen> {
                 id: id,
                 name: "",
                 email: "",
+                showComplete: true,
+                showDetails: false,
                 taskMap: <String, List<Task>>{
                   'All': [],
                   'Inbox': [],
