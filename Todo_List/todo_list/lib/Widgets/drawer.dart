@@ -40,10 +40,7 @@ class _SideDrawerState extends State<SideDrawer> {
             MainScreenState.currentList = listNames[index];
           });
           Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) =>
-                      MainScreen(file: widget.file, user: widget.user)));
+              context, MaterialPageRoute(builder: (context) => MainScreen()));
         },
       ));
     }

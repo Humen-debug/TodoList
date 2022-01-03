@@ -2,77 +2,68 @@ import 'package:flutter/material.dart';
 import 'package:todo_list/Models/file_header.dart';
 import 'package:todo_list/Screens/Calender/calender_screen.dart';
 import 'package:todo_list/Screens/Task/task_screen2.dart';
-import 'package:todo_list/Models/task.dart';
 import 'package:todo_list/Models/user.dart';
+import 'package:todo_list/Models/task.dart';
 
 class MainScreen extends StatefulWidget {
-  FileHandler file;
-  User user;
-  MainScreen({Key? key, required this.file, required this.user});
+  MainScreen({Key? key}) : super(key: key);
   @override
   MainScreenState createState() => MainScreenState();
 }
 
 class MainScreenState extends State<MainScreen> {
-  // FileHandler fileHandler = FileHandler.instance;
-  // late User user = User(
-  //     id: 0,
-  //     name: "",
-  //     email: "",
-  //     showComplete: true,
-  //     showDetails: false,
-  //     taskMap: <String, List<Task>>{'All': [], 'Inbox': [], 'Completed': []});
-  // late List<User> users = [];
+  FileHandler fileHandler = FileHandler.instance;
+  late User user = User(
+      id: 0,
+      name: "",
+      email: "",
+      showComplete: true,
+      showDetails: false,
+      taskMap: <String, List<Task>>{'All': [], 'Inbox': [], 'Completed': []});
+  late List<User> users = [];
+
+  void initState() {
+    fileHandler.readUsers().then((List<User> userList) {
+      setState(() {
+        try {
+          users = userList;
+          int id = 0;
+          if (users.isNotEmpty) {
+            for (int i = 0; i < users.length; i++) {
+              if (id == i) {
+                user = users[i];
+                // print(user);
+                break;
+              }
+            }
+          } else {
+            user = User(
+                id: id,
+                name: "",
+                email: "",
+                showComplete: true,
+                showDetails: false,
+                taskMap: <String, List<Task>>{
+                  'All': [],
+                  'Inbox': [],
+                  'Completed': []
+                });
+          }
+        } on Exception catch (e) {
+          print(e);
+          fileHandler.deleteUser(user);
+        }
+      });
+    });
+  }
+
   int _selectedIndex = 0;
   static String currentList = "All";
-  @override
-  // void initState() {
-  //   // fileHandler.deleteFile();
-  //   print(user);
-
-  //   fileHandler.readUsers().then((List<User> userList) {
-  //     setState(() {
-  //       try {
-  //         print(user);
-  //         users = userList;
-  //         int id = 0;
-  //         if (users.isNotEmpty) {
-  //           for (int i = 0; i < users.length; i++) {
-  //             if (id == i) {
-  //               user = users[i];
-  //               print("$currentList: ${user.taskMap['currentList']}");
-  //               break;
-  //             }
-  //           }
-  //         } else {
-  //           user = User(
-  //               id: id,
-  //               name: "",
-  //               email: "",
-  //               showComplete: true,
-  //               showDetails: false,
-  //               taskMap: <String, List<Task>>{
-  //                 'All': [],
-  //                 'Inbox': [],
-  //                 'Completed': []
-  //               });
-  //         }
-  //       } on Exception catch (e) {
-  //         print(e);
-  //         fileHandler.deleteUser(user);
-  //       }
-  //     });
-  //   });
-  //   super.initState();
-  // }
 
   @override
   Widget build(BuildContext context) {
-    // initState();
-    // print('${MediaQuery.of(context).platformBrightness}');
-    // print('${Theme.of(context).brightness}');
     final _pages = [
-      TaskScreen(user: widget.user, file: widget.file),
+      TaskScreen(user: user, file: fileHandler),
       Center(child: Text('Home')),
       CalenderScreen(),
       Center(child: Text('Person')),

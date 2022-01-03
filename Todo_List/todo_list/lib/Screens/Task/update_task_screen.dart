@@ -10,16 +10,12 @@ import 'package:todo_list/Models/theme.dart';
 
 class UpdateTaskScreen extends StatefulWidget {
   Task task;
-  int index;
+
   User user;
   FileHandler file;
 
   UpdateTaskScreen(
-      {Key? key,
-      required this.index,
-      required this.user,
-      required this.file,
-      required this.task})
+      {Key? key, required this.user, required this.file, required this.task})
       : super(key: key);
 
   @override

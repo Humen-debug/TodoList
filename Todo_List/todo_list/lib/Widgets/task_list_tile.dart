@@ -4,7 +4,6 @@ import 'package:todo_list/Models/task.dart';
 import 'package:todo_list/Models/user.dart';
 import 'package:todo_list/Screens/main_screen.dart';
 import 'package:todo_list/Widgets/expand_trailing.dart';
-import 'package:todo_list/Screens/Task/task_screen.dart';
 
 class TaskListTile extends StatefulWidget {
   int index;
@@ -34,20 +33,18 @@ class _TaskListTileState extends State<TaskListTile> {
       list[index].isCompleted = flag!;
       if (list[index].isCompleted == true) {
         widget.user.taskMap['Completed']!.add(temp);
-        // widget.user.taskMap[MainScreenState.currentList]!.remove(temp);
+
         list.remove(temp);
         list.add(temp);
       } else {
         widget.user.taskMap['Completed']!.remove(temp);
-        // widget.user.taskMap[MainScreenState.currentList]!.remove(temp);
+
         list.remove(temp);
         if (completeIndex != -1) {
           list.insert(completeIndex, temp);
-          // widget.user.taskMap[MainScreenState.currentList]!
-          //     .insert(completeIndex, temp);
         } else {
           list.add(temp);
-          // widget.user.taskMap[MainScreenState.currentList]!.add(temp);
+          widget.user.taskMap[MainScreenState.currentList]!.add(temp);
         }
       }
 
@@ -57,6 +54,7 @@ class _TaskListTileState extends State<TaskListTile> {
 
   @override
   Widget build(BuildContext context) {
+    // print(widget.list[widget.index]);
     return Opacity(
       opacity: widget.list[widget.index].isCompleted ? 0.5 : 1,
       child: ListTile(

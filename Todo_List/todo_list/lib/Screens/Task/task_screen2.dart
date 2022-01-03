@@ -25,6 +25,8 @@ class TaskScreen extends StatefulWidget {
 
 // 1. Create temperoary map for sorting tasks into completed and processing/ Dates / Tags
 // 4. find way to move floating action button into sliver instead of scaffold
+// 5. data not changed instantly -> inherited widget? >> changes stored in file, but not instantly pass from user to dateMap
+// every update from widge.user to dateTimeMap has to pass to TaskScreen
 class TaskScreenState extends State<TaskScreen> {
   final appBarTitle = MainScreenState.currentList;
   late Task task;
@@ -47,7 +49,8 @@ class TaskScreenState extends State<TaskScreen> {
         }
       }
     });
-    super.initState();
+    print("${appBarTitle}: ${widget.user.taskMap[appBarTitle]}");
+    // super.initState();
   }
 
   Future setDateMap(Task v) async {
@@ -76,7 +79,7 @@ class TaskScreenState extends State<TaskScreen> {
       for (var l in dateTimeMap.values) {
         l = l.toSet().toList();
       }
-      // print(widget.user.taskMap[appBarTitle]);
+      print(widget.user.taskMap[appBarTitle]);
     });
   }
 
@@ -188,9 +191,9 @@ class TaskScreenState extends State<TaskScreen> {
 
   @override
   Widget build(BuildContext context) {
+    initState();
     final themeProvider = Provider.of<ThemeProvider>(context);
 
-    // initState();
     return Scaffold(
       drawer: SideDrawer(user: widget.user, file: widget.file),
       floatingActionButton: FloatingActionButton(
@@ -224,10 +227,7 @@ class TaskScreenState extends State<TaskScreen> {
             ],
           ),
           TaskListView(
-              key: UniqueKey(),
-              taskMap: dateTimeMap,
-              user: widget.user,
-              file: widget.file)
+              taskMap: dateTimeMap, user: widget.user, file: widget.file)
         ],
       ),
     );

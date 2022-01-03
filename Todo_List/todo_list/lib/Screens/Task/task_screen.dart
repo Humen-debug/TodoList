@@ -288,7 +288,6 @@ class TaskScreenState extends State<TaskScreen> {
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) => UpdateTaskScreen(
-                                            index: index - 1,
                                             user: widget.user,
                                             file: widget.file,
                                             task: widget.user.taskMap[
