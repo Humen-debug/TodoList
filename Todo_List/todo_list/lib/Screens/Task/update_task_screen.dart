@@ -9,12 +9,17 @@ import 'package:provider/provider.dart';
 import 'package:todo_list/Models/theme.dart';
 
 class UpdateTaskScreen extends StatefulWidget {
+  Task task;
   int index;
   User user;
   FileHandler file;
 
   UpdateTaskScreen(
-      {Key? key, required this.index, required this.user, required this.file})
+      {Key? key,
+      required this.index,
+      required this.user,
+      required this.file,
+      required this.task})
       : super(key: key);
 
   @override
@@ -24,8 +29,7 @@ class UpdateTaskScreen extends StatefulWidget {
 class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
   late Task subtask;
   int get completeIndex =>
-      widget.user.taskMap[MainScreenState.currentList]![widget.index].subtasks
-          .indexWhere((task) => task.isCompleted == true);
+      widget.task.subtasks.indexWhere((task) => task.isCompleted == true);
 
   TextEditingController taskController = TextEditingController();
 
@@ -58,12 +62,8 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
     );
     setDefault();
     completeIndex != -1
-        ? widget
-            .user.taskMap[MainScreenState.currentList]![widget.index].subtasks
-            .insert(completeIndex, newTask)
-        : widget
-            .user.taskMap[MainScreenState.currentList]![widget.index].subtasks
-            .add(newTask);
+        ? widget.task.subtasks.insert(completeIndex, newTask)
+        : widget.task.subtasks.add(newTask);
     widget.file.updateUser(id: widget.user.id, updatedUser: widget.user);
   }
 
@@ -175,29 +175,20 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
             alignment: Alignment.centerLeft,
             children: [
               LinearProgressIndicator(
-                value: widget
-                    .user
-                    .taskMap[MainScreenState.currentList]![widget.index]
-                    .setProgress,
+                value: widget.task.setProgress,
                 minHeight: 48,
                 valueColor: AlwaysStoppedAnimation<Color>(themeProvider.islight
                     ? Colors.grey.shade300
                     : Colors.grey.shade800),
                 backgroundColor: Colors.transparent,
               ),
-              Checkbox(
-                  value: widget
-                      .user
-                      .taskMap[MainScreenState.currentList]![widget.index]
-                      .isCompleted,
-                  onChanged: (value) {}),
+              Checkbox(value: widget.task.isCompleted, onChanged: (value) {}),
             ],
           ),
           Column(
             children: [
               TextFormField(
-                initialValue: widget.user
-                    .taskMap[MainScreenState.currentList]![widget.index].title,
+                initialValue: widget.task.title,
                 decoration: const InputDecoration(
                   border: InputBorder.none,
                 ),
@@ -205,11 +196,15 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),
+                onChanged: (String title) => setState(() {
+                  if (title != "") {
+                    widget.task.title = title;
+                    widget.file.updateUser(
+                        id: widget.user.id, updatedUser: widget.user);
+                  }
+                }),
                 onFieldSubmitted: (String title) => setState(() {
-                  widget
-                      .user
-                      .taskMap[MainScreenState.currentList]![widget.index]
-                      .title = title;
+                  widget.task.title = title;
                   widget.file
                       .updateUser(id: widget.user.id, updatedUser: widget.user);
                 }),
@@ -217,15 +212,11 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
               TextFormField(
                 maxLines: null,
                 minLines: null,
-                initialValue: widget.user
-                    .taskMap[MainScreenState.currentList]![widget.index].status,
+                initialValue: widget.task.status,
                 decoration: const InputDecoration(
                     border: InputBorder.none, hintText: "Description"),
                 onChanged: (String descript) => setState(() {
-                  widget
-                      .user
-                      .taskMap[MainScreenState.currentList]![widget.index]
-                      .status = descript;
+                  widget.task.status = descript;
                   widget.file
                       .updateUser(id: widget.user.id, updatedUser: widget.user);
                 }),
@@ -234,27 +225,11 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
                 height: MediaQuery.of(context).size.height,
                 child: ListView.builder(
                     padding: EdgeInsets.zero,
-                    itemCount: widget
-                            .user
-                            .taskMap[MainScreenState.currentList]![widget.index]
-                            .subtasks
-                            .isEmpty
+                    itemCount: widget.task.subtasks.isEmpty
                         ? 1
-                        : (widget
-                                .user
-                                .taskMap[MainScreenState.currentList]![
-                                    widget.index]
-                                .subtasks
-                                .length) +
-                            1,
+                        : (widget.task.subtasks.length) + 1,
                     itemBuilder: (context, index) {
-                      if (index ==
-                          widget
-                              .user
-                              .taskMap[MainScreenState.currentList]![
-                                  widget.index]
-                              .subtasks
-                              .length) {
+                      if (index == widget.task.subtasks.length) {
                         return TextButton.icon(
                           onPressed: () => buildTask(context),
                           icon: const Icon(Icons.add),
@@ -264,59 +239,31 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
                           ),
                         );
                       } else {
-                        final item = widget
-                            .user
-                            .taskMap[MainScreenState.currentList]![widget.index]
-                            .subtasks[index];
+                        final item = widget.task.subtasks[index];
                         return Dismissible(
                           key: Key(item.title + item.createdTime.toString()),
                           onDismissed: (direction) {
                             setState(() {
-                              widget
-                                  .user
-                                  .taskMap[MainScreenState.currentList]![
-                                      widget.index]
-                                  .subtasks
-                                  .remove(item);
+                              widget.task.subtasks.remove(item);
                               widget.file.updateUser(
                                   id: widget.user.id, updatedUser: widget.user);
                             });
                           },
                           background: const Card(color: Colors.red),
                           child: Opacity(
-                              opacity: widget
-                                      .user
-                                      .taskMap[MainScreenState.currentList]![
-                                          widget.index]
-                                      .subtasks[index]
-                                      .isCompleted
+                              opacity: widget.task.subtasks[index].isCompleted
                                   ? 0.5
                                   : 1,
                               child: ListTile(
                                 horizontalTitleGap: 5,
                                 minLeadingWidth: 10,
                                 leading: Checkbox(
-                                  value: widget
-                                      .user
-                                      .taskMap[MainScreenState.currentList]![
-                                          widget.index]
-                                      .subtasks[index]
-                                      .isCompleted,
+                                  value:
+                                      widget.task.subtasks[index].isCompleted,
                                   onChanged: (value) => updateComplete(
-                                      widget
-                                          .user
-                                          .taskMap[MainScreenState
-                                              .currentList]![widget.index]
-                                          .subtasks,
-                                      index,
-                                      value),
+                                      widget.task.subtasks, index, value),
                                 ),
-                                title: Text(widget
-                                    .user
-                                    .taskMap[MainScreenState.currentList]![
-                                        widget.index]
-                                    .subtasks[index]
-                                    .title),
+                                title: Text(widget.task.subtasks[index].title),
                               )),
                         );
                       }

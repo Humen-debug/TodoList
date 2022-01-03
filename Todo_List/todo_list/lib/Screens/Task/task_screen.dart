@@ -31,19 +31,59 @@ class TaskScreenState extends State<TaskScreen> {
   final appBarTitle = MainScreenState.currentList;
   late Task task;
   late List<Task> list;
+  List keys = [];
+  late Map<String, List<Task>> dateTimeMap = {
+    "Pinned": [],
+    "Overdue": [],
+    "Next 7 days": [],
+    "Later": [],
+    "No Date": []
+  };
 
   TextEditingController taskController = TextEditingController();
 
   @override
   void initState() {
-    // super.initState();
     setState(() {
       list = widget.user.taskMap[appBarTitle] != null
           ? widget.user.taskMap[appBarTitle]!
           : [];
-
-      // setDefault();
+      if (list.isNotEmpty) {
+        for (var v in list) {
+          setDateMap(v);
+          // print(dateTimeMap);
+        }
+      }
     });
+    // super.initState();
+  }
+
+  void setDateMap(Task v) {
+    bool flag = false;
+    for (var l in dateTimeMap.values) {
+      if (l.contains(v)) {
+        flag = true;
+        break;
+      }
+    }
+    if (flag == false) {
+      if (v.date != null) {
+        int diff = v.date!.difference(DateTime.now()).inDays;
+        if (diff < 0) {
+          dateTimeMap["Overdue"]!.add(v);
+        } else if (diff <= 7) {
+          dateTimeMap["Next 7 days"]!.add(v);
+        } else {
+          dateTimeMap["Later"]!.add(v);
+        }
+      } else {
+        dateTimeMap["No Date"]!.add(v);
+      }
+    }
+    for (var l in dateTimeMap.values) {
+      l = l.toSet().toList();
+    }
+    print(dateTimeMap);
   }
 
   void setDefault() {
@@ -79,6 +119,8 @@ class TaskScreenState extends State<TaskScreen> {
         ? list.insert(completeIndex, newTask)
         : list.add(newTask);
     widget.user.taskMap[appBarTitle] = list;
+    setDateMap(newTask);
+
     widget.file.updateUser(id: widget.user.id, updatedUser: widget.user);
   }
 
@@ -162,8 +204,8 @@ class TaskScreenState extends State<TaskScreen> {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
-
     initState();
+
     return Scaffold(
       drawer: SideDrawer(user: widget.user, file: widget.file),
       floatingActionButton: FloatingActionButton(
@@ -216,7 +258,7 @@ class TaskScreenState extends State<TaskScreen> {
                                   .toString()),
                       onDismissed: (direction) {
                         setState(() {
-                          widget.user.taskMap[appBarTitle]!.remove(item);
+                          widget.user.taskMap[appBarTitle]!.removeAt(index - 1);
                           widget.file.updateUser(
                               id: widget.user.id, updatedUser: widget.user);
                         });
@@ -246,10 +288,11 @@ class TaskScreenState extends State<TaskScreen> {
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) => UpdateTaskScreen(
-                                          index: index - 1,
-                                          user: widget.user,
-                                          file: widget.file,
-                                        ),
+                                            index: index - 1,
+                                            user: widget.user,
+                                            file: widget.file,
+                                            task: widget.user.taskMap[
+                                                appBarTitle]![index - 1]),
                                       )),
                                   child: TaskListTile(
                                       list: widget.user.taskMap[appBarTitle]!,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:todo_list/Models/file_header.dart';
 import 'package:todo_list/Screens/Task/add_list_screen.dart';
-// import 'package:todo_list/Models/task.dart';
+
 import 'package:todo_list/Models/user.dart';
 import 'package:todo_list/Screens/main_screen.dart';
 import 'package:todo_list/Screens/Settings/profile_screen.dart';
@@ -10,7 +10,7 @@ import 'package:todo_list/Screens/Settings/setting_screen.dart';
 class SideDrawer extends StatefulWidget {
   User user;
   FileHandler file;
-  // Map<String, List<Task>> taskMap;
+
   SideDrawer({Key? key, required this.user, required this.file})
       : super(key: key);
 
@@ -19,7 +19,6 @@ class SideDrawer extends StatefulWidget {
 }
 
 class _SideDrawerState extends State<SideDrawer> {
-  void initState() {}
   Widget tasklistListView(BuildContext context, categories) {
     return ListView.builder(
         padding: EdgeInsets.zero,
@@ -41,7 +40,10 @@ class _SideDrawerState extends State<SideDrawer> {
             MainScreenState.currentList = listNames[index];
           });
           Navigator.push(
-              context, MaterialPageRoute(builder: (context) => MainScreen()));
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      MainScreen(file: widget.file, user: widget.user)));
         },
       ));
     }

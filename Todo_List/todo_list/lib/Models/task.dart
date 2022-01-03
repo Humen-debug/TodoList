@@ -13,7 +13,7 @@ class Task {
 
   @override
   String toString() {
-    return "$title: $date, $subtasks";
+    return "$title: $date, $createdTime,$subtasks";
   }
 
   double get setProgress => subtasks.isNotEmpty
@@ -22,6 +22,7 @@ class Task {
       : 0;
 
   Task({
+    int? id,
     required this.title,
     required this.date,
     required this.isCompleted,
