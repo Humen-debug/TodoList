@@ -24,6 +24,8 @@ class MainScreenState extends State<MainScreen> {
   late List<User> users = [];
 
   void initState() {
+    // fileHandler.deleteUser(user);
+
     fileHandler.readUsers().then((List<User> userList) {
       setState(() {
         try {
