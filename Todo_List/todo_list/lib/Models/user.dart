@@ -6,6 +6,7 @@ class User {
   final String email;
   bool showComplete;
   bool showDetails;
+  int sortIndex;
   final Map<String, List<Task>> taskMap;
 
   User({
@@ -14,6 +15,7 @@ class User {
     required this.name,
     required this.showComplete,
     required this.showDetails,
+    required this.sortIndex,
     required this.taskMap,
   });
 
@@ -24,6 +26,7 @@ class User {
       name: map['name'] as String,
       showComplete: map['showComplete'] as bool,
       showDetails: map['showComplete'] as bool,
+      sortIndex: map['sortIndex'] as int,
       taskMap:
           Map<String, List<Task>>.from(map['taskMap'].map((String name, value) {
         return MapEntry(
@@ -42,6 +45,7 @@ class User {
       'email': email,
       'showComplete': showComplete,
       'showDetails': showDetails,
+      'sortIndex': sortIndex,
       'taskMap': taskMap,
     };
   }

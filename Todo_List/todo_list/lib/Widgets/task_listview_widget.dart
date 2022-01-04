@@ -7,6 +7,7 @@ import 'package:todo_list/Models/task.dart';
 import 'package:todo_list/Models/theme.dart';
 import 'package:todo_list/Screens/Task/update_task_screen.dart';
 import 'package:todo_list/Screens/main_screen.dart';
+import 'package:todo_list/Widgets/sort_button.dart';
 import 'package:todo_list/Widgets/statment_widget.dart';
 
 class TaskListView extends StatefulWidget {
@@ -43,26 +44,38 @@ class _TaskListViewState extends State<TaskListView> {
     return pos;
   }
 
+// need to update the add and remove
   void updateComplete(List<Task> list, int index, bool? flag) {
+    final List dummyList = list;
     final Task temp = list[index];
     int completeIndex = list.indexWhere((task) => task.isCompleted == true);
     setState(() {
       list[index].isCompleted = flag!;
       if (list[index].isCompleted == true) {
-        widget.user.taskMap['Completed']!.add(temp);
-
-        list.remove(temp);
-        list.add(temp);
-      } else {
-        widget.user.taskMap['Completed']!.remove(temp);
-
-        list.remove(temp);
-        if (completeIndex != -1) {
-          list.insert(completeIndex, temp);
-        } else {
-          list.add(temp);
-          widget.user.taskMap[MainScreenState.currentList]!.add(temp);
+        if (dummyList != widget.taskMap['Completed']) {
+          if (widget.user.taskMap['Completed']! !=
+              widget.taskMap['Completed']) {
+            widget.taskMap['Completed'].add(temp);
+          }
+          widget.user.taskMap['Completed']!.add(temp);
         }
+
+        // list.remove(temp);
+        // list.add(temp);
+      } else {
+        if (dummyList != widget.user.taskMap['Completed']!) {
+          widget.user.taskMap['Completed']!.remove(temp);
+          widget.taskMap['Completed'].remove(temp);
+        } else {
+          list.remove(temp);
+        }
+        // list.add(temp);
+        // if (completeIndex != -1) {
+        //   list.insert(completeIndex, temp);
+        // } else {
+        //   list.add(temp);
+        //   // widget.user.taskMap[MainScreenState.currentList]!.add(temp);
+        // }
       }
 
       widget.file.updateUser(id: widget.user.id, updatedUser: widget.user);
@@ -125,117 +138,131 @@ class _TaskListViewState extends State<TaskListView> {
           String key = keys[index];
           return Card(
               elevation: 0.0,
-              child: widget.taskMap[key].isNotEmpty
-                  ? Column(
-                      children: [
-                        Text(key),
-                        ListView.builder(
-                            physics: const NeverScrollableScrollPhysics(),
-                            padding: EdgeInsets.zero,
-                            shrinkWrap: true,
-                            itemCount: widget.taskMap[key].length,
-                            itemBuilder: (context, lindex) {
-                              final Task item = widget.taskMap[key][lindex];
-                              return Dismissible(
-                                key: Key(
-                                    item.title + item.createdTime.toString()),
-                                onDismissed: (direction) {
-                                  int? pos = dismissedIndex(item);
-                                  setState(() {
-                                    widget.taskMap[key]!.removeAt(lindex);
+              child: (key != "Completed" || !widget.user.showComplete)
+                  ? (widget.taskMap[key].isNotEmpty)
+                      ? Column(
+                          children: [
+                            Text(key),
+                            ListView.builder(
+                                physics: const NeverScrollableScrollPhysics(),
+                                padding: EdgeInsets.zero,
+                                shrinkWrap: true,
+                                itemCount: widget.taskMap[key].length,
+                                itemBuilder: (context, lindex) {
+                                  final Task item = widget.taskMap[key][lindex];
+                                  return key != "Completed" && item.isCompleted
+                                      ? SizedBox.shrink()
+                                      : Dismissible(
+                                          key: Key(item.title +
+                                              item.createdTime.toString()),
+                                          onDismissed: (direction) {
+                                            int? pos = dismissedIndex(item);
+                                            setState(() {
+                                              widget.taskMap[key]!
+                                                  .removeAt(lindex);
 
-                                    widget.user
-                                        .taskMap[MainScreenState.currentList]!
-                                        .removeAt(pos!);
+                                              widget
+                                                  .user
+                                                  .taskMap[MainScreenState
+                                                      .currentList]!
+                                                  .removeAt(pos!);
 
-                                    widget.file.updateUser(
-                                        id: widget.user.id,
-                                        updatedUser: widget.user);
-                                  });
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                          content:
-                                              Text('${item.title} dismissed')));
-                                },
-                                background: const Card(color: Colors.red),
-                                child: Column(
-                                  children: [
-                                    ElevatedButton(
-                                        style: ButtonStyle(
-                                            padding: MaterialStateProperty.all<
-                                                    EdgeInsetsGeometry?>(
-                                                EdgeInsets.zero),
-                                            elevation:
-                                                MaterialStateProperty.all<double>(
-                                                    0.0),
-                                            backgroundColor: themeProvider.islight
-                                                ? MaterialStateProperty.all<Color>(
-                                                    Colors.white)
-                                                : MaterialStateProperty.all<Color>(
-                                                    Colors.grey.shade800)),
-                                        onPressed: () => Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  UpdateTaskScreen(
-                                                      user: widget.user,
-                                                      file: widget.file,
-                                                      task: widget.taskMap[key]
-                                                          [lindex]),
-                                            )),
-                                        child: taskListTile(
-                                            widget.taskMap[key][lindex],
-                                            widget.taskMap[key],
-                                            lindex)),
-                                    Column(
-                                      children: [
-                                        // show deadline, process, tomato clock (if has one)
-                                        // and next line might show tags
-                                        StatementWidget(
-                                          task: widget.taskMap[key]![lindex],
-                                        ),
-                                        widget.taskMap[key]![lindex].isExpand
-                                            ? ListView.builder(
-                                                padding:
-                                                    const EdgeInsets.fromLTRB(
-                                                        25, 0, 0, 0),
-                                                physics:
-                                                    const NeverScrollableScrollPhysics(),
-                                                shrinkWrap: true,
-                                                itemBuilder:
-                                                    (BuildContext context,
-                                                        int num) {
-                                                  return TextButton(
-                                                    onPressed: () {},
-                                                    child: SizedBox(
-                                                        height: 45,
-                                                        child: taskListTile(
-                                                            widget
-                                                                .taskMap[key]
-                                                                    [lindex]
-                                                                .subtasks[num],
-                                                            widget
-                                                                .taskMap[key]
-                                                                    [lindex]
-                                                                .subtasks,
-                                                            num)),
-                                                  );
-                                                },
-                                                itemCount: widget
-                                                    .taskMap[key]![lindex]
-                                                    .subtasks
-                                                    .length,
-                                              )
-                                            : const SizedBox.shrink()
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              );
-                            }),
-                      ],
-                    )
-                  : SizedBox.shrink());
+                                              widget.file.updateUser(
+                                                  id: widget.user.id,
+                                                  updatedUser: widget.user);
+                                            });
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(SnackBar(
+                                                    content: Text(
+                                                        '${item.title} dismissed')));
+                                          },
+                                          background:
+                                              const Card(color: Colors.red),
+                                          child: Column(
+                                            children: [
+                                              ElevatedButton(
+                                                  style: ButtonStyle(
+                                                      padding: MaterialStateProperty
+                                                          .all<EdgeInsetsGeometry?>(
+                                                              EdgeInsets.zero),
+                                                      elevation:
+                                                          MaterialStateProperty
+                                                              .all<double>(0.0),
+                                                      backgroundColor: themeProvider.islight
+                                                          ? MaterialStateProperty
+                                                              .all<Color>(
+                                                                  Colors.white)
+                                                          : MaterialStateProperty.all<Color>(
+                                                              Colors.grey.shade800)),
+                                                  onPressed: () => Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            UpdateTaskScreen(
+                                                                user:
+                                                                    widget.user,
+                                                                file:
+                                                                    widget.file,
+                                                                task: widget
+                                                                        .taskMap[
+                                                                    key][lindex]),
+                                                      )),
+                                                  child: taskListTile(widget.taskMap[key][lindex], widget.taskMap[key], lindex)),
+                                              Column(
+                                                children: [
+                                                  // show deadline, process, tomato clock (if has one)
+                                                  // and next line might show tags
+                                                  StatementWidget(
+                                                    task: widget
+                                                        .taskMap[key]![lindex],
+                                                  ),
+                                                  widget.taskMap[key]![lindex]
+                                                          .isExpand
+                                                      ? ListView.builder(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .fromLTRB(
+                                                                  25, 0, 0, 0),
+                                                          physics:
+                                                              const NeverScrollableScrollPhysics(),
+                                                          shrinkWrap: true,
+                                                          itemBuilder:
+                                                              (BuildContext
+                                                                      context,
+                                                                  int num) {
+                                                            return TextButton(
+                                                              onPressed: () {},
+                                                              child: SizedBox(
+                                                                  height: 45,
+                                                                  child: taskListTile(
+                                                                      widget.taskMap[key][lindex].subtasks[
+                                                                          num],
+                                                                      widget
+                                                                          .taskMap[
+                                                                              key]
+                                                                              [
+                                                                              lindex]
+                                                                          .subtasks,
+                                                                      num)),
+                                                            );
+                                                          },
+                                                          itemCount: widget
+                                                              .taskMap[key]![
+                                                                  lindex]
+                                                              .subtasks
+                                                              .length,
+                                                        )
+                                                      : const SizedBox.shrink()
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                }),
+                          ],
+                        )
+                      : const SizedBox.shrink()
+                  : const SizedBox.shrink());
         },
         childCount: widget.taskMap.length,
       ),

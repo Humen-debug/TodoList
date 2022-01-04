@@ -19,26 +19,32 @@ class SortButton extends StatefulWidget {
 class _SortButtonState extends State<SortButton> {
   Icon sortIcon = const Icon(Icons.sort);
 
-  final sortIcons = const <Icon>[
-    Icon(Icons.sort),
-    Icon(Icons.schedule),
-    Icon(Icons.text_rotate_vertical),
-    Icon(Icons.tag),
+  final sortIcons = <Icon>[
+    MainScreenState.currentList == "All"
+        ? const Icon(Icons.table_rows)
+        : const Icon(Icons.sort),
+    const Icon(Icons.schedule),
+    const Icon(Icons.text_rotate_vertical),
+    const Icon(Icons.tag),
   ];
-  final sortTitle = const <Text>[
-    Text("Custom"),
-    Text("By Time"),
-    Text("By Title"),
-    Text("By Tags"),
+  final sortTitle = <Text>[
+    MainScreenState.currentList == "All"
+        ? const Text("List")
+        : const Text("Custom"),
+    const Text("By Time"),
+    const Text("By Title"),
+    const Text("By Tags"),
   ];
   void filterTasks(int item) {
     setState(() {
+      widget.user.sortIndex = item;
       sortIcon = sortIcons[item];
       widget.list.sort((a, b) {
         return !b.isCompleted ? 1 : -1;
       });
       switch (item) {
         case 0:
+
           // reOrder = !reOrder;
           break;
         case 1:

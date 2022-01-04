@@ -19,6 +19,7 @@ class MainScreenState extends State<MainScreen> {
       email: "",
       showComplete: true,
       showDetails: false,
+      sortIndex: 0,
       taskMap: <String, List<Task>>{'All': [], 'Inbox': [], 'Completed': []});
   late List<User> users = [];
 
@@ -43,6 +44,7 @@ class MainScreenState extends State<MainScreen> {
                 email: "",
                 showComplete: true,
                 showDetails: false,
+                sortIndex: 0,
                 taskMap: <String, List<Task>>{
                   'All': [],
                   'Inbox': [],

@@ -36,20 +36,29 @@ class TaskScreenState extends State<TaskScreen> {
     "Overdue": [],
     "Next 7 days": [],
     "Later": [],
-    "No Date": []
+    "No Date": [],
+    "Completed": []
   };
+
+  Map<String, List<Task>?> get taskMap => {
+        MainScreenState.currentList:
+            widget.user.taskMap[MainScreenState.currentList],
+        "Completed": []
+      };
   TextEditingController taskController = TextEditingController();
 
   @override
   void initState() {
+    String currentList = appBarTitle;
+    appBarTitle == "All" ? currentList = "Inbox" : currentList = currentList;
     setState(() {
-      if (widget.user.taskMap[appBarTitle]!.isNotEmpty) {
-        for (var v in widget.user.taskMap[appBarTitle]!) {
+      if (widget.user.taskMap[currentList]!.isNotEmpty) {
+        for (var v in widget.user.taskMap[currentList]!) {
           setDateMap(v);
         }
       }
     });
-    print("${appBarTitle}: ${widget.user.taskMap[appBarTitle]}");
+    // print("${appBarTitle}: ${widget.user.taskMap[appBarTitle]}");
     // super.initState();
   }
 
@@ -63,6 +72,10 @@ class TaskScreenState extends State<TaskScreen> {
     }
     setState(() {
       if (flag == false) {
+        if (v.isCompleted) {
+          dateTimeMap["Completed"]!.add(v);
+          return;
+        }
         if (v.date != null) {
           int diff = v.date!.difference(DateTime.now()).inDays;
           if (diff < 0) {
@@ -79,7 +92,6 @@ class TaskScreenState extends State<TaskScreen> {
       for (var l in dateTimeMap.values) {
         l = l.toSet().toList();
       }
-      print(widget.user.taskMap[appBarTitle]);
     });
   }
 
@@ -113,13 +125,105 @@ class TaskScreenState extends State<TaskScreen> {
       subtasks: task.subtasks,
     );
     setDefault();
+    String currentList = MainScreenState.currentList;
+    if (currentList == "All") currentList = "Inbox";
     completeIndex != -1
-        ? widget.user.taskMap[appBarTitle]!.insert(completeIndex, newTask)
-        : widget.user.taskMap[appBarTitle]!.add(newTask);
+        ? widget.user.taskMap[currentList]!.insert(completeIndex, newTask)
+        : widget.user.taskMap[currentList]!.add(newTask);
 
     setDateMap(newTask);
 
     widget.file.updateUser(id: widget.user.id, updatedUser: widget.user);
+  }
+
+  Map selectMap() {
+    switch (widget.user.sortIndex) {
+      case 0:
+        return MainScreenState.currentList == "All"
+            ? widget.user.taskMap
+            : taskMap;
+      case 1:
+        return dateTimeMap;
+    }
+    return widget.user.taskMap;
+  }
+
+  Icon get sortIcon => sortIcons[widget.user.sortIndex];
+
+  final sortIcons = <Icon>[
+    MainScreenState.currentList == "All"
+        ? const Icon(Icons.table_rows)
+        : const Icon(Icons.sort),
+    const Icon(Icons.schedule),
+    const Icon(Icons.text_rotate_vertical),
+    const Icon(Icons.tag),
+  ];
+
+  final sortTitle = <Text>[
+    MainScreenState.currentList == "All"
+        ? const Text("List")
+        : const Text("Custom"),
+    const Text("By Time"),
+    const Text("By Title"),
+    const Text("By Tags"),
+  ];
+
+  void filterTasks(int item) {
+    setState(() {
+      widget.user.sortIndex = item;
+
+      for (var list in selectMap().values) {
+        list.sort((a, b) {
+          return !b.isCompleted ? 1 : -1;
+        });
+        switch (item) {
+          case 0:
+
+            // reOrder = !reOrder;
+            break;
+          case 1:
+            list.sort((a, b) {
+              if (a.date == b.date) {
+                return 0;
+              } else if ((a.date == null && b.date != null)) {
+                return -1;
+              } else if (a.date != null && b.date == null) {
+                return 1;
+              } else {
+                return a.date!.compareTo(b.date!);
+              }
+            });
+            break;
+          case 2:
+            list.sort((a, b) => a.title.compareTo(b.title));
+            break;
+          case 3:
+            break;
+        }
+        list.sort((a, b) {
+          return !b.isCompleted ? 1 : -1;
+        });
+      }
+
+      widget.file.updateUser(id: widget.user.id, updatedUser: widget.user);
+    });
+  }
+
+  Widget sortButton() {
+    return PopupMenuButton<int>(
+        onSelected: (item) => filterTasks(item),
+        icon: sortIcon,
+        itemBuilder: (context) {
+          return List.generate(sortIcons.length, (index) {
+            return PopupMenuItem(
+                value: index,
+                child: Row(children: [
+                  sortIcons[index],
+                  const SizedBox(width: 10),
+                  sortTitle[index]
+                ]));
+          });
+        });
   }
 
   void buildTask(BuildContext context) {
@@ -219,15 +323,16 @@ class TaskScreenState extends State<TaskScreen> {
                     onPressed: () => Scaffold.of(context).openDrawer(),
                     icon: const Icon(Icons.menu))),
             actions: <Widget>[
-              SortButton(
-                  file: widget.file,
-                  user: widget.user,
-                  list: widget.user.taskMap[appBarTitle]!),
+              sortButton(),
+              // SortButton(
+              //     file: widget.file,
+              //     user: widget.user,
+              //     list: widget.user.taskMap[appBarTitle]!),
               MenuButton(file: widget.file, user: widget.user)
             ],
           ),
           TaskListView(
-              taskMap: dateTimeMap, user: widget.user, file: widget.file)
+              taskMap: selectMap(), user: widget.user, file: widget.file)
         ],
       ),
     );
