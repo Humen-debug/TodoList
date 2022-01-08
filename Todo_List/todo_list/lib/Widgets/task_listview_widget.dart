@@ -151,7 +151,7 @@ class _TaskListViewState extends State<TaskListView> {
                                 itemBuilder: (context, lindex) {
                                   final Task item = widget.taskMap[key][lindex];
                                   return key != "Completed" && item.isCompleted
-                                      ? SizedBox.shrink()
+                                      ? const SizedBox.shrink()
                                       : Dismissible(
                                           key: Key(item.title +
                                               item.createdTime.toString()),

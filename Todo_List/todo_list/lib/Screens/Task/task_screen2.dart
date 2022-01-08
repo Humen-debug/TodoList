@@ -176,30 +176,28 @@ class TaskScreenState extends State<TaskScreen> {
         list.sort((a, b) {
           return !b.isCompleted ? 1 : -1;
         });
-        switch (item) {
-          case 0:
-
-            // reOrder = !reOrder;
-            break;
-          case 1:
-            list.sort((a, b) {
-              if (a.date == b.date) {
-                return 0;
-              } else if ((a.date == null && b.date != null)) {
-                return -1;
-              } else if (a.date != null && b.date == null) {
-                return 1;
-              } else {
-                return a.date!.compareTo(b.date!);
-              }
-            });
-            break;
-          case 2:
-            list.sort((a, b) => a.title.compareTo(b.title));
-            break;
-          case 3:
-            break;
-        }
+        // switch (item) {
+        //   case 0:
+        //     break;
+        //   case 1:
+        //     list.sort((a, b) {
+        //       if (a.date == b.date) {
+        //         return 0;
+        //       } else if ((a.date == null && b.date != null)) {
+        //         return -1;
+        //       } else if (a.date != null && b.date == null) {
+        //         return 1;
+        //       } else {
+        //         return a.date!.compareTo(b.date!);
+        //       }
+        //     });
+        //     break;
+        //   case 2:
+        //     list.sort((a, b) => a.title.compareTo(b.title));
+        //     break;
+        //   case 3:
+        //     break;
+        // }
         list.sort((a, b) {
           return !b.isCompleted ? 1 : -1;
         });
