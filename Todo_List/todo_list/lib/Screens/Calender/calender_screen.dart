@@ -1,11 +1,16 @@
 import 'dart:collection';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
+import 'package:todo_list/Models/file_header.dart';
 import 'package:todo_list/Models/task.dart';
+import 'package:todo_list/Models/user.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class CalenderScreen extends StatefulWidget {
-  CalenderScreen({Key? key}) : super(key: key);
+  User user;
+  FileHandler file;
+  CalenderScreen({Key? key, required this.file, required this.user})
+      : super(key: key);
 
   @override
   _CalenderScreenState createState() => _CalenderScreenState();
@@ -14,7 +19,7 @@ class CalenderScreen extends StatefulWidget {
 class _CalenderScreenState extends State<CalenderScreen> {
   late final ValueNotifier<List<Task>> selectedEvents;
   late final PageController pageController;
-
+  late Map<DateTime?, List<Task>> kEvents = {};
   final ValueNotifier<DateTime> focusedDay = ValueNotifier(DateTime.now());
   final Set<DateTime> selectedDays = LinkedHashSet<DateTime>(
     equals: isSameDay,
@@ -24,12 +29,14 @@ class _CalenderScreenState extends State<CalenderScreen> {
   RangeSelectionMode rangeSelectionMode = RangeSelectionMode.toggledOff;
   DateTime? rangeStart;
   DateTime? rangeEnd;
+
   @override
   void initState() {
-    super.initState();
+    setMap();
     selectedDays.add(focusedDay.value);
     selectedEvents = ValueNotifier(getEventsForDay(focusedDay.value));
     // selectedEvents = ValueNotifier(getEventsForDay(selectedDay!));
+    super.initState();
   }
 
   @override
@@ -39,11 +46,35 @@ class _CalenderScreenState extends State<CalenderScreen> {
     super.dispose();
   }
 
+  void setMap() {
+    
+    List lists = widget.user.taskMap.values.toList();
+    for (int i = 0; i < lists.length - 1; i++){
+      for (var task in lists[i]) {
+        
+          DateTime? date;
+          if (task.date != null) {
+            date =
+                DateTime.utc(task.date!.year, task.date!.month, task.date!.day)
+                    .toLocal();
+          }
+          if (kEvents.containsKey(date)) {
+            kEvents[date]!.add(task);
+          } else {
+            kEvents[date] = [task];
+          }
+        }
+      }
+    
+
+    print(kEvents);
+  }
+
   bool get canClearSelection =>
       selectedDays.isNotEmpty || rangeStart != null || rangeEnd != null;
 
   List<Task> getEventsForDay(DateTime day) {
-    return kEvents[day] ?? [];
+    return kEvents[day.toLocal()] ?? [];
   }
 
   List<Task> getEventsForDays(Iterable<DateTime> days) {
@@ -92,6 +123,7 @@ class _CalenderScreenState extends State<CalenderScreen> {
   @override
   Widget build(BuildContext context) {
     // initState();
+
     return Scaffold(
       appBar: AppBar(),
       body: Column(children: <Widget>[
@@ -151,8 +183,7 @@ class _CalenderScreenState extends State<CalenderScreen> {
                 itemBuilder: (context, index) {
                   return Card(
                     child: ListTile(
-                      // onTap: () => print("${value[index]}"),
-                      title: Text("${value[index]}"),
+                      title: Text(value[index].title),
                     ),
                   );
                 });

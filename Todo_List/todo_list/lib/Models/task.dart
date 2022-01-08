@@ -13,7 +13,7 @@ class Task {
 
   @override
   String toString() {
-    return "$title: $date, $createdTime,$subtasks \nisExpand: $isExpand";
+    return "$title: $date, $createdTime,$subtasks";
   }
 
   double get setProgress => subtasks.isNotEmpty
@@ -89,29 +89,6 @@ int getHashCode(DateTime key) {
   return key.day * 1000000 + key.month * 10000 + key.year;
 }
 
-final kEvents = LinkedHashMap<DateTime, List<Task>>(
-    equals: isSameDay, hashCode: getHashCode)
-  ..addAll(kEventSource);
-
-final kEventSource =
-    Map<DateTime, List<Task>>.fromIterable(List.generate(50, (index) => index),
-        key: (item) => DateTime.utc(kFirstDay.year, kFirstDay.month, item * 5),
-        value: (item) => List.generate(
-            item % 4 + 1,
-            (index) => Task(
-                  title: '$item | $index',
-                  date: null,
-                  isCompleted: false,
-                  isExpand: false,
-                  time: "",
-                  createdTime: DateTime.now(),
-                  status: "",
-                  deadline: "No Deadline",
-                  subtasks: [],
-                )))
-      ..addAll({
-        kToday: [],
-      });
 
 List<DateTime> daysInRange(DateTime first, DateTime last) {
   final dayCount = last.difference(first).inDays + 1;
