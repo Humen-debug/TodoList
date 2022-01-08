@@ -137,6 +137,8 @@ class _TaskListViewState extends State<TaskListView> {
         (context, index) {
           String key = keys[index];
           return Card(
+              // shape: RoundedRectangleBorder(
+              //     borderRadius: BorderRadius.circular(5.0)),
               elevation: 0.0,
               child: (key != "Completed" || !widget.user.showComplete)
                   ? (widget.taskMap[key].isNotEmpty)

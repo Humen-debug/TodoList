@@ -47,27 +47,22 @@ class _CalenderScreenState extends State<CalenderScreen> {
   }
 
   void setMap() {
-    
     List lists = widget.user.taskMap.values.toList();
-    for (int i = 0; i < lists.length - 1; i++){
-      for (var task in lists[i]) {
-        
+    for (int i = 0; i < lists.length - 1; i++) {
+      for (Task task in lists[i]) {
+        if (!task.isCompleted) {
           DateTime? date;
           if (task.date != null) {
             date =
                 DateTime.utc(task.date!.year, task.date!.month, task.date!.day)
                     .toLocal();
           }
-          if (kEvents.containsKey(date)) {
-            kEvents[date]!.add(task);
-          } else {
-            kEvents[date] = [task];
-          }
+          kEvents.containsKey(date)
+              ? kEvents[date]!.add(task)
+              : kEvents[date] = [task];
         }
       }
-    
-
-    print(kEvents);
+    }
   }
 
   bool get canClearSelection =>
@@ -122,8 +117,6 @@ class _CalenderScreenState extends State<CalenderScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // initState();
-
     return Scaffold(
       appBar: AppBar(),
       body: Column(children: <Widget>[
