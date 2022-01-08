@@ -1,28 +1,78 @@
 import 'package:flutter/material.dart';
+import 'package:todo_list/Models/file_header.dart';
 import 'package:todo_list/Screens/Calender/calender_screen.dart';
-import 'package:todo_list/Screens/Task/task_screen.dart';
+import 'package:todo_list/Screens/Task/task_screen2.dart';
+import 'package:todo_list/Models/user.dart';
 import 'package:todo_list/Models/task.dart';
 
 class MainScreen extends StatefulWidget {
+  MainScreen({Key? key}) : super(key: key);
   @override
   MainScreenState createState() => MainScreenState();
 }
 
 class MainScreenState extends State<MainScreen> {
+  FileHandler fileHandler = FileHandler.instance;
+  late User user = User(
+      id: 0,
+      name: "",
+      email: "",
+      showComplete: true,
+      showDetails: false,
+      sortIndex: 0,
+      taskMap: <String, List<Task>>{'All': [], 'Inbox': [], 'Completed': []});
+  late List<User> users = [];
+
+  void initState() {
+    // fileHandler.deleteUser(user);
+
+    fileHandler.readUsers().then((List<User> userList) {
+      setState(() {
+        try {
+          users = userList;
+          int id = 0;
+          if (users.isNotEmpty) {
+            for (int i = 0; i < users.length; i++) {
+              if (id == i) {
+                user = users[i];
+                // print(user);
+                break;
+              }
+            }
+          } else {
+            user = User(
+                id: id,
+                name: "",
+                email: "",
+                showComplete: true,
+                showDetails: false,
+                sortIndex: 0,
+                taskMap: <String, List<Task>>{
+                  'All': [],
+                  'Inbox': [],
+                  'Completed': []
+                });
+          }
+        } on Exception catch (e) {
+          print(e);
+          fileHandler.deleteUser(user);
+        }
+      });
+    });
+  }
+
   int _selectedIndex = 0;
-  static String currentList = "Inbox";
-  static var taskMap = <String, List<Task>>{
-    'Inbox': [],
-    'Completed': [],
-  };
+  static String currentList = "All";
+
   @override
   Widget build(BuildContext context) {
     final _pages = [
-      TaskScreen(),
+      TaskScreen(user: user, file: fileHandler),
       Center(child: Text('Home')),
       CalenderScreen(),
       Center(child: Text('Person')),
     ];
+
     return Scaffold(
       body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
@@ -41,7 +91,6 @@ class MainScreenState extends State<MainScreen> {
         onTap: (index) {
           setState(() {
             _selectedIndex = index;
-            // print(taskMap[currentList].toString());
           });
         },
       ),
