@@ -69,7 +69,7 @@ class MainScreenState extends State<MainScreen> {
     final _pages = [
       TaskScreen(user: user, file: fileHandler),
       Center(child: Text('Home')),
-      CalenderScreen(),
+      CalenderScreen(user: user, file: fileHandler,),
       Center(child: Text('Person')),
     ];
 
