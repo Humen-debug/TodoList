@@ -1,7 +1,7 @@
 # TodoList
 Project of creating a todo app using Flutter
 
-#OBJECTIVES
+# OBJECTIVES <br>
 Functions: 
 1. Task Screen
   1. able to create task file and tags for grouping
