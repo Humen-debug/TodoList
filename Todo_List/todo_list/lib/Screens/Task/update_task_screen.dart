@@ -10,7 +10,6 @@ import 'package:todo_list/Models/theme.dart';
 
 class UpdateTaskScreen extends StatefulWidget {
   Task task;
-
   User user;
   FileHandler file;
 
@@ -172,13 +171,26 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
             children: [
               LinearProgressIndicator(
                 value: widget.task.setProgress,
-                minHeight: 48,
+                minHeight: 50,
                 valueColor: AlwaysStoppedAnimation<Color>(themeProvider.islight
                     ? Colors.grey.shade300
                     : Colors.grey.shade800),
                 backgroundColor: Colors.transparent,
               ),
               Checkbox(value: widget.task.isCompleted, onChanged: (value) {}),
+              Positioned(
+                left: 48,
+                child: TextButton(
+                    onPressed: () {},
+                    child: widget.task.deadline == "No Deadline"
+                        ? const Text(
+                            "Date",
+                            style: TextStyle(fontWeight: FontWeight.w700),
+                          )
+                        : Text(widget.task.deadline,
+                            style:
+                                const TextStyle(fontWeight: FontWeight.w700))),
+              ),
             ],
           ),
           Column(

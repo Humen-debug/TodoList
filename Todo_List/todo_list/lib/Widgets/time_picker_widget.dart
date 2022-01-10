@@ -81,7 +81,8 @@ class _TimePickerWidgetState extends State<TimePickerWidget> {
                         context: context,
                         initialDate: initialDate,
                         firstDate: DateTime(DateTime.now().year - 5),
-                        lastDate: DateTime(DateTime.now().year + 5))
+                        lastDate: DateTime(DateTime.now().year + 5),
+                        currentDate: DateTime.now())
                     .then((date) {
                   // print('date: $date');
                   updateDate(date);

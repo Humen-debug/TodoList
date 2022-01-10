@@ -98,7 +98,7 @@ class ThemeProvider extends ChangeNotifier {
           primaryVariant: themeColors[themeKey][1],
           secondary: themeColors[themeKey][2],
           secondaryVariant: themeColors[themeKey][3],
-          onPrimary: themeColors[themeKey][0],
+          // onPrimary: themeColors[themeKey][0],
           onSurface: themeColors[themeKey][3],
           onBackground: themeColors[themeKey][2],
         ),
