@@ -37,44 +37,59 @@ class TaskScreenState extends State<TaskScreen> {
   Map<String, List<Task>?> taskMap = {
     MainScreenState.currentList: [],
   };
+
   TextEditingController taskController = TextEditingController();
+
+  // instance icon displayed
+  Icon get sortIcon => sortIcons[widget.user.sortIndex];
+
+  final sortIcons = <Icon>[
+    MainScreenState.currentList == "All"
+        ? const Icon(Icons.table_rows)
+        : const Icon(Icons.sort),
+    const Icon(Icons.schedule),
+    const Icon(Icons.text_rotate_vertical),
+    const Icon(Icons.tag),
+  ];
+
+  final sortTitle = <Text>[
+    MainScreenState.currentList == "All"
+        ? const Text("List")
+        : const Text("Custom"),
+    const Text("By Time"),
+    const Text("By Title"),
+    const Text("By Tags"),
+  ];
 
   @override
   void initState() {
     String currentList = appBarTitle;
+    // put task in INBOX when user add task in ALL screen
     appBarTitle == "All" ? currentList = "Inbox" : currentList = currentList;
     setState(() {
       taskMap[MainScreenState.currentList] =
           widget.user.taskMap[MainScreenState.currentList];
       if (widget.user.taskMap[currentList]!.isNotEmpty) {
-        for (var v in widget.user.taskMap[currentList]!) {
-          setTaskMap(v);
-          setDateMap(v);
+        for (var task in widget.user.taskMap[currentList]!) {
+          setTaskMap(task);
+          setDateMap(task);
         }
       }
-      // if (dateTimeMap["Completed"]!.isNotEmpty) {
-      //   for (var v in dateTimeMap["Completed"]!) {
-      //     if (!widget.user.taskMap["Completed"]!.contains(v)) {
-      //       widget.user.taskMap["Completed"]!.add(v);
-      //     }
-      //   }
-      // }
     });
-    // print("${appBarTitle}: ${widget.user.taskMap[appBarTitle]}");
-    // print(taskMap);
-    // super.initState();
   }
 
   Future setDateMap(Task v) async {
-    bool flag = false;
-    for (var l in dateTimeMap.values) {
-      if (l.contains(v)) {
-        flag = true;
+    bool containTask = false;
+    // Check whether list in map contain task v
+    // contain sometime not work without reason so here is a loop for double checkin'
+    for (var list in dateTimeMap.values) {
+      if (list.contains(v)) {
+        containTask = true;
         break;
       }
     }
     setState(() {
-      if (flag == false) {
+      if (containTask == false) {
         if (v.isCompleted) {
           dateTimeMap["Completed"]!.add(v);
           return;
@@ -92,19 +107,20 @@ class TaskScreenState extends State<TaskScreen> {
           dateTimeMap["No Date"]!.add(v);
         }
       }
-      for (var l in dateTimeMap.values) {
-        l = l.toSet().toList();
+      // to double confirm no duplicate task in list
+      for (var list in dateTimeMap.values) {
+        list = list.toSet().toList();
       }
     });
   }
 
   Future setTaskMap(Task v) async {
+    // Add complete list to the map if current map is not COMPLETED
     if (MainScreenState.currentList != "Completed") {
       taskMap["Completed"] = [];
     }
     setState(() {
       if (v.isCompleted && !taskMap["Completed"]!.contains(v)) {
-        // print("${v.title}: ${!taskMap["Completed"]!.contains(v)}");
         taskMap["Completed"]!.add(v);
       }
     });
@@ -139,9 +155,12 @@ class TaskScreenState extends State<TaskScreen> {
       deadline: task.deadline,
       subtasks: task.subtasks,
     );
-    setDefault();
+    setDefault(); // release task value for next user's input
+
+    // put task in INBOX when user add task in ALL screen
     String currentList = MainScreenState.currentList;
     if (currentList == "All") currentList = "Inbox";
+    // insert task before the first completed task in list
     completeIndex != -1
         ? widget.user.taskMap[currentList]!.insert(completeIndex, newTask)
         : widget.user.taskMap[currentList]!.add(newTask);
@@ -151,6 +170,8 @@ class TaskScreenState extends State<TaskScreen> {
     widget.file.updateUser(id: widget.user.id, updatedUser: widget.user);
   }
 
+// return map that is selected after clicking SORT function
+// TODO: need further sorting in the list
   Map selectMap() {
     switch (widget.user.sortIndex) {
       case 0:
@@ -169,39 +190,9 @@ class TaskScreenState extends State<TaskScreen> {
     return widget.user.taskMap;
   }
 
-  Icon get sortIcon => sortIcons[widget.user.sortIndex];
-
-  final sortIcons = <Icon>[
-    MainScreenState.currentList == "All"
-        ? const Icon(Icons.table_rows)
-        : const Icon(Icons.sort),
-    const Icon(Icons.schedule),
-    const Icon(Icons.text_rotate_vertical),
-    const Icon(Icons.tag),
-  ];
-
-  final sortTitle = <Text>[
-    MainScreenState.currentList == "All"
-        ? const Text("List")
-        : const Text("Custom"),
-    const Text("By Time"),
-    const Text("By Title"),
-    const Text("By Tags"),
-  ];
-
   void filterTasks(int item) {
     setState(() {
       widget.user.sortIndex = item;
-
-      for (var list in selectMap().values) {
-        list.sort((a, b) {
-          return !b.isCompleted ? 1 : -1;
-        });
-
-        list.sort((a, b) {
-          return !b.isCompleted ? 1 : -1;
-        });
-      }
 
       widget.file.updateUser(id: widget.user.id, updatedUser: widget.user);
     });
@@ -243,6 +234,7 @@ class TaskScreenState extends State<TaskScreen> {
         onSelected: (item) => onSelected(item),
         icon: const Icon(Icons.more_vert),
         itemBuilder: (context) => [
+              // Show more or less details
               PopupMenuItem<int>(
                 value: 0,
                 child: Row(
@@ -257,6 +249,7 @@ class TaskScreenState extends State<TaskScreen> {
                   ],
                 ),
               ),
+              // Show or hide completed task
               PopupMenuItem<int>(
                   value: 1,
                   child: Row(
@@ -270,6 +263,7 @@ class TaskScreenState extends State<TaskScreen> {
                           : const Text("Hide Completed"),
                     ],
                   )),
+              // Select function for grouping or deletion
               PopupMenuItem<int>(
                 value: 2,
                 child: Row(
@@ -292,7 +286,6 @@ class TaskScreenState extends State<TaskScreen> {
           return StatefulBuilder(builder: (context, state) {
             return Padding(
               padding: EdgeInsets.only(
-                  // 330 as keyboard height
                   bottom: MediaQuery.of(context).viewInsets.bottom),
               child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
                 Flex(
@@ -382,11 +375,6 @@ class TaskScreenState extends State<TaskScreen> {
             actions: <Widget>[
               sortButton(),
               menuButton(),
-              // SortButton(
-              //     file: widget.file,
-              //     user: widget.user,
-              //     list: widget.user.taskMap[appBarTitle]!),
-              // MenuButton(file: widget.file, user: widget.user)
             ],
           ),
           TaskListView(

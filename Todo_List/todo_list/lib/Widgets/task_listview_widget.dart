@@ -22,10 +22,6 @@ class TaskListView extends StatefulWidget {
 }
 
 class _TaskListViewState extends State<TaskListView> {
-  void setCompleted_num() {
-    int count = 0;
-  }
-
   void _onReorder(int oldIndex, int newIndex) {
     setState(() {
       if (newIndex > oldIndex) {
@@ -47,10 +43,9 @@ class _TaskListViewState extends State<TaskListView> {
     return pos;
   }
 
-// need to update the add and remove
+// TODO: need to update the add and remove
   void updateComplete(List<Task> list, int index, bool? flag) {
     final Task temp = list[index];
-    // int completeIndex = list.indexWhere((task) => task.isCompleted == true);
     setState(() {
       list[index].isCompleted = flag!;
       if (list[index].isCompleted == true) {
@@ -96,21 +91,23 @@ class _TaskListViewState extends State<TaskListView> {
           },
         ),
         trailing: expandTrailing(
-            task, widget.user.showDetails && task.subtasks.isNotEmpty),
+            task, widget.user.showDetails && task.subtasks.isNotEmpty, true),
         title: Text(task.title),
       ),
     );
   }
 
-  Widget expandTrailing(Task task, bool flag) {
+  Widget expandTrailing(Task task, bool flag, bool isTask) {
     const Icon show = Icon(Icons.expand_more);
     return flag
         ? IconButton(
             onPressed: () => setState(
               () {
-                task.isExpand = !task.isExpand;
-                widget.file
-                    .updateUser(id: widget.user.id, updatedUser: widget.user);
+                if (isTask) {
+                  task.isExpand = !task.isExpand;
+                  widget.file
+                      .updateUser(id: widget.user.id, updatedUser: widget.user);
+                }
               },
             ),
             icon: AnimatedSwitcher(
@@ -142,8 +139,8 @@ class _TaskListViewState extends State<TaskListView> {
               .toList()
               .length;
           return Card(
-              // shape: RoundedRectangleBorder(
-              //     borderRadius: BorderRadius.circular(5.0)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0)),
               elevation: 0.0,
               child: ((key != "Completed" || widget.user.showComplete) ||
                       key == MainScreenState.currentList
@@ -153,7 +150,20 @@ class _TaskListViewState extends State<TaskListView> {
                       ? const SizedBox.shrink()
                       : Column(
                           children: [
-                            Text(key),
+                            Container(
+                              height: 30,
+                              alignment: Alignment.center,
+                              child: Row(
+                                children: [
+                                  Text(
+                                    key.toUpperCase(),
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 16),
+                                  ),
+                                ],
+                              ),
+                            ),
                             ListView.builder(
                                 physics: const NeverScrollableScrollPhysics(),
                                 padding: EdgeInsets.zero,
@@ -222,8 +232,6 @@ class _TaskListViewState extends State<TaskListView> {
                                                   child: taskListTile(widget.taskMap[key][lindex], widget.taskMap[key], lindex)),
                                               Column(
                                                 children: [
-                                                  // show deadline, process, tomato clock (if has one)
-                                                  // and next line might show tags
                                                   StatementWidget(
                                                     task: widget
                                                         .taskMap[key]![lindex],
@@ -264,7 +272,8 @@ class _TaskListViewState extends State<TaskListView> {
                                                               .subtasks
                                                               .length,
                                                         )
-                                                      : const SizedBox.shrink()
+                                                      : const SizedBox(
+                                                          height: 0)
                                                 ],
                                               ),
                                             ],
@@ -273,7 +282,9 @@ class _TaskListViewState extends State<TaskListView> {
                                 }),
                           ],
                         )
-                  : const SizedBox.shrink()));
+                  : const SizedBox(
+                      height: 0,
+                    )));
         },
         childCount: widget.taskMap.length,
       ),
