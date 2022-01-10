@@ -146,26 +146,32 @@ class _CalenderScreenState extends State<CalenderScreen> {
               },
               clearButtonVisible: canClearSelection),
         ),
-        TableCalendar<Task>(
-            focusedDay: focusedDay.value,
-            firstDay: kFirstDay,
-            lastDay: kLastDay,
-            headerVisible: false,
-            selectedDayPredicate: (day) => selectedDays.contains(day),
-            rangeStartDay: rangeStart,
-            rangeEndDay: rangeEnd,
-            rangeSelectionMode: rangeSelectionMode,
-            calendarFormat: calendarFormat,
-            eventLoader: getEventsForDay,
-            onDaySelected: onDaySelected,
-            onRangeSelected: onRangeSelected,
-            onCalendarCreated: (controller) => pageController = controller,
-            onPageChanged: (_focusedDay) => focusedDay.value = _focusedDay,
-            onFormatChanged: (format) {
-              if (calendarFormat != format) {
-                setState(() => calendarFormat = format);
-              }
-            }),
+        Expanded(
+          child: SizedBox(
+            // height: 200,
+            child: TableCalendar<Task>(
+                shouldFillViewport: true,
+                focusedDay: focusedDay.value,
+                firstDay: kFirstDay,
+                lastDay: kLastDay,
+                headerVisible: false,
+                selectedDayPredicate: (day) => selectedDays.contains(day),
+                rangeStartDay: rangeStart,
+                rangeEndDay: rangeEnd,
+                rangeSelectionMode: rangeSelectionMode,
+                calendarFormat: calendarFormat,
+                eventLoader: getEventsForDay,
+                onDaySelected: onDaySelected,
+                onRangeSelected: onRangeSelected,
+                onCalendarCreated: (controller) => pageController = controller,
+                onPageChanged: (_focusedDay) => focusedDay.value = _focusedDay,
+                onFormatChanged: (format) {
+                  if (calendarFormat != format) {
+                    setState(() => calendarFormat = format);
+                  }
+                }),
+          ),
+        ),
         const SizedBox(height: 10),
         Expanded(
             child: ValueListenableBuilder<List<Task>>(
