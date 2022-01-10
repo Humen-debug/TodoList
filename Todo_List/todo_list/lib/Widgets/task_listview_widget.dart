@@ -7,7 +7,6 @@ import 'package:todo_list/Models/task.dart';
 import 'package:todo_list/Models/theme.dart';
 import 'package:todo_list/Screens/Task/update_task_screen.dart';
 import 'package:todo_list/Screens/main_screen.dart';
-import 'package:todo_list/Widgets/sort_button.dart';
 import 'package:todo_list/Widgets/statment_widget.dart';
 
 class TaskListView extends StatefulWidget {
@@ -46,13 +45,13 @@ class _TaskListViewState extends State<TaskListView> {
 
 // need to update the add and remove
   void updateComplete(List<Task> list, int index, bool? flag) {
-    final List dummyList = list;
+    // final List dummyList = list;
     final Task temp = list[index];
-    int completeIndex = list.indexWhere((task) => task.isCompleted == true);
+    // int completeIndex = list.indexWhere((task) => task.isCompleted == true);
     setState(() {
       list[index].isCompleted = flag!;
       if (list[index].isCompleted == true) {
-        if (dummyList != widget.taskMap['Completed']) {
+        if (list != widget.taskMap['Completed']) {
           if (widget.user.taskMap['Completed']! !=
               widget.taskMap['Completed']) {
             widget.taskMap['Completed'].add(temp);
@@ -63,11 +62,13 @@ class _TaskListViewState extends State<TaskListView> {
         // list.remove(temp);
         // list.add(temp);
       } else {
-        if (dummyList != widget.user.taskMap['Completed']!) {
+        if (list != widget.user.taskMap['Completed']!) {
+          print(list);
           widget.user.taskMap['Completed']!.remove(temp);
           widget.taskMap['Completed'].remove(temp);
         } else {
           list.remove(temp);
+          widget.taskMap['Completed']!.remove(temp);
         }
         // list.add(temp);
         // if (completeIndex != -1) {
@@ -140,7 +141,8 @@ class _TaskListViewState extends State<TaskListView> {
               // shape: RoundedRectangleBorder(
               //     borderRadius: BorderRadius.circular(5.0)),
               elevation: 0.0,
-              child: (key != "Completed" || !widget.user.showComplete)
+              child: ((key != "Completed" || widget.user.showComplete) ||
+                      key == MainScreenState.currentList
                   ? (widget.taskMap[key].isNotEmpty)
                       ? Column(
                           children: [
@@ -152,7 +154,8 @@ class _TaskListViewState extends State<TaskListView> {
                                 itemCount: widget.taskMap[key].length,
                                 itemBuilder: (context, lindex) {
                                   final Task item = widget.taskMap[key][lindex];
-                                  return key != "Completed" && item.isCompleted
+                                  return (key != "Completed" &&
+                                          item.isCompleted)
                                       ? const SizedBox.shrink()
                                       : Dismissible(
                                           key: Key(item.title +
@@ -264,7 +267,7 @@ class _TaskListViewState extends State<TaskListView> {
                           ],
                         )
                       : const SizedBox.shrink()
-                  : const SizedBox.shrink());
+                  : const SizedBox.shrink()));
         },
         childCount: widget.taskMap.length,
       ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:todo_list/Models/file_header.dart';
 import 'package:todo_list/Screens/Calender/calender_screen.dart';
-import 'package:todo_list/Screens/Task/task_screen2.dart';
+import 'package:todo_list/Screens/Task/task_screen.dart';
 import 'package:todo_list/Models/user.dart';
 import 'package:todo_list/Models/task.dart';
 
@@ -69,7 +69,10 @@ class MainScreenState extends State<MainScreen> {
     final _pages = [
       TaskScreen(user: user, file: fileHandler),
       Center(child: Text('Home')),
-      CalenderScreen(user: user, file: fileHandler,),
+      CalenderScreen(
+        user: user,
+        file: fileHandler,
+      ),
       Center(child: Text('Person')),
     ];
 

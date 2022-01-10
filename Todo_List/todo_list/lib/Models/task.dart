@@ -13,7 +13,7 @@ class Task {
 
   @override
   String toString() {
-    return "$title: $date, $createdTime,$subtasks";
+    return "$title: $isCompleted";
   }
 
   double get setProgress => subtasks.isNotEmpty
@@ -88,7 +88,6 @@ class Tag {
 int getHashCode(DateTime key) {
   return key.day * 1000000 + key.month * 10000 + key.year;
 }
-
 
 List<DateTime> daysInRange(DateTime first, DateTime last) {
   final dayCount = last.difference(first).inDays + 1;
