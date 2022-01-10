@@ -277,6 +277,31 @@ class TaskScreenState extends State<TaskScreen> {
             ]);
   }
 
+  Widget addTaskField(BuildContext context) {
+    return TextField(
+      controller: taskController,
+      decoration: const InputDecoration(labelText: 'Add Task'),
+      onChanged: (String title) => setState(() => task.title = title),
+      onSubmitted: (String title) {
+        setState(() {
+          task.title = title;
+          createTask();
+        });
+        Navigator.pop(context);
+      },
+    );
+  }
+
+  Widget submitTaskBtn(BuildContext context) {
+    return IconButton(
+      onPressed: () {
+        setState(() => createTask());
+        Navigator.pop(context);
+      },
+      icon: const Icon(Icons.arrow_upward_outlined),
+    );
+  }
+
   void buildTask(BuildContext context) {
     setDefault();
     showModalBottomSheet(
@@ -291,33 +316,8 @@ class TaskScreenState extends State<TaskScreen> {
                 Flex(
                   direction: Axis.horizontal,
                   children: <Widget>[
-                    Expanded(
-                      flex: 6,
-                      child: TextField(
-                        controller: taskController,
-                        decoration:
-                            const InputDecoration(labelText: 'Add Task'),
-                        onChanged: (String title) =>
-                            setState(() => task.title = title),
-                        onSubmitted: (String title) {
-                          setState(() {
-                            task.title = title;
-                            createTask();
-                          });
-                          Navigator.pop(context);
-                        },
-                      ),
-                    ),
-                    Expanded(
-                      flex: 1,
-                      child: IconButton(
-                        onPressed: () {
-                          setState(() => createTask());
-                          Navigator.pop(context);
-                        },
-                        icon: const Icon(Icons.arrow_upward_outlined),
-                      ),
-                    )
+                    Expanded(flex: 6, child: addTaskField(context)),
+                    Expanded(flex: 1, child: submitTaskBtn(context))
                   ],
                 ),
                 Flex(direction: Axis.horizontal, children: <Widget>[

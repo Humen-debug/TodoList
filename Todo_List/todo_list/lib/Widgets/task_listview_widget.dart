@@ -179,24 +179,26 @@ class _TaskListViewState extends State<TaskListView> {
                                               item.createdTime.toString()),
                                           onDismissed: (direction) {
                                             int? pos = dismissedIndex(item);
-                                            setState(() {
-                                              widget.taskMap[key]!
-                                                  .removeAt(lindex);
+                                            if (pos != null) {
+                                              setState(() {
+                                                widget.taskMap[key]!
+                                                    .removeAt(lindex);
 
-                                              widget
-                                                  .user
-                                                  .taskMap[MainScreenState
-                                                      .currentList]!
-                                                  .removeAt(pos!);
+                                                widget
+                                                    .user
+                                                    .taskMap[MainScreenState
+                                                        .currentList]!
+                                                    .removeAt(pos);
 
-                                              widget.file.updateUser(
-                                                  id: widget.user.id,
-                                                  updatedUser: widget.user);
-                                            });
-                                            ScaffoldMessenger.of(context)
-                                                .showSnackBar(SnackBar(
-                                                    content: Text(
-                                                        '${item.title} dismissed')));
+                                                widget.file.updateUser(
+                                                    id: widget.user.id,
+                                                    updatedUser: widget.user);
+                                              });
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(SnackBar(
+                                                      content: Text(
+                                                          '${item.title} dismissed')));
+                                            }
                                           },
                                           background:
                                               const Card(color: Colors.red),
@@ -272,8 +274,7 @@ class _TaskListViewState extends State<TaskListView> {
                                                               .subtasks
                                                               .length,
                                                         )
-                                                      : const SizedBox(
-                                                          height: 0)
+                                                      : const SizedBox.shrink()
                                                 ],
                                               ),
                                             ],
