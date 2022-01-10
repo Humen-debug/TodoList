@@ -52,6 +52,13 @@ class TaskScreenState extends State<TaskScreen> {
           setDateMap(v);
         }
       }
+      // if (dateTimeMap["Completed"]!.isNotEmpty) {
+      //   for (var v in dateTimeMap["Completed"]!) {
+      //     if (!widget.user.taskMap["Completed"]!.contains(v)) {
+      //       widget.user.taskMap["Completed"]!.add(v);
+      //     }
+      //   }
+      // }
     });
     // print("${appBarTitle}: ${widget.user.taskMap[appBarTitle]}");
     // print(taskMap);

@@ -22,6 +22,10 @@ class TaskListView extends StatefulWidget {
 }
 
 class _TaskListViewState extends State<TaskListView> {
+  void setCompleted_num() {
+    int count = 0;
+  }
+
   void _onReorder(int oldIndex, int newIndex) {
     setState(() {
       if (newIndex > oldIndex) {
@@ -45,7 +49,6 @@ class _TaskListViewState extends State<TaskListView> {
 
 // need to update the add and remove
   void updateComplete(List<Task> list, int index, bool? flag) {
-    // final List dummyList = list;
     final Task temp = list[index];
     // int completeIndex = list.indexWhere((task) => task.isCompleted == true);
     setState(() {
@@ -58,25 +61,22 @@ class _TaskListViewState extends State<TaskListView> {
           }
           widget.user.taskMap['Completed']!.add(temp);
         }
-
-        // list.remove(temp);
-        // list.add(temp);
       } else {
         if (list != widget.user.taskMap['Completed']!) {
-          print(list);
           widget.user.taskMap['Completed']!.remove(temp);
           widget.taskMap['Completed'].remove(temp);
         } else {
           list.remove(temp);
           widget.taskMap['Completed']!.remove(temp);
         }
-        // list.add(temp);
-        // if (completeIndex != -1) {
-        //   list.insert(completeIndex, temp);
-        // } else {
-        //   list.add(temp);
-        //   // widget.user.taskMap[MainScreenState.currentList]!.add(temp);
-        // }
+        for (List v in widget.user.taskMap.values) {
+          for (Task task in v) {
+            if (temp.title == task.title &&
+                temp.createdTime == task.createdTime) {
+              task.isCompleted = !task.isCompleted;
+            }
+          }
+        }
       }
 
       widget.file.updateUser(id: widget.user.id, updatedUser: widget.user);
@@ -137,14 +137,21 @@ class _TaskListViewState extends State<TaskListView> {
       delegate: SliverChildBuilderDelegate(
         (context, index) {
           String key = keys[index];
+          int count = widget.taskMap[key]
+              .where((e) => e.isCompleted == true)
+              .toList()
+              .length;
           return Card(
               // shape: RoundedRectangleBorder(
               //     borderRadius: BorderRadius.circular(5.0)),
               elevation: 0.0,
               child: ((key != "Completed" || widget.user.showComplete) ||
                       key == MainScreenState.currentList
-                  ? (widget.taskMap[key].isNotEmpty)
-                      ? Column(
+                  ? (widget.taskMap[key].isEmpty ||
+                          count == widget.taskMap[key].length &&
+                              key != "Completed")
+                      ? const SizedBox.shrink()
+                      : Column(
                           children: [
                             Text(key),
                             ListView.builder(
@@ -266,7 +273,6 @@ class _TaskListViewState extends State<TaskListView> {
                                 }),
                           ],
                         )
-                      : const SizedBox.shrink()
                   : const SizedBox.shrink()));
         },
         childCount: widget.taskMap.length,

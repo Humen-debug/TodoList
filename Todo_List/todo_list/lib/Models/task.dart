@@ -66,20 +66,6 @@ class Task {
   }
 }
 
-// final Set<Task> taskSet = {};
-// Future<void> writeTask(Task task, List<Task> taskList) async {
-//   taskSet.add(task);
-//   taskList = taskSet.toList();
-// }
-
-// Future<void> updateTask(
-//     {required Task oldTask,
-//     required Task updatedTask,
-//     required List<Task> taskList}) async {
-//   taskSet.remove(oldTask);
-//   await writeTask(updatedTask, taskList);
-// }
-
 class Tag {
   String name;
   Tag({required this.name});

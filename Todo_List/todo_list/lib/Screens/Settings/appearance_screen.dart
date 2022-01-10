@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:todo_list/Models/theme.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_switch/flutter_switch.dart';
@@ -72,6 +73,10 @@ class _AppearanceScreenState extends State<AppearanceScreen> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(18.0),
                     ),
+                    splashFactory: InkRipple.splashFactory,
+                    side: index == themeKey
+                        ? const BorderSide(width: 3, color: Colors.white54)
+                        : BorderSide.none,
                     primary: _baseColors[index],
                     elevation: 0.5),
               );
