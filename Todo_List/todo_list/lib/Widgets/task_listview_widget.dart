@@ -43,34 +43,20 @@ class _TaskListViewState extends State<TaskListView> {
     return pos;
   }
 
-// TODO: need to update the add and remove
   void updateComplete(List<Task> list, int index, bool? flag) {
     final Task temp = list[index];
     setState(() {
       list[index].isCompleted = flag!;
       if (list[index].isCompleted == true) {
-        if (list != widget.taskMap['Completed']) {
-          if (widget.user.taskMap['Completed']! !=
-              widget.taskMap['Completed']) {
-            widget.taskMap['Completed'].add(temp);
-          }
-          widget.user.taskMap['Completed']!.add(temp);
+        widget.user.taskMap['Completed']!.add(temp);
+        // update taskMap immediately
+        if (widget.user.taskMap['Completed'] != widget.taskMap['Completed']) {
+          widget.taskMap['Completed'].add(temp);
         }
       } else {
-        if (list != widget.user.taskMap['Completed']!) {
-          widget.user.taskMap['Completed']!.remove(temp);
+        widget.user.taskMap['Completed']!.remove(temp);
+        if (widget.user.taskMap['Completed'] != widget.taskMap['Completed']) {
           widget.taskMap['Completed'].remove(temp);
-        } else {
-          list.remove(temp);
-          widget.taskMap['Completed']!.remove(temp);
-        }
-        for (List v in widget.user.taskMap.values) {
-          for (Task task in v) {
-            if (temp.title == task.title &&
-                temp.createdTime == task.createdTime) {
-              task.isCompleted = !task.isCompleted;
-            }
-          }
         }
       }
 
