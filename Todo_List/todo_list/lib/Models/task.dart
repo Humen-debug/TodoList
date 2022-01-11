@@ -1,6 +1,3 @@
-import 'dart:collection';
-import 'package:table_calendar/table_calendar.dart';
-
 class Task {
   int? id;
   bool isCompleted;
@@ -49,10 +46,6 @@ class Task {
     }
 
     return deadline;
-  }
-
-  set setRepeatChoice(int choice) {
-    repeatChoice = choice;
   }
 
   Task({

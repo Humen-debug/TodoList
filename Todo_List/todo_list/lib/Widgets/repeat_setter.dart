@@ -22,6 +22,8 @@ class _RepeatSetterState extends State<RepeatSetter> {
   Future<void> handleRadioValue(value) async {
     setState(() {
       widget.task.repeatChoice = value;
+      // need to pop up dialog for choosing custom
+      if (value == repeatTitle.length - 1) {}
       // might need to update task repeat here
       // so that repeatChoice can be set to -1 again
     });
@@ -32,22 +34,20 @@ class _RepeatSetterState extends State<RepeatSetter> {
     // WHY WE NEED STATEFULBUILDER HERE???
     return StatefulBuilder(builder: (context, StateSetter setState) {
       return Dialog(
-        insetPadding: EdgeInsets.zero,
-        // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         elevation: 16,
-        child: Container(
-          child: ListView.builder(
-              shrinkWrap: true,
-              itemCount: repeatTitle.length,
-              itemBuilder: (context, index) {
-                return RadioListTile(
-                  title: repeatTitle[index],
-                  value: index,
-                  groupValue: widget.task.repeatChoice,
-                  onChanged: handleRadioValue,
-                );
-              }),
-        ),
+        child: ListView.builder(
+            physics: const NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            itemCount: repeatTitle.length,
+            itemBuilder: (context, index) {
+              return RadioListTile(
+                title: repeatTitle[index],
+                value: index,
+                groupValue: widget.task.repeatChoice,
+                onChanged: handleRadioValue,
+              );
+            }),
       );
     });
   }

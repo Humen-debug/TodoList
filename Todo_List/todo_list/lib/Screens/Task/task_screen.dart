@@ -25,7 +25,6 @@ class TaskScreen extends StatefulWidget {
 class TaskScreenState extends State<TaskScreen> {
   final appBarTitle = MainScreenState.currentList;
   late Task task;
-  int repeatChoice = -1;
 
   Map<String, List<Task>> dateTimeMap = {
     "Pinned": [],
@@ -372,10 +371,7 @@ class TaskScreenState extends State<TaskScreen> {
                 builder: (context) => IconButton(
                     onPressed: () => Scaffold.of(context).openDrawer(),
                     icon: const Icon(Icons.menu))),
-            actions: <Widget>[
-              sortButton(),
-              menuButton(),
-            ],
+            actions: <Widget>[sortButton(), menuButton()],
           ),
           TaskListView(
               taskMap: selectMap(), user: widget.user, file: widget.file)
