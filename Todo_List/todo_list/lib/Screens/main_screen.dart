@@ -23,6 +23,7 @@ class MainScreenState extends State<MainScreen> {
       taskMap: <String, List<Task>>{'All': [], 'Inbox': [], 'Completed': []});
   late List<User> users = [];
 
+  @override
   void initState() {
     // fileHandler.deleteUser(user);
 

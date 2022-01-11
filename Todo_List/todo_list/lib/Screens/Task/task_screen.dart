@@ -135,7 +135,7 @@ class TaskScreenState extends State<TaskScreen> {
           time: "",
           createdTime: DateTime.now(),
           status: "",
-          deadline: "No Deadline",
+          // deadline: "No Deadline",
           subtasks: [],
         ));
   }
@@ -152,7 +152,7 @@ class TaskScreenState extends State<TaskScreen> {
       time: task.time,
       createdTime: task.createdTime,
       status: task.status,
-      deadline: task.deadline,
+      // deadline: task.deadline,
       subtasks: task.subtasks,
     );
     setDefault(); // release task value for next user's input
@@ -322,13 +322,11 @@ class TaskScreenState extends State<TaskScreen> {
                 ),
                 Flex(direction: Axis.horizontal, children: <Widget>[
                   Expanded(
-                    flex: 1,
-                    child: TimePickerWidget(task: task, type: "Date"),
-                  ),
+                      flex: 1,
+                      child: TimePickerWidget(task: task, type: "Date")),
                   Expanded(
-                    flex: 1,
-                    child: TimePickerWidget(task: task, type: 'Time'),
-                  ),
+                      flex: 1,
+                      child: TimePickerWidget(task: task, type: 'Time')),
                   Expanded(
                       flex: 1,
                       child: TextButton.icon(

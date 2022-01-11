@@ -8,11 +8,11 @@ class StatementWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Widget deadlineText() {
-      Text deadline_text = Text(task.deadline);
-      if (task.deadline.contains('late') ||
-          task.deadline.contains('hrs left')) {
+      Text deadline_text = Text(task.setDeadline);
+      if (task.setDeadline.contains('late') ||
+          task.setDeadline.contains('hrs left')) {
         deadline_text = Text(
-          task.deadline,
+          task.setDeadline,
           style: const TextStyle(color: Colors.red),
         );
       }
@@ -25,7 +25,7 @@ class StatementWidget extends StatelessWidget {
         margin: const EdgeInsets.only(left: 68),
         child: Row(
           children: <Widget>[
-            task.deadline != 'No Deadline'
+            task.setDeadline != 'none'
                 ? deadlineText()
                 : const SizedBox.shrink(),
             task.subtasks.isNotEmpty

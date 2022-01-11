@@ -10,7 +10,7 @@ void setDefault(StateSetter setState, Task task) {
         time: "",
         createdTime: DateTime.now(),
         status: "",
-        deadline: "No Deadline",
+        // deadline: "No Deadline",
         subtasks: [],
       ));
 }

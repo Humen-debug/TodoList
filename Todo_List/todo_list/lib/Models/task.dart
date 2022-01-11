@@ -5,7 +5,8 @@ class Task {
   int? id;
   bool isCompleted;
   bool isExpand;
-  String title, time, status, deadline;
+  String title, time, status;
+
   DateTime? date;
   DateTime createdTime;
   List<Task> subtasks;
@@ -21,6 +22,30 @@ class Task {
           subtasks.length
       : 0;
 
+  String get setDeadline {
+    String deadline = "none";
+    var diff = (date)?.difference(DateTime.now()).inDays ?? 0;
+    if (diff > 0) {
+      if (diff == 1) {
+        deadline = 'Due Tomorrow';
+      } else {
+        deadline = '${date!.day}/${date!.month}/${date!.year}: $diff days left';
+      }
+    } else if (diff == 0) {
+      var diffHour = (date!).difference(DateTime.now()).inHours;
+      if (diffHour >= 0) {
+        deadline = '$diffHour hrs left';
+      } else {
+        diffHour = -diffHour;
+        deadline = '$diffHour hrs late';
+      }
+    } else {
+      diff = -diff;
+      deadline = '${date!.day}/${date!.month}/${date!.year}: $diff days late';
+    }
+    return deadline;
+  }
+
   Task({
     int? id,
     required this.title,
@@ -29,7 +54,7 @@ class Task {
     required this.time,
     required this.createdTime,
     required this.status,
-    required this.deadline,
+    // required this.deadline,
     required this.subtasks,
     required this.isExpand,
   });
@@ -43,7 +68,7 @@ class Task {
         time: map['time'],
         createdTime: DateTime.parse(map['createdTime']),
         status: map['status'],
-        deadline: map['deadline'],
+        // deadline: map['deadline'],
         subtasks: map['subtasks'] != null
             ? map['subtasks'].map<Task>((s) => Task.fromJson(s)).toList()
             : []);
@@ -59,7 +84,7 @@ class Task {
       'time': time,
       'createdTime': createdTime.toIso8601String(),
       'status': status,
-      'deadline': deadline,
+      // 'deadline': deadline,
       'subtasks': subtasks,
       'isExpand': isExpand,
     };

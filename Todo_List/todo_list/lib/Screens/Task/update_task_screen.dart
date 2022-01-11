@@ -37,7 +37,7 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
           time: "",
           createdTime: DateTime.now(),
           status: "",
-          deadline: "No Dealine",
+          // deadline: "No Dealine",
           subtasks: [],
         ));
   }
@@ -52,7 +52,7 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
       time: subtask.time,
       createdTime: subtask.createdTime,
       status: subtask.status,
-      deadline: subtask.deadline,
+      // deadline: subtask.deadline,
       subtasks: subtask.subtasks,
     );
     setDefault();
@@ -182,12 +182,12 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
                 left: 48,
                 child: TextButton(
                     onPressed: () {},
-                    child: widget.task.deadline == "No Deadline"
+                    child: widget.task.setDeadline == "none"
                         ? const Text(
                             "Date",
                             style: TextStyle(fontWeight: FontWeight.w700),
                           )
-                        : Text(widget.task.deadline,
+                        : Text(widget.task.setDeadline,
                             style:
                                 const TextStyle(fontWeight: FontWeight.w700))),
               ),

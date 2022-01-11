@@ -20,7 +20,7 @@ class _TimePickerWidgetState extends State<TimePickerWidget> {
     if (date == null) return;
     setState(() {
       widget.task.date = date;
-      updateDeadline();
+      // updateDeadline();
     });
   }
 
@@ -36,33 +36,8 @@ class _TimePickerWidgetState extends State<TimePickerWidget> {
           time.hour,
           time.minute);
       widget.task.time = '$hours:$minutes';
-      updateDeadline();
+      // updateDeadline();
     });
-  }
-
-  void updateDeadline() {
-    var diff = (widget.task.date)?.difference(DateTime.now()).inDays ?? 0;
-
-    if (diff > 0) {
-      if (diff == 1) {
-        widget.task.deadline = 'Due Tomorrow';
-      } else {
-        widget.task.deadline =
-            '${widget.task.date!.day}/${widget.task.date!.month}/${widget.task.date!.year}: $diff days left';
-      }
-    } else if (diff == 0) {
-      var diffHour = (widget.task.date!).difference(DateTime.now()).inHours;
-      if (diffHour >= 0) {
-        widget.task.deadline = '$diffHour hrs left';
-      } else {
-        diffHour = -diffHour;
-        widget.task.deadline = '$diffHour hrs late';
-      }
-    } else {
-      diff = -diff;
-      widget.task.deadline =
-          '${widget.task.date!.day}/${widget.task.date!.month}/${widget.task.date!.year}: $diff days late';
-    }
   }
 
   static const icons = <String, IconData>{
@@ -84,9 +59,7 @@ class _TimePickerWidgetState extends State<TimePickerWidget> {
                         lastDate: DateTime(DateTime.now().year + 5),
                         currentDate: DateTime.now())
                     .then((date) {
-                  // print('date: $date');
                   updateDate(date);
-                  // print('task.date: $widget.task.date');
                 });
               }
               break;
