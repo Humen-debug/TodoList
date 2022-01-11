@@ -135,7 +135,6 @@ class TaskScreenState extends State<TaskScreen> {
           time: "",
           createdTime: DateTime.now(),
           status: "",
-          // deadline: "No Deadline",
           subtasks: [],
         ));
   }
@@ -152,7 +151,6 @@ class TaskScreenState extends State<TaskScreen> {
       time: task.time,
       createdTime: task.createdTime,
       status: task.status,
-      // deadline: task.deadline,
       subtasks: task.subtasks,
     );
     setDefault(); // release task value for next user's input

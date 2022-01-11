@@ -6,7 +6,6 @@ class Task {
   bool isCompleted;
   bool isExpand;
   String title, time, status;
-
   DateTime? date;
   DateTime createdTime;
   List<Task> subtasks;
@@ -24,25 +23,29 @@ class Task {
 
   String get setDeadline {
     String deadline = "none";
-    var diff = (date)?.difference(DateTime.now()).inDays ?? 0;
-    if (diff > 0) {
-      if (diff == 1) {
-        deadline = 'Due Tomorrow';
+    if (date != null) {
+      var diff = (date)?.difference(DateTime.now()).inDays ?? 0;
+      if (diff > 0) {
+        if (diff == 1) {
+          deadline = 'Due Tomorrow';
+        } else {
+          deadline =
+              '${date!.day}/${date!.month}/${date!.year}: $diff days left';
+        }
+      } else if (diff == 0) {
+        var diffHour = (date!).difference(DateTime.now()).inHours;
+        if (diffHour >= 0) {
+          deadline = '$diffHour hrs left';
+        } else {
+          diffHour = -diffHour;
+          deadline = '$diffHour hrs late';
+        }
       } else {
-        deadline = '${date!.day}/${date!.month}/${date!.year}: $diff days left';
+        diff = -diff;
+        deadline = '${date!.day}/${date!.month}/${date!.year}: $diff days late';
       }
-    } else if (diff == 0) {
-      var diffHour = (date!).difference(DateTime.now()).inHours;
-      if (diffHour >= 0) {
-        deadline = '$diffHour hrs left';
-      } else {
-        diffHour = -diffHour;
-        deadline = '$diffHour hrs late';
-      }
-    } else {
-      diff = -diff;
-      deadline = '${date!.day}/${date!.month}/${date!.year}: $diff days late';
     }
+
     return deadline;
   }
 
@@ -54,7 +57,6 @@ class Task {
     required this.time,
     required this.createdTime,
     required this.status,
-    // required this.deadline,
     required this.subtasks,
     required this.isExpand,
   });
@@ -84,7 +86,6 @@ class Task {
       'time': time,
       'createdTime': createdTime.toIso8601String(),
       'status': status,
-      // 'deadline': deadline,
       'subtasks': subtasks,
       'isExpand': isExpand,
     };

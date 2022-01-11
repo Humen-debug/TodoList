@@ -37,7 +37,6 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
           time: "",
           createdTime: DateTime.now(),
           status: "",
-          // deadline: "No Dealine",
           subtasks: [],
         ));
   }
@@ -52,7 +51,6 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
       time: subtask.time,
       createdTime: subtask.createdTime,
       status: subtask.status,
-      // deadline: subtask.deadline,
       subtasks: subtask.subtasks,
     );
     setDefault();
