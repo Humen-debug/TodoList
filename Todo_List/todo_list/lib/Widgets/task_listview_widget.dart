@@ -141,11 +141,14 @@ class _TaskListViewState extends State<TaskListView> {
                               alignment: Alignment.center,
                               child: Row(
                                 children: [
-                                  Text(
-                                    key.toUpperCase(),
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.w700,
-                                        fontSize: 16),
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 32),
+                                    child: Text(
+                                      key.toUpperCase(),
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 16),
+                                    ),
                                   ),
                                 ],
                               ),

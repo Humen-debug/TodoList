@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class TimePickerWidget extends StatefulWidget {
   Task task;
   String type;
-  // Text deadline;
+
   TimePickerWidget({
     Key? key,
     required this.task,
@@ -20,7 +20,6 @@ class _TimePickerWidgetState extends State<TimePickerWidget> {
     if (date == null) return;
     setState(() {
       widget.task.date = date;
-      // updateDeadline();
     });
   }
 
@@ -36,7 +35,6 @@ class _TimePickerWidgetState extends State<TimePickerWidget> {
           time.hour,
           time.minute);
       widget.task.time = '$hours:$minutes';
-      // updateDeadline();
     });
   }
 

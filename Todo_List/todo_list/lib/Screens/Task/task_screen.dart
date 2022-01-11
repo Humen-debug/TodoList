@@ -8,6 +8,7 @@ import 'package:todo_list/Models/theme.dart';
 import 'package:todo_list/Models/user.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_list/Screens/main_screen.dart';
+import 'package:todo_list/Widgets/repeat_setter.dart';
 
 import 'package:todo_list/Widgets/task_listview_widget.dart';
 import 'package:todo_list/Widgets/time_picker_widget.dart';
@@ -24,6 +25,7 @@ class TaskScreen extends StatefulWidget {
 class TaskScreenState extends State<TaskScreen> {
   final appBarTitle = MainScreenState.currentList;
   late Task task;
+  int repeatChoice = -1;
 
   Map<String, List<Task>> dateTimeMap = {
     "Pinned": [],
@@ -329,7 +331,9 @@ class TaskScreenState extends State<TaskScreen> {
                       flex: 1,
                       child: TextButton.icon(
                           // add daily / weekly / monthly options
-                          onPressed: () {},
+                          onPressed: () => showDialog(
+                              context: context,
+                              builder: (context) => RepeatSetter(task: task)),
                           icon: const Icon(Icons.repeat_rounded),
                           label: const Text('Repeat'))),
                 ])

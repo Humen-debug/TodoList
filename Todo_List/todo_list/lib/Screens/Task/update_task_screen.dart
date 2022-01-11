@@ -3,7 +3,6 @@ import 'package:todo_list/Models/task.dart';
 import 'package:todo_list/Models/user.dart';
 import 'package:todo_list/Models/file_header.dart';
 import 'package:todo_list/Screens/main_screen.dart';
-import 'package:todo_list/Widgets/task_list_tile.dart';
 import 'package:todo_list/Widgets/time_picker_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_list/Models/theme.dart';
@@ -168,7 +167,7 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
             alignment: Alignment.centerLeft,
             children: [
               LinearProgressIndicator(
-                value: widget.task.setProgress,
+                value: widget.task.getProgress,
                 minHeight: 50,
                 valueColor: AlwaysStoppedAnimation<Color>(themeProvider.islight
                     ? Colors.grey.shade300
@@ -180,12 +179,12 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
                 left: 48,
                 child: TextButton(
                     onPressed: () {},
-                    child: widget.task.setDeadline == "none"
+                    child: widget.task.getDeadline == "none"
                         ? const Text(
                             "Date",
                             style: TextStyle(fontWeight: FontWeight.w700),
                           )
-                        : Text(widget.task.setDeadline,
+                        : Text(widget.task.getDeadline,
                             style:
                                 const TextStyle(fontWeight: FontWeight.w700))),
               ),
@@ -193,40 +192,43 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
           ),
           Column(
             children: [
-              TextFormField(
-                initialValue: widget.task.title,
-                decoration: const InputDecoration(
-                  border: InputBorder.none,
-                ),
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-                onChanged: (String title) => setState(() {
-                  if (title != "") {
-                    widget.task.title = title;
-                    widget.file.updateUser(
-                        id: widget.user.id, updatedUser: widget.user);
-                  }
-                }),
-                onFieldSubmitted: (String title) => setState(() {
-                  widget.task.title = title;
-                  widget.file
-                      .updateUser(id: widget.user.id, updatedUser: widget.user);
-                }),
-              ),
-              TextFormField(
-                maxLines: null,
-                minLines: null,
-                initialValue: widget.task.status,
-                decoration: const InputDecoration(
-                    border: InputBorder.none, hintText: "Description"),
-                onChanged: (String descript) => setState(() {
-                  widget.task.status = descript;
-                  widget.file
-                      .updateUser(id: widget.user.id, updatedUser: widget.user);
-                }),
-              ),
+              Padding(
+                  padding: const EdgeInsets.only(left: 14, right: 14),
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        initialValue: widget.task.title,
+                        decoration:
+                            const InputDecoration(border: InputBorder.none),
+                        style: const TextStyle(
+                            fontSize: 24, fontWeight: FontWeight.bold),
+                        onChanged: (String title) => setState(() {
+                          if (title != "") {
+                            widget.task.title = title;
+                            widget.file.updateUser(
+                                id: widget.user.id, updatedUser: widget.user);
+                          }
+                        }),
+                        onFieldSubmitted: (String title) => setState(() {
+                          widget.task.title = title;
+                          widget.file.updateUser(
+                              id: widget.user.id, updatedUser: widget.user);
+                        }),
+                      ),
+                      TextFormField(
+                        maxLines: null,
+                        minLines: null,
+                        initialValue: widget.task.status,
+                        decoration: const InputDecoration(
+                            border: InputBorder.none, hintText: "Description"),
+                        onChanged: (String descript) => setState(() {
+                          widget.task.status = descript;
+                          widget.file.updateUser(
+                              id: widget.user.id, updatedUser: widget.user);
+                        }),
+                      ),
+                    ],
+                  )),
               SizedBox(
                 height: MediaQuery.of(context).size.height,
                 child: ListView.builder(

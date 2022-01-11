@@ -11,17 +11,19 @@ class Task {
   List<Task> subtasks;
   List<Tag>? tags;
 
+  int repeatChoice = -1;
+
   @override
   String toString() {
     return "$title: $isCompleted";
   }
 
-  double get setProgress => subtasks.isNotEmpty
+  double get getProgress => subtasks.isNotEmpty
       ? subtasks.where((s) => s.isCompleted == true).toList().length /
           subtasks.length
       : 0;
 
-  String get setDeadline {
+  String get getDeadline {
     String deadline = "none";
     if (date != null) {
       var diff = (date)?.difference(DateTime.now()).inDays ?? 0;
@@ -47,6 +49,10 @@ class Task {
     }
 
     return deadline;
+  }
+
+  set setRepeatChoice(int choice) {
+    repeatChoice = choice;
   }
 
   Task({
