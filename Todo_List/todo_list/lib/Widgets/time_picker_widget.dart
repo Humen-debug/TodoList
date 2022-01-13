@@ -16,6 +16,8 @@ class TimePickerWidget extends StatefulWidget {
 }
 
 class _TimePickerWidgetState extends State<TimePickerWidget> {
+  final textStyle = const TextStyle(color: Colors.grey, fontSize: 16);
+
   void updateDate(date) {
     if (date == null) return;
     setState(() {
@@ -38,55 +40,47 @@ class _TimePickerWidgetState extends State<TimePickerWidget> {
     });
   }
 
-  static const icons = <String, IconData>{
-    "Date": (Icons.event),
-    "Time": (Icons.alarm),
-  };
-
   @override
   Widget build(BuildContext context) {
-    return TextButton.icon(
-        onPressed: () async {
-          switch (widget.type) {
-            case 'Date':
-              {
-                final initialDate = DateTime.now();
-
-                await showDatePicker(
-                        context: context,
-                        initialDate: initialDate,
-                        firstDate: DateTime(DateTime.now().year - 5),
-                        lastDate: DateTime(DateTime.now().year + 5),
-                        currentDate: DateTime.now())
-                    .then((date) {
-                  updateDate(date);
-                });
-              }
-              break;
-            case 'Time':
-              {
-                const initialTime = TimeOfDay(hour: 8, minute: 0);
-                await showTimePicker(
-                  context: context,
-                  initialTime: initialTime,
-                ).then((time) {
-                  updateTime(time);
-                });
-              }
-              break;
-          }
-        },
-        icon: Icon(icons[widget.type]),
-        label: widget.type == 'Time'
-            ? widget.task.time == ""
-                ? const Text("Select Time",
-                    style: TextStyle(color: Colors.grey))
-                : Text(widget.task.time)
-            : widget.task.date == null
-                ? const Text("Select Date",
-                    style: TextStyle(color: Colors.grey))
-                : Text(
-                    '${widget.task.date!.day}/${widget.task.date!.month}/${widget.task.date!.year}',
-                    style: const TextStyle(color: Colors.grey)));
+    return TextButton(
+      child: widget.type == 'Time'
+          ? widget.task.time == ""
+              ? Text("Time", style: textStyle)
+              : Text(widget.task.time, style: textStyle)
+          : widget.task.date == null
+              ? Text("Selected Date", style: textStyle)
+              : Text(
+                  '${widget.task.date!.day}/${widget.task.date!.month}/${widget.task.date!.year}',
+                  style: textStyle),
+      onPressed: () async {
+        switch (widget.type) {
+          case 'Date':
+            {
+              final initialDate = DateTime.now();
+              await showDatePicker(
+                      context: context,
+                      initialDate: initialDate,
+                      firstDate: DateTime(DateTime.now().year - 5),
+                      lastDate: DateTime(DateTime.now().year + 5),
+                      currentDate: DateTime.now())
+                  .then((date) {
+                updateDate(date);
+              });
+            }
+            break;
+          case 'Time':
+            {
+              const initialTime = TimeOfDay(hour: 8, minute: 0);
+              await showTimePicker(
+                context: context,
+                initialTime: initialTime,
+              ).then((time) {
+                updateTime(time);
+              });
+            }
+            break;
+        }
+      },
+    );
   }
 }

@@ -244,10 +244,8 @@ class _TaskListViewState extends State<TaskListView> {
                                                           physics:
                                                               const NeverScrollableScrollPhysics(),
                                                           shrinkWrap: true,
-                                                          itemBuilder:
-                                                              (BuildContext
-                                                                      context,
-                                                                  int num) {
+                                                          itemBuilder: (context,
+                                                              int num) {
                                                             return TextButton(
                                                               onPressed: () {},
                                                               child: SizedBox(

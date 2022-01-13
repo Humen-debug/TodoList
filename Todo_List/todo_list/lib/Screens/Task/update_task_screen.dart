@@ -3,6 +3,7 @@ import 'package:todo_list/Models/task.dart';
 import 'package:todo_list/Models/user.dart';
 import 'package:todo_list/Models/file_header.dart';
 import 'package:todo_list/Screens/main_screen.dart';
+import 'package:todo_list/Widgets/buildTaskSheet.dart';
 import 'package:todo_list/Widgets/time_picker_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_list/Models/theme.dart';
@@ -33,6 +34,7 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
           date: null,
           isCompleted: false,
           isExpand: false,
+          isAllDay: true,
           time: "",
           createdTime: DateTime.now(),
           status: "",
@@ -47,6 +49,7 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
       date: subtask.date,
       isCompleted: false,
       isExpand: false,
+      isAllDay: true,
       time: subtask.time,
       createdTime: subtask.createdTime,
       status: subtask.status,
@@ -78,72 +81,9 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
     setDefault();
     showModalBottomSheet(
         context: context,
-        builder: (BuildContext bottomContext) {
-          return StatefulBuilder(builder: (context, state) {
-            return Padding(
-              padding: EdgeInsets.only(
-                  bottom: MediaQuery.of(context).viewInsets.bottom),
-              child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-                Flex(
-                  direction: Axis.horizontal,
-                  children: <Widget>[
-                    Expanded(
-                      flex: 6,
-                      child: TextField(
-                        controller: taskController,
-                        decoration: const InputDecoration(
-                          labelText: 'Add Task',
-                        ),
-                        onChanged: (String title) {
-                          setState(() {
-                            subtask.title = title;
-                          });
-                        },
-                        onSubmitted: (String title) {
-                          setState(() {
-                            subtask.title = title;
-                            createTask();
-                          });
-                          Navigator.pop(context);
-                        },
-                      ),
-                    ),
-                    Expanded(
-                      flex: 1,
-                      child: IconButton(
-                        onPressed: () {
-                          setState(() => createTask());
-                          Navigator.pop(context);
-                        },
-                        icon: const Icon(Icons.arrow_upward_outlined),
-                      ),
-                    )
-                  ],
-                ),
-                Flex(direction: Axis.horizontal, children: <Widget>[
-                  Expanded(
-                      flex: 1,
-                      child: TimePickerWidget(
-                        task: subtask,
-                        type: 'Date',
-                      )),
-                  Expanded(
-                      flex: 1,
-                      child: TimePickerWidget(
-                        task: subtask,
-                        type: 'Time',
-                      )),
-                  Expanded(
-                      flex: 1,
-                      child: TextButton.icon(
-                          // add daily / weekly / monthly options
-                          onPressed: () {},
-                          icon: const Icon(Icons.repeat_rounded),
-                          label: const Text('Repeat'))),
-                ])
-              ]),
-            );
-          });
+        builder: (context) {
+          return BuildTaskSheet(
+              context: context, task: subtask, createTask: createTask);
         });
   }
 

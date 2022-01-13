@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:todo_list/Models/file_header.dart';
 import 'package:todo_list/Models/task.dart';
+import 'package:todo_list/Widgets/buildTaskSheet.dart';
 
 import 'package:todo_list/Widgets/drawer.dart';
 import 'package:todo_list/Models/theme.dart';
@@ -12,6 +13,8 @@ import 'package:todo_list/Widgets/repeat_setter.dart';
 
 import 'package:todo_list/Widgets/task_listview_widget.dart';
 import 'package:todo_list/Widgets/time_picker_widget.dart';
+
+import 'package:flutter_switch/flutter_switch.dart';
 
 class TaskScreen extends StatefulWidget {
   User user;
@@ -133,6 +136,7 @@ class TaskScreenState extends State<TaskScreen> {
           date: null,
           isCompleted: false,
           isExpand: false,
+          isAllDay: true,
           time: "",
           createdTime: DateTime.now(),
           status: "",
@@ -149,6 +153,7 @@ class TaskScreenState extends State<TaskScreen> {
       date: task.date,
       isCompleted: false,
       isExpand: false,
+      isAllDay: true,
       time: task.time,
       createdTime: task.createdTime,
       status: task.status,
@@ -276,69 +281,14 @@ class TaskScreenState extends State<TaskScreen> {
             ]);
   }
 
-  Widget addTaskField(BuildContext context) {
-    return TextField(
-      controller: taskController,
-      decoration: const InputDecoration(labelText: 'Add Task'),
-      onChanged: (String title) => setState(() => task.title = title),
-      onSubmitted: (String title) {
-        setState(() {
-          task.title = title;
-          createTask();
-        });
-        Navigator.pop(context);
-      },
-    );
-  }
-
-  Widget submitTaskBtn(BuildContext context) {
-    return IconButton(
-      onPressed: () {
-        setState(() => createTask());
-        Navigator.pop(context);
-      },
-      icon: const Icon(Icons.arrow_upward_outlined),
-    );
-  }
-
   void buildTask(BuildContext context) {
     setDefault();
     showModalBottomSheet(
         isScrollControlled: true,
         context: context,
         builder: (context) {
-          return StatefulBuilder(builder: (context, state) {
-            return Padding(
-              padding: EdgeInsets.only(
-                  bottom: MediaQuery.of(context).viewInsets.bottom),
-              child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-                Flex(
-                  direction: Axis.horizontal,
-                  children: <Widget>[
-                    Expanded(flex: 6, child: addTaskField(context)),
-                    Expanded(flex: 1, child: submitTaskBtn(context))
-                  ],
-                ),
-                Flex(direction: Axis.horizontal, children: <Widget>[
-                  Expanded(
-                      flex: 1,
-                      child: TimePickerWidget(task: task, type: "Date")),
-                  Expanded(
-                      flex: 1,
-                      child: TimePickerWidget(task: task, type: 'Time')),
-                  Expanded(
-                      flex: 1,
-                      child: TextButton.icon(
-                          // add daily / weekly / monthly options
-                          onPressed: () => showDialog(
-                              context: context,
-                              builder: (context) => RepeatSetter(task: task)),
-                          icon: const Icon(Icons.repeat_rounded),
-                          label: const Text('Repeat'))),
-                ])
-              ]),
-            );
-          });
+          return BuildTaskSheet(
+              context: context, task: task, createTask: createTask);
         });
   }
 

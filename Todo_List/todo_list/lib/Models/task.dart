@@ -2,6 +2,7 @@ class Task {
   int? id;
   bool isCompleted;
   bool isExpand;
+  bool isAllDay;
   String title, time, status;
   DateTime? date;
   DateTime createdTime;
@@ -52,6 +53,7 @@ class Task {
     int? id,
     required this.title,
     required this.date,
+    required this.isAllDay,
     required this.isCompleted,
     required this.time,
     required this.createdTime,
@@ -66,6 +68,7 @@ class Task {
         date: map['date'] != null ? DateTime.parse(map['date']) : null,
         isCompleted: map['isCompleted'],
         isExpand: map['isExpand'] as bool,
+        isAllDay: map['isAllDay'] as bool,
         time: map['time'],
         createdTime: DateTime.parse(map['createdTime']),
         status: map['status'],
@@ -81,6 +84,7 @@ class Task {
       'title': title,
       'date': date?.toIso8601String(),
       'isCompleted': isCompleted,
+      'isAllDay': isAllDay,
       'time': time,
       'createdTime': createdTime.toIso8601String(),
       'status': status,

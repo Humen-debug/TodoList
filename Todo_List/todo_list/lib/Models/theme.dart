@@ -68,6 +68,11 @@ final List<List<Color>> themeColors = <List<Color>>[
   ],
 ];
 
+// final textTheme = const TextTheme(
+//   headline1: TextStyle(),
+
+// );
+
 class ThemeProvider extends ChangeNotifier {
   ThemeMode themeMode = ThemeMode.light;
 
