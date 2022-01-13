@@ -220,7 +220,7 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
                         minLines: null,
                         initialValue: widget.task.status,
                         decoration: const InputDecoration(
-                            border: InputBorder.none, hintText: "Description"),
+                            border: InputBorder.none, hintText: "Note"),
                         onChanged: (String descript) => setState(() {
                           widget.task.status = descript;
                           widget.file.updateUser(

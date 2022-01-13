@@ -32,14 +32,20 @@ class _TaskListViewState extends State<TaskListView> {
     });
   }
 
-  int? dismissedIndex(Task item) {
+//  need to improve
+  int? dismissedIndex(Task item, String key) {
     int? pos;
-    for (var v in widget.user.taskMap[MainScreenState.currentList]!) {
+    String currentList = MainScreenState.currentList;
+    print(widget.user.taskMap.containsKey(key));
+    if (widget.user.taskMap.containsKey(key)) currentList = key;
+
+    for (var v in widget.user.taskMap[currentList]!) {
       if (v == item) {
-        pos = widget.user.taskMap[MainScreenState.currentList]!.indexOf(v);
+        pos = widget.user.taskMap[currentList]!.indexOf(v);
         break;
       }
     }
+    print(pos);
     return pos;
   }
 
@@ -167,11 +173,12 @@ class _TaskListViewState extends State<TaskListView> {
                                           key: Key(item.title +
                                               item.createdTime.toString()),
                                           onDismissed: (direction) {
-                                            int? pos = dismissedIndex(item);
+                                            int? pos =
+                                                dismissedIndex(item, key);
                                             if (pos != null) {
                                               setState(() {
-                                                widget.taskMap[key]!
-                                                    .removeAt(lindex);
+                                                // widget.taskMap[key]!
+                                                //     .removeAt(lindex);
 
                                                 widget
                                                     .user

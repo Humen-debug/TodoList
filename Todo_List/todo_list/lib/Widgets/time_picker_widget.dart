@@ -42,6 +42,7 @@ class _TimePickerWidgetState extends State<TimePickerWidget> {
     "Date": (Icons.event),
     "Time": (Icons.alarm),
   };
+
   @override
   Widget build(BuildContext context) {
     return TextButton.icon(
@@ -50,6 +51,7 @@ class _TimePickerWidgetState extends State<TimePickerWidget> {
             case 'Date':
               {
                 final initialDate = DateTime.now();
+
                 await showDatePicker(
                         context: context,
                         initialDate: initialDate,

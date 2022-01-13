@@ -69,7 +69,6 @@ class Task {
         time: map['time'],
         createdTime: DateTime.parse(map['createdTime']),
         status: map['status'],
-        // deadline: map['deadline'],
         subtasks: map['subtasks'] != null
             ? map['subtasks'].map<Task>((s) => Task.fromJson(s)).toList()
             : []);
@@ -104,7 +103,7 @@ List<DateTime> daysInRange(DateTime first, DateTime last) {
   final dayCount = last.difference(first).inDays + 1;
   return List.generate(
     dayCount,
-    (index) => DateTime.utc(first.year, first.month, first.day + index),
+    (index) => DateTime(first.year, first.month, first.day + index),
   );
 }
 
