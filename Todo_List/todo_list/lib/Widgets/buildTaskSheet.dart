@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:todo_list/Models/task.dart';
 import 'package:flutter_switch/flutter_switch.dart';
+import 'package:todo_list/Models/theme.dart';
+import 'package:todo_list/Widgets/add_reminder_dialog.dart';
 import 'package:todo_list/Widgets/time_picker_widget.dart';
 import 'package:todo_list/Widgets/repeat_setter.dart';
+import 'package:provider/provider.dart';
 
 class BuildTaskSheet extends StatefulWidget {
   BuildContext context;
@@ -58,10 +61,12 @@ class _BuildTaskSheetState extends State<BuildTaskSheet> {
           return FlutterSwitch(
               height: 30,
               width: 64,
+              activeColor: Theme.of(context).colorScheme.primary,
               value: widget.task.isAllDay,
               onToggle: (value) {
                 setState(() {
                   widget.task.isAllDay = value;
+
                   // TODO: add shown fuction to Time if toggled
                 });
               });
@@ -120,7 +125,9 @@ class _BuildTaskSheetState extends State<BuildTaskSheet> {
               minimumSize: MaterialStateProperty.all<Size?>(
                   Size(MediaQuery.of(context).size.width - 60, 45))),
           // add daily / weekly / monthly options
-          onPressed: () {},
+          onPressed: () => showDialog(
+              context: context,
+              builder: (context) => AddReminderDialog(task: widget.task)),
           child: const Text(
             'Add Reminder',
             style: TextStyle(fontSize: 16),

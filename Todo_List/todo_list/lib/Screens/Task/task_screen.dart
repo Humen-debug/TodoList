@@ -9,12 +9,8 @@ import 'package:todo_list/Models/theme.dart';
 import 'package:todo_list/Models/user.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_list/Screens/main_screen.dart';
-import 'package:todo_list/Widgets/repeat_setter.dart';
 
 import 'package:todo_list/Widgets/task_listview_widget.dart';
-import 'package:todo_list/Widgets/time_picker_widget.dart';
-
-import 'package:flutter_switch/flutter_switch.dart';
 
 class TaskScreen extends StatefulWidget {
   User user;
