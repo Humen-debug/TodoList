@@ -60,6 +60,7 @@ class MainScreenState extends State<MainScreen> {
         }
       });
     });
+    super.initState();
   }
 
   int _selectedIndex = 0;

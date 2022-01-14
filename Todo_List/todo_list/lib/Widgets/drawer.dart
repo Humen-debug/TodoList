@@ -19,22 +19,50 @@ class SideDrawer extends StatefulWidget {
 }
 
 class _SideDrawerState extends State<SideDrawer> {
+  final categories = <Widget>[];
+  List<String> get listNames => widget.user.taskMap.keys.toList();
+  List<int> get taskNum {
+    List<int> counts = [];
+    for (List list in widget.user.taskMap.values) {
+      counts.add(list.length);
+    }
+    return counts;
+  }
+
   Widget tasklistListView(BuildContext context, categories) {
     return ListView.builder(
         padding: EdgeInsets.zero,
         itemCount: categories.length,
-        itemBuilder: (BuildContext context, int index) {
+        itemBuilder: (context, int index) {
           return categories[index];
         });
   }
 
+  Widget listTitle(int index) {
+    return Row(
+      children: [
+        Text(listNames[index]),
+        const Spacer(),
+        Text(taskNum[index] == 0
+            ? ''
+            : taskNum[index] > 99
+                ? '99+'
+                : taskNum[index].toString())
+      ],
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final categories = <Widget>[];
+    // Problem: lists are not instantly update state
     for (int index = 0; index < widget.user.taskMap.length; index++) {
-      List<String> listNames = widget.user.taskMap.keys.toList();
       categories.add(ListTile(
-        title: Text(listNames[index]),
+        title: listTitle(index),
         onTap: () {
           setState(() {
             MainScreenState.currentList = listNames[index];
@@ -62,7 +90,7 @@ class _SideDrawerState extends State<SideDrawer> {
                             context,
                             MaterialPageRoute(
                                 builder: (context) => ProfileScreen())),
-                        icon: Icon(Icons.person),
+                        icon: const Icon(Icons.person),
                         color: Colors.white,
                       ),
                       backgroundColor: Colors.grey),

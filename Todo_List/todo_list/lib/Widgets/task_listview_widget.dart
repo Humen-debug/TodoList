@@ -32,21 +32,19 @@ class _TaskListViewState extends State<TaskListView> {
     });
   }
 
-//  need to improve
-  int? dismissedIndex(Task item, String key) {
-    int? pos;
-    String currentList = MainScreenState.currentList;
-    print(widget.user.taskMap.containsKey(key));
-    if (widget.user.taskMap.containsKey(key)) currentList = key;
-
-    for (var v in widget.user.taskMap[currentList]!) {
-      if (v == item) {
-        pos = widget.user.taskMap[currentList]!.indexOf(v);
-        break;
+  void dissmissTask(Task task, String key) {
+    setState(() {
+      if (widget.user.taskMap.containsKey(key)) {
+        widget.user.taskMap[key]!.remove(task);
+      } else {
+        for (var list in widget.user.taskMap.values) {
+          if (list.contains(task)) {
+            list.remove(task);
+          }
+        }
       }
-    }
-    print(pos);
-    return pos;
+    });
+    widget.file.updateUser(id: widget.user.id, updatedUser: widget.user);
   }
 
   void updateComplete(List<Task> list, int index, bool? flag) {
@@ -68,6 +66,20 @@ class _TaskListViewState extends State<TaskListView> {
 
       widget.file.updateUser(id: widget.user.id, updatedUser: widget.user);
     });
+  }
+
+  Widget listTitleBar(String key) {
+    return Row(
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 32),
+          child: Text(
+            key.toUpperCase(),
+            style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+          ),
+        ),
+      ],
+    );
   }
 
   Widget taskListTile(Task task, List<Task> list, int index) {
@@ -119,6 +131,13 @@ class _TaskListViewState extends State<TaskListView> {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
+    final taskBtnStyle = ButtonStyle(
+        padding:
+            MaterialStateProperty.all<EdgeInsetsGeometry?>(EdgeInsets.zero),
+        elevation: MaterialStateProperty.all<double>(0.0),
+        backgroundColor: themeProvider.islight
+            ? MaterialStateProperty.all<Color>(Colors.white)
+            : MaterialStateProperty.all<Color>(Colors.grey.shade800));
 
     List keys = widget.taskMap.keys.toList();
 
@@ -130,35 +149,22 @@ class _TaskListViewState extends State<TaskListView> {
               .where((e) => e.isCompleted == true)
               .toList()
               .length;
+          bool showList = (key != "Completed" || widget.user.showComplete) ||
+              key == MainScreenState.currentList;
+          bool showNotEmptyList = !(widget.taskMap[key].isEmpty ||
+              count == widget.taskMap[key].length && key != "Completed");
           return Card(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8.0)),
               elevation: 0.0,
-              child: ((key != "Completed" || widget.user.showComplete) ||
-                      key == MainScreenState.currentList
-                  ? (widget.taskMap[key].isEmpty ||
-                          count == widget.taskMap[key].length &&
-                              key != "Completed")
-                      ? const SizedBox.shrink()
-                      : Column(
+              child: showList
+                  ? showNotEmptyList
+                      ? Column(
                           children: [
                             Container(
-                              height: 30,
-                              alignment: Alignment.center,
-                              child: Row(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 32),
-                                    child: Text(
-                                      key.toUpperCase(),
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.w700,
-                                          fontSize: 16),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
+                                height: 30,
+                                alignment: Alignment.center,
+                                child: listTitleBar(key)),
                             ListView.builder(
                                 physics: const NeverScrollableScrollPhysics(),
                                 padding: EdgeInsets.zero,
@@ -166,68 +172,46 @@ class _TaskListViewState extends State<TaskListView> {
                                 itemCount: widget.taskMap[key].length,
                                 itemBuilder: (context, lindex) {
                                   final Task item = widget.taskMap[key][lindex];
+                                  final taskKey = Key(
+                                      item.title + item.createdTime.toString());
                                   return (key != "Completed" &&
                                           item.isCompleted)
                                       ? const SizedBox.shrink()
                                       : Dismissible(
-                                          key: Key(item.title +
-                                              item.createdTime.toString()),
+                                          key: taskKey,
                                           onDismissed: (direction) {
-                                            int? pos =
-                                                dismissedIndex(item, key);
-                                            if (pos != null) {
-                                              setState(() {
-                                                // widget.taskMap[key]!
-                                                //     .removeAt(lindex);
-
-                                                widget
-                                                    .user
-                                                    .taskMap[MainScreenState
-                                                        .currentList]!
-                                                    .removeAt(pos);
-
-                                                widget.file.updateUser(
-                                                    id: widget.user.id,
-                                                    updatedUser: widget.user);
-                                              });
-                                              ScaffoldMessenger.of(context)
-                                                  .showSnackBar(SnackBar(
-                                                      content: Text(
-                                                          '${item.title} dismissed')));
-                                            }
+                                            dissmissTask(item, key);
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(SnackBar(
+                                                    content: Text(
+                                                        '${item.title} dismissed')));
                                           },
                                           background:
                                               const Card(color: Colors.red),
                                           child: Column(
                                             children: [
                                               ElevatedButton(
-                                                  style: ButtonStyle(
-                                                      padding: MaterialStateProperty
-                                                          .all<EdgeInsetsGeometry?>(
-                                                              EdgeInsets.zero),
-                                                      elevation:
-                                                          MaterialStateProperty
-                                                              .all<double>(0.0),
-                                                      backgroundColor: themeProvider.islight
-                                                          ? MaterialStateProperty
-                                                              .all<Color>(
-                                                                  Colors.white)
-                                                          : MaterialStateProperty.all<Color>(
-                                                              Colors.grey.shade800)),
-                                                  onPressed: () => Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            UpdateTaskScreen(
-                                                                user:
-                                                                    widget.user,
-                                                                file:
-                                                                    widget.file,
-                                                                task: widget
-                                                                        .taskMap[
-                                                                    key][lindex]),
-                                                      )),
-                                                  child: taskListTile(widget.taskMap[key][lindex], widget.taskMap[key], lindex)),
+                                                  style: taskBtnStyle,
+                                                  onPressed: () =>
+                                                      Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                UpdateTaskScreen(
+                                                                    user: widget
+                                                                        .user,
+                                                                    file: widget
+                                                                        .file,
+                                                                    task: widget
+                                                                            .taskMap[key]
+                                                                        [
+                                                                        lindex]),
+                                                          )),
+                                                  child: taskListTile(
+                                                      widget.taskMap[key]
+                                                          [lindex],
+                                                      widget.taskMap[key],
+                                                      lindex)),
                                               Column(
                                                 children: [
                                                   StatementWidget(
@@ -277,9 +261,8 @@ class _TaskListViewState extends State<TaskListView> {
                                 }),
                           ],
                         )
-                  : const SizedBox(
-                      height: 0,
-                    )));
+                      : const SizedBox.shrink()
+                  : const SizedBox.shrink());
         },
         childCount: widget.taskMap.length,
       ),

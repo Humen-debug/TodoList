@@ -103,12 +103,14 @@ class _RepeatSetterState extends State<RepeatSetter> {
   Widget numberInputBox() {
     return Container(
       padding: const EdgeInsets.all(8),
-      height: 44,
+      height: 48,
       width: 70,
       child: TextFormField(
         decoration: const InputDecoration(
           counterText: "",
-          border: OutlineInputBorder(gapPadding: 2),
+          contentPadding: EdgeInsets.all(8),
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(12))),
         ),
         textAlign: TextAlign.center,
         initialValue: '1',

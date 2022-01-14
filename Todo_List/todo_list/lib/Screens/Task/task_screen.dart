@@ -61,16 +61,17 @@ class TaskScreenState extends State<TaskScreen> {
     const Text("By Tags"),
   ];
 
-  @override
-  void initState() {
-    String currentList = appBarTitle;
-    // put task in INBOX when user add task in ALL screen
-    appBarTitle == "All" ? currentList = "Inbox" : currentList = currentList;
+  void setMaps() {
     setState(() {
-      taskMap[MainScreenState.currentList] =
-          widget.user.taskMap[MainScreenState.currentList];
-      if (widget.user.taskMap[currentList]!.isNotEmpty) {
-        for (var task in widget.user.taskMap[currentList]!) {
+      if (appBarTitle == 'All') {
+        for (List list in widget.user.taskMap.values) {
+          for (Task task in list) {
+            setDateMap(task);
+          }
+        }
+      } else {
+        taskMap[appBarTitle] = widget.user.taskMap[appBarTitle];
+        for (Task task in widget.user.taskMap[appBarTitle]!) {
           setTaskMap(task);
           setDateMap(task);
         }
@@ -92,7 +93,6 @@ class TaskScreenState extends State<TaskScreen> {
       if (containTask == false) {
         if (v.isCompleted) {
           dateTimeMap["Completed"]!.add(v);
-          return;
         }
         if (v.date != null) {
           int diff = v.date!.difference(DateTime.now()).inDays;
@@ -290,7 +290,7 @@ class TaskScreenState extends State<TaskScreen> {
 
   @override
   Widget build(BuildContext context) {
-    initState();
+    setMaps();
     final themeProvider = Provider.of<ThemeProvider>(context);
 
     return Scaffold(
