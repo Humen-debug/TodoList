@@ -57,36 +57,29 @@ class _BuildTaskSheetState extends State<BuildTaskSheet> {
         const SizedBox(width: 16),
         const Text('All Day', style: TextStyle(fontSize: 16)),
         const Spacer(),
-        StatefulBuilder(builder: (context, StateSetter setState) {
-          return FlutterSwitch(
-              height: 30,
-              width: 64,
-              activeColor: Theme.of(context).colorScheme.primary,
-              value: widget.task.isAllDay,
-              onToggle: (value) {
-                setState(() {
-                  widget.task.isAllDay = value;
-
-                  // TODO: add shown fuction to Time if toggled
-                });
+        FlutterSwitch(
+            height: 30,
+            width: 64,
+            activeColor: Theme.of(context).colorScheme.primary,
+            value: widget.task.isAllDay,
+            onToggle: (value) {
+              setState(() {
+                widget.task.isAllDay = value;
               });
-        }),
+            })
       ],
     );
   }
 
-  Widget selectDateandTime() {
+  Widget selectDateTime(BuildContext context) {
     return Row(
       children: [
         const SizedBox(width: 30),
         TimePickerWidget(task: widget.task, type: "Date"),
         const Spacer(),
-        TimePickerWidget(task: widget.task, type: 'Time')
-
-        // here is an issue for detecting / state changing problem
-        // !widget.task.isAllDay
-        //     ? TimePickerWidget(widget.task: widget.task, type: 'Time')
-        //     : const SizedBox.shrink(),
+        widget.task.isAllDay
+            ? TimePickerWidget(task: widget.task, type: 'Time')
+            : const SizedBox.shrink(),
       ],
     );
   }
@@ -163,7 +156,7 @@ class _BuildTaskSheetState extends State<BuildTaskSheet> {
               ),
               Padding(
                   padding: const EdgeInsets.only(top: 20),
-                  child: selectDateandTime()),
+                  child: selectDateTime(context)),
               addRepeatBtn(context),
               addReminderBtn(),
             ]),
