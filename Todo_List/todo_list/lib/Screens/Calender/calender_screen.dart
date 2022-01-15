@@ -35,7 +35,6 @@ class _CalenderScreenState extends State<CalenderScreen> {
     setMap();
     selectedDays.add(focusedDay.value);
     selectedEvents = ValueNotifier(getEventsForDay(focusedDay.value));
-    // selectedEvents = ValueNotifier(getEventsForDay(selectedDay!));
     super.initState();
   }
 
