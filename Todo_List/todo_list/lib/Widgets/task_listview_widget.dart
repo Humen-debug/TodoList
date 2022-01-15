@@ -52,12 +52,16 @@ class _TaskListViewState extends State<TaskListView> {
     setState(() {
       list[index].isCompleted = flag!;
       if (list[index].isCompleted == true) {
+        list[index].completedTime = DateTime.now();
+
         widget.user.taskMap['Completed']!.add(temp);
         // update taskMap immediately
         if (widget.user.taskMap['Completed'] != widget.taskMap['Completed']) {
           widget.taskMap['Completed'].add(temp);
         }
       } else {
+        list[index].completedTime = null;
+
         widget.user.taskMap['Completed']!.remove(temp);
         if (widget.user.taskMap['Completed'] != widget.taskMap['Completed']) {
           widget.taskMap['Completed'].remove(temp);

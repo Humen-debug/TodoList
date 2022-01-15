@@ -28,6 +28,10 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
 
   TextEditingController taskController = TextEditingController();
 
+  final menuElementTitles = const <String>['Edit'];
+
+  final menuElementIcons = const <Icon>[Icon(Icons.edit)];
+
   void setDefault() {
     setState(() => subtask = Task(
           title: "",
@@ -37,6 +41,7 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
           isAllDay: true,
           time: "",
           createdTime: DateTime.now(),
+          completedTime: null,
           status: "",
           subtasks: [],
         ));
@@ -52,6 +57,7 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
       isAllDay: true,
       time: subtask.time,
       createdTime: subtask.createdTime,
+      completedTime: subtask.completedTime,
       status: subtask.status,
       subtasks: subtask.subtasks,
     );
@@ -67,9 +73,11 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
     setState(() {
       list[index].isCompleted = flag!;
       if (list[index].isCompleted == true) {
+        list[index].completedTime = DateTime.now();
         list.removeAt(index);
         list.add(temp);
       } else {
+        list[index].completedTime = null;
         list.removeAt(index);
         completeIndex != -1 ? list.insert(completeIndex, temp) : list.add(temp);
       }
@@ -87,6 +95,31 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
         });
   }
 
+  Widget menuBtn() {
+    return PopupMenuButton<int>(
+      icon: const Icon(Icons.more_horiz),
+      itemBuilder: (context) {
+        return List.generate(
+            menuElementTitles.length,
+            (index) => PopupMenuItem(
+                onTap: () {
+                  switch (index) {
+                    case 0:
+                      break;
+                    default:
+                  }
+                },
+                child: Row(
+                  children: [
+                    menuElementIcons[index],
+                    const SizedBox(width: 10),
+                    Text(menuElementTitles[index])
+                  ],
+                )));
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     String appTitle = MainScreenState.currentList;
@@ -97,9 +130,7 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
       SliverAppBar(
         elevation: 0.0,
         title: Text(appTitle),
-        actions: <Widget>[
-          IconButton(onPressed: () {}, icon: const Icon(Icons.more_horiz))
-        ],
+        actions: <Widget>[menuBtn()],
       ),
       SliverList(
         delegate: SliverChildListDelegate([

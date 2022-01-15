@@ -135,6 +135,7 @@ class TaskScreenState extends State<TaskScreen> {
           isAllDay: true,
           time: "",
           createdTime: DateTime.now(),
+          completedTime: null,
           status: "",
           subtasks: [],
         ));
@@ -152,6 +153,7 @@ class TaskScreenState extends State<TaskScreen> {
       isAllDay: true,
       time: task.time,
       createdTime: task.createdTime,
+      completedTime: task.completedTime,
       status: task.status,
       subtasks: task.subtasks,
     );

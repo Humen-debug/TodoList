@@ -6,6 +6,7 @@ class Task {
   String title, time, status;
   DateTime? date;
   DateTime createdTime;
+  DateTime? completedTime;
   List<Task> subtasks;
   List<Tag>? tags;
 
@@ -57,6 +58,7 @@ class Task {
     required this.isCompleted,
     required this.time,
     required this.createdTime,
+    required this.completedTime,
     required this.status,
     required this.subtasks,
     required this.isExpand,
@@ -71,6 +73,9 @@ class Task {
         isAllDay: map['isAllDay'] as bool,
         time: map['time'],
         createdTime: DateTime.parse(map['createdTime']),
+        completedTime: map['completedTime'] != null
+            ? DateTime.parse(map['completedTime'])
+            : null,
         status: map['status'],
         subtasks: map['subtasks'] != null
             ? map['subtasks'].map<Task>((s) => Task.fromJson(s)).toList()
@@ -87,6 +92,7 @@ class Task {
       'isAllDay': isAllDay,
       'time': time,
       'createdTime': createdTime.toIso8601String(),
+      'completedTime': completedTime?.toIso8601String(),
       'status': status,
       'subtasks': subtasks,
       'isExpand': isExpand,

@@ -24,7 +24,8 @@ class _SideDrawerState extends State<SideDrawer> {
   List<int> get taskNum {
     List<int> counts = [];
     for (List list in widget.user.taskMap.values) {
-      counts.add(list.length);
+      int count = list.where((e) => e.isCompleted != true).toList().length;
+      counts.add(count);
     }
     return counts;
   }
