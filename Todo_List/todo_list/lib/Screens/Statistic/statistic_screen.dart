@@ -209,14 +209,18 @@ class _StatisticScreenState extends State<StatisticScreen> {
                   title: ChartTitle(
                       text: 'Recent Completion Curve',
                       alignment: ChartAlignment.near),
+                  margin:
+                      const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
                   // for String as Xasis label
                   primaryXAxis: CategoryAxis(isInversed: true),
                   primaryYAxis: NumericAxis(
-                    interval: 1,
-                  ),
+                      interval: 1,
+                      labelPosition: ChartDataLabelPosition.inside,
+                      labelAlignment: LabelAlignment.center),
                   series: <ChartSeries>[
                     LineSeries<TaskData, String>(
                         dataSource: selectTaskCounts,
+                        enableTooltip: true,
                         xValueMapper: (TaskData data, _) => data.time,
                         yValueMapper: (TaskData data, _) => data.count)
                   ],
