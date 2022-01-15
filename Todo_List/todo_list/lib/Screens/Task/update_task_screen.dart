@@ -3,14 +3,13 @@ import 'package:todo_list/Models/task.dart';
 import 'package:todo_list/Models/user.dart';
 import 'package:todo_list/Models/file_header.dart';
 import 'package:todo_list/Screens/main_screen.dart';
-import 'package:todo_list/Widgets/task_list_tile.dart';
+import 'package:todo_list/Widgets/buildTaskSheet.dart';
 import 'package:todo_list/Widgets/time_picker_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_list/Models/theme.dart';
 
 class UpdateTaskScreen extends StatefulWidget {
   Task task;
-
   User user;
   FileHandler file;
 
@@ -29,16 +28,21 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
 
   TextEditingController taskController = TextEditingController();
 
+  final menuElementTitles = const <String>['Edit'];
+
+  final menuElementIcons = const <Icon>[Icon(Icons.edit)];
+
   void setDefault() {
     setState(() => subtask = Task(
           title: "",
           date: null,
           isCompleted: false,
           isExpand: false,
+          isAllDay: true,
           time: "",
           createdTime: DateTime.now(),
+          completedTime: null,
           status: "",
-          deadline: "No Dealine",
           subtasks: [],
         ));
   }
@@ -50,10 +54,11 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
       date: subtask.date,
       isCompleted: false,
       isExpand: false,
+      isAllDay: true,
       time: subtask.time,
       createdTime: subtask.createdTime,
+      completedTime: subtask.completedTime,
       status: subtask.status,
-      deadline: subtask.deadline,
       subtasks: subtask.subtasks,
     );
     setDefault();
@@ -68,9 +73,11 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
     setState(() {
       list[index].isCompleted = flag!;
       if (list[index].isCompleted == true) {
+        list[index].completedTime = DateTime.now();
         list.removeAt(index);
         list.add(temp);
       } else {
+        list[index].completedTime = null;
         list.removeAt(index);
         completeIndex != -1 ? list.insert(completeIndex, temp) : list.add(temp);
       }
@@ -82,73 +89,35 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
     setDefault();
     showModalBottomSheet(
         context: context,
-        builder: (BuildContext bottomContext) {
-          return StatefulBuilder(builder: (context, state) {
-            return Padding(
-              padding: EdgeInsets.only(
-                  bottom: MediaQuery.of(context).viewInsets.bottom),
-              child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-                Flex(
-                  direction: Axis.horizontal,
-                  children: <Widget>[
-                    Expanded(
-                      flex: 6,
-                      child: TextField(
-                        controller: taskController,
-                        decoration: const InputDecoration(
-                          labelText: 'Add Task',
-                        ),
-                        onChanged: (String title) {
-                          setState(() {
-                            subtask.title = title;
-                          });
-                        },
-                        onSubmitted: (String title) {
-                          setState(() {
-                            subtask.title = title;
-                            createTask();
-                          });
-                          Navigator.pop(context);
-                        },
-                      ),
-                    ),
-                    Expanded(
-                      flex: 1,
-                      child: IconButton(
-                        onPressed: () {
-                          setState(() => createTask());
-                          Navigator.pop(context);
-                        },
-                        icon: const Icon(Icons.arrow_upward_outlined),
-                      ),
-                    )
-                  ],
-                ),
-                Flex(direction: Axis.horizontal, children: <Widget>[
-                  Expanded(
-                      flex: 1,
-                      child: TimePickerWidget(
-                        task: subtask,
-                        type: 'Date',
-                      )),
-                  Expanded(
-                      flex: 1,
-                      child: TimePickerWidget(
-                        task: subtask,
-                        type: 'Time',
-                      )),
-                  Expanded(
-                      flex: 1,
-                      child: TextButton.icon(
-                          // add daily / weekly / monthly options
-                          onPressed: () {},
-                          icon: const Icon(Icons.repeat_rounded),
-                          label: const Text('Repeat'))),
-                ])
-              ]),
-            );
-          });
+        builder: (context) {
+          return BuildTaskSheet(
+              context: context, task: subtask, createTask: createTask);
         });
+  }
+
+  Widget menuBtn() {
+    return PopupMenuButton<int>(
+      icon: const Icon(Icons.more_horiz),
+      itemBuilder: (context) {
+        return List.generate(
+            menuElementTitles.length,
+            (index) => PopupMenuItem(
+                onTap: () {
+                  switch (index) {
+                    case 0:
+                      break;
+                    default:
+                  }
+                },
+                child: Row(
+                  children: [
+                    menuElementIcons[index],
+                    const SizedBox(width: 10),
+                    Text(menuElementTitles[index])
+                  ],
+                )));
+      },
+    );
   }
 
   @override
@@ -161,9 +130,7 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
       SliverAppBar(
         elevation: 0.0,
         title: Text(appTitle),
-        actions: <Widget>[
-          IconButton(onPressed: () {}, icon: const Icon(Icons.more_horiz))
-        ],
+        actions: <Widget>[menuBtn()],
       ),
       SliverList(
         delegate: SliverChildListDelegate([
@@ -171,52 +138,68 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
             alignment: Alignment.centerLeft,
             children: [
               LinearProgressIndicator(
-                value: widget.task.setProgress,
-                minHeight: 48,
+                value: widget.task.getProgress,
+                minHeight: 50,
                 valueColor: AlwaysStoppedAnimation<Color>(themeProvider.islight
                     ? Colors.grey.shade300
                     : Colors.grey.shade800),
                 backgroundColor: Colors.transparent,
               ),
               Checkbox(value: widget.task.isCompleted, onChanged: (value) {}),
+              Positioned(
+                left: 48,
+                child: TextButton(
+                    onPressed: () {},
+                    child: widget.task.getDeadline == "none"
+                        ? const Text(
+                            "Date",
+                            style: TextStyle(fontWeight: FontWeight.w700),
+                          )
+                        : Text(widget.task.getDeadline,
+                            style:
+                                const TextStyle(fontWeight: FontWeight.w700))),
+              ),
             ],
           ),
           Column(
             children: [
-              TextFormField(
-                initialValue: widget.task.title,
-                decoration: const InputDecoration(
-                  border: InputBorder.none,
-                ),
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-                onChanged: (String title) => setState(() {
-                  if (title != "") {
-                    widget.task.title = title;
-                    widget.file.updateUser(
-                        id: widget.user.id, updatedUser: widget.user);
-                  }
-                }),
-                onFieldSubmitted: (String title) => setState(() {
-                  widget.task.title = title;
-                  widget.file
-                      .updateUser(id: widget.user.id, updatedUser: widget.user);
-                }),
-              ),
-              TextFormField(
-                maxLines: null,
-                minLines: null,
-                initialValue: widget.task.status,
-                decoration: const InputDecoration(
-                    border: InputBorder.none, hintText: "Description"),
-                onChanged: (String descript) => setState(() {
-                  widget.task.status = descript;
-                  widget.file
-                      .updateUser(id: widget.user.id, updatedUser: widget.user);
-                }),
-              ),
+              Padding(
+                  padding: const EdgeInsets.only(left: 14, right: 14),
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        initialValue: widget.task.title,
+                        decoration:
+                            const InputDecoration(border: InputBorder.none),
+                        style: const TextStyle(
+                            fontSize: 24, fontWeight: FontWeight.bold),
+                        onChanged: (String title) => setState(() {
+                          if (title != "") {
+                            widget.task.title = title;
+                            widget.file.updateUser(
+                                id: widget.user.id, updatedUser: widget.user);
+                          }
+                        }),
+                        onFieldSubmitted: (String title) => setState(() {
+                          widget.task.title = title;
+                          widget.file.updateUser(
+                              id: widget.user.id, updatedUser: widget.user);
+                        }),
+                      ),
+                      TextFormField(
+                        maxLines: null,
+                        minLines: null,
+                        initialValue: widget.task.status,
+                        decoration: const InputDecoration(
+                            border: InputBorder.none, hintText: "Note"),
+                        onChanged: (String descript) => setState(() {
+                          widget.task.status = descript;
+                          widget.file.updateUser(
+                              id: widget.user.id, updatedUser: widget.user);
+                        }),
+                      ),
+                    ],
+                  )),
               SizedBox(
                 height: MediaQuery.of(context).size.height,
                 child: ListView.builder(

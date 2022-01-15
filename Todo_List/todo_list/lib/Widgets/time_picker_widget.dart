@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class TimePickerWidget extends StatefulWidget {
   Task task;
   String type;
-  // Text deadline;
+
   TimePickerWidget({
     Key? key,
     required this.task,
@@ -16,11 +16,12 @@ class TimePickerWidget extends StatefulWidget {
 }
 
 class _TimePickerWidgetState extends State<TimePickerWidget> {
+  final textStyle = const TextStyle(color: Colors.grey, fontSize: 16);
+
   void updateDate(date) {
     if (date == null) return;
     setState(() {
       widget.task.date = date;
-      updateDeadline();
     });
   }
 
@@ -36,83 +37,50 @@ class _TimePickerWidgetState extends State<TimePickerWidget> {
           time.hour,
           time.minute);
       widget.task.time = '$hours:$minutes';
-      updateDeadline();
     });
   }
 
-  void updateDeadline() {
-    var diff = (widget.task.date)?.difference(DateTime.now()).inDays ?? 0;
-
-    if (diff > 0) {
-      if (diff == 1) {
-        widget.task.deadline = 'Due Tomorrow';
-      } else {
-        widget.task.deadline =
-            '${widget.task.date!.day}/${widget.task.date!.month}/${widget.task.date!.year}: $diff days left';
-      }
-    } else if (diff == 0) {
-      var diffHour = (widget.task.date!).difference(DateTime.now()).inHours;
-      if (diffHour >= 0) {
-        widget.task.deadline = '$diffHour hrs left';
-      } else {
-        diffHour = -diffHour;
-        widget.task.deadline = '$diffHour hrs late';
-      }
-    } else {
-      diff = -diff;
-      widget.task.deadline =
-          '${widget.task.date!.day}/${widget.task.date!.month}/${widget.task.date!.year}: $diff days late';
-    }
-  }
-
-  static const icons = <String, IconData>{
-    "Date": (Icons.event),
-    "Time": (Icons.alarm),
-  };
   @override
   Widget build(BuildContext context) {
-    return TextButton.icon(
-        onPressed: () async {
-          switch (widget.type) {
-            case 'Date':
-              {
-                final initialDate = DateTime.now();
-                await showDatePicker(
-                        context: context,
-                        initialDate: initialDate,
-                        firstDate: DateTime(DateTime.now().year - 5),
-                        lastDate: DateTime(DateTime.now().year + 5))
-                    .then((date) {
-                  // print('date: $date');
-                  updateDate(date);
-                  // print('task.date: $widget.task.date');
-                });
-              }
-              break;
-            case 'Time':
-              {
-                const initialTime = TimeOfDay(hour: 8, minute: 0);
-                await showTimePicker(
-                  context: context,
-                  initialTime: initialTime,
-                ).then((time) {
-                  updateTime(time);
-                });
-              }
-              break;
-          }
-        },
-        icon: Icon(icons[widget.type]),
-        label: widget.type == 'Time'
-            ? widget.task.time == ""
-                ? const Text("Select Time",
-                    style: TextStyle(color: Colors.grey))
-                : Text(widget.task.time)
-            : widget.task.date == null
-                ? const Text("Select Date",
-                    style: TextStyle(color: Colors.grey))
-                : Text(
-                    '${widget.task.date!.day}/${widget.task.date!.month}/${widget.task.date!.year}',
-                    style: const TextStyle(color: Colors.grey)));
+    return TextButton(
+      child: widget.type == 'Time'
+          ? widget.task.time == ""
+              ? Text("Time", style: textStyle)
+              : Text(widget.task.time, style: textStyle)
+          : widget.task.date == null
+              ? Text("Selected Date", style: textStyle)
+              : Text(
+                  '${widget.task.date!.day}/${widget.task.date!.month}/${widget.task.date!.year}',
+                  style: textStyle),
+      onPressed: () async {
+        switch (widget.type) {
+          case 'Date':
+            {
+              final initialDate = DateTime.now();
+              await showDatePicker(
+                      context: context,
+                      initialDate: initialDate,
+                      firstDate: DateTime(DateTime.now().year - 5),
+                      lastDate: DateTime(DateTime.now().year + 5),
+                      currentDate: DateTime.now())
+                  .then((date) {
+                updateDate(date);
+              });
+            }
+            break;
+          case 'Time':
+            {
+              const initialTime = TimeOfDay(hour: 8, minute: 0);
+              await showTimePicker(
+                context: context,
+                initialTime: initialTime,
+              ).then((time) {
+                updateTime(time);
+              });
+            }
+            break;
+        }
+      },
+    );
   }
 }
