@@ -25,26 +25,12 @@ class _StatisticScreenState extends State<StatisticScreen> {
           DateTime.now().year, DateTime.now().month, DateTime.now().day)
       .toLocal();
   final int periodNum = 7;
+  double dateTimeInterval = 1.0;
   int periodChoice = 0;
 
   late Map<DateTime, int> taskCountsMap = {};
 
   final List periodBtnTitles = const <String>['Day', 'Week', 'Month'];
-
-  final List months = const <String>[
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'May',
-    'Jun',
-    'Jul',
-    'Aug',
-    'Sep',
-    'Oct',
-    'Nov',
-    'Dec'
-  ];
 
   List<TaskData> dailyTaskCounts = [];
   List<TaskData> weeklyTaskCounts = [];
@@ -68,12 +54,17 @@ class _StatisticScreenState extends State<StatisticScreen> {
       switch (index) {
         case 0:
           selectTaskCounts = dailyTaskCounts;
+          dateTimeInterval = 1.0;
+
           break;
         case 1:
           selectTaskCounts = weeklyTaskCounts;
+          dateTimeInterval = 7.0;
           break;
         case 2:
           selectTaskCounts = monthlyTaskCounts;
+          dateTimeInterval = 1.0;
+
           break;
       }
     });
@@ -96,7 +87,9 @@ class _StatisticScreenState extends State<StatisticScreen> {
 
   int getCountForWeek(DateTime date) {
     int count = 0;
-    for (int day = 0; day < periodNum; day++) {
+    int diff = date.difference(findSunday(date)).inDays;
+
+    for (int day = 0; day < diff; day++) {
       count += getCountForDay(date.subtract(Duration(days: day)));
     }
     return count;
@@ -114,20 +107,17 @@ class _StatisticScreenState extends State<StatisticScreen> {
   void setDailyTaskCount() {
     dailyTaskCounts = List<TaskData>.generate(periodNum, (index) {
       DateTime date = today.subtract(Duration(days: index));
-      bool isToday = date == today;
-      String time = isToday ? 'Today' : (date.day).toString() + 'th';
 
-      return TaskData(time: time, count: getCountForDay(date));
+      return TaskData(time: date, count: getCountForDay(date));
     });
   }
 
   void setWeeklyTaskCount() {
     weeklyTaskCounts = List<TaskData>.generate(periodNum, (index) {
-      DateTime date = findSaturday(
-          today.subtract(Duration(days: DateTime.daysPerWeek * index)));
-      bool isThisWeek = findSunday(date) == findSunday(today);
-      String time =
-          isThisWeek ? 'This Week' : (findSunday(date).day).toString() + 'th';
+      DateTime date =
+          today.subtract(Duration(days: DateTime.daysPerWeek * index));
+      bool isThisWeek = date == today;
+      DateTime time = isThisWeek ? today : findSunday(date);
       return TaskData(time: time, count: getCountForWeek(date));
     });
   }
@@ -136,18 +126,16 @@ class _StatisticScreenState extends State<StatisticScreen> {
     monthlyTaskCounts = List<TaskData>.generate(periodNum, (index) {
       DateTime date = findLastDayinMonth(
           DateTime.utc(today.year, today.month - index, today.day).toLocal());
-      bool isThisMonth =
-          findFirstDayinMonth(date) == findFirstDayinMonth(today);
-      String time = isThisMonth ? 'This Month' : months[date.month - 1];
-      return TaskData(time: time, count: getCountForMonth(date));
+
+      return TaskData(time: date, count: getCountForMonth(date));
     });
   }
 
-  DateTime findSunday(DateTime date) =>
-      date.subtract(Duration(days: date.weekday));
-
   DateTime findSaturday(DateTime date) =>
       date.add(Duration(days: DateTime.daysPerWeek - (date.weekday + 1)));
+
+  DateTime findSunday(DateTime date) =>
+      date.subtract(Duration(days: date.weekday));
 
   DateTime findFirstDayinMonth(DateTime date) =>
       DateTime(date.year, date.month, 1).toLocal();
@@ -174,12 +162,13 @@ class _StatisticScreenState extends State<StatisticScreen> {
         appBar: AppBar(),
         body: ListView(children: [
           Card(
-            child: Column(
-              children: [
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-                  child: SizedBox(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(8, 24, 8, 4),
+              child: Column(
+                children: [
+                  SizedBox(
                     height: 30,
                     child: ListView.separated(
                         scrollDirection: Axis.horizontal,
@@ -204,28 +193,29 @@ class _StatisticScreenState extends State<StatisticScreen> {
                                   style: choiceBtnTextStyle));
                         }),
                   ),
-                ),
-                SfCartesianChart(
-                  title: ChartTitle(
-                      text: 'Recent Completion Curve',
-                      alignment: ChartAlignment.near),
-                  margin:
-                      const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
-                  // for String as Xasis label
-                  primaryXAxis: CategoryAxis(isInversed: true),
-                  primaryYAxis: NumericAxis(
-                      interval: 1,
-                      labelPosition: ChartDataLabelPosition.inside,
-                      labelAlignment: LabelAlignment.center),
-                  series: <ChartSeries>[
-                    LineSeries<TaskData, String>(
-                        dataSource: selectTaskCounts,
-                        enableTooltip: true,
-                        xValueMapper: (TaskData data, _) => data.time,
-                        yValueMapper: (TaskData data, _) => data.count)
-                  ],
-                ),
-              ],
+                  SfCartesianChart(
+                    title: ChartTitle(
+                        text: 'Recent Completion Curve',
+                        alignment: ChartAlignment.near),
+                    margin: const EdgeInsets.symmetric(
+                        vertical: 20, horizontal: 12),
+                    primaryXAxis: DateTimeAxis(interval: dateTimeInterval),
+                    primaryYAxis: NumericAxis(
+                        interval: 1,
+                        labelPosition: ChartDataLabelPosition.inside,
+                        labelAlignment: LabelAlignment.center),
+                    series: <ChartSeries>[
+                      LineSeries<TaskData, DateTime>(
+                          dataSource: selectTaskCounts,
+                          enableTooltip: true,
+                          color: themeProvider.lighttheme.colorScheme.primary,
+                          animationDuration: 500.0,
+                          xValueMapper: (TaskData data, _) => data.time,
+                          yValueMapper: (TaskData data, _) => data.count)
+                    ],
+                  ),
+                ],
+              ),
             ),
           )
         ]));

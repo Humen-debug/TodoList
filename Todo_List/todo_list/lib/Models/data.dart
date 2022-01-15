@@ -1,5 +1,5 @@
 class TaskData {
-  String time;
+  DateTime time;
   int count;
 
   TaskData({required this.time, required this.count});
