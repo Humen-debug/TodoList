@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:todo_list/Models/file_header.dart';
 import 'package:todo_list/Screens/Calender/calender_screen.dart';
+import 'package:todo_list/Screens/Statistic/statistic_screen.dart';
 import 'package:todo_list/Screens/Task/task_screen.dart';
 import 'package:todo_list/Models/user.dart';
 import 'package:todo_list/Models/task.dart';
@@ -70,7 +71,10 @@ class MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     final _pages = [
       TaskScreen(user: user, file: fileHandler),
-      Center(child: Text('Home')),
+      StatisticScreen(
+        user: user,
+        file: fileHandler,
+      ),
       CalenderScreen(
         user: user,
         file: fileHandler,
