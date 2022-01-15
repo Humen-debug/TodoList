@@ -178,9 +178,7 @@ class _StatisticScreenState extends State<StatisticScreen> {
                         itemCount: periodBtnTitles.length,
                         itemBuilder: (context, index) {
                           return OutlinedButton(
-                              onPressed: () {
-                                selectPeriod(index);
-                              },
+                              onPressed: () => selectPeriod(index),
                               style: periodChoice == index
                                   ? choiceBtnStyle.copyWith(
                                       backgroundColor:
@@ -199,7 +197,11 @@ class _StatisticScreenState extends State<StatisticScreen> {
                         alignment: ChartAlignment.near),
                     margin: const EdgeInsets.symmetric(
                         vertical: 20, horizontal: 12),
-                    primaryXAxis: DateTimeAxis(interval: dateTimeInterval),
+                    primaryXAxis: DateTimeAxis(
+                      interval: dateTimeInterval,
+                      majorGridLines:
+                          const MajorGridLines(width: 2, dashArray: [4, 5]),
+                    ),
                     primaryYAxis: NumericAxis(
                         interval: 1,
                         labelPosition: ChartDataLabelPosition.inside,
