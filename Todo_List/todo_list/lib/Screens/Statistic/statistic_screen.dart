@@ -3,6 +3,8 @@ import 'package:todo_list/Models/data.dart';
 
 import 'package:todo_list/Models/file_header.dart';
 import 'package:todo_list/Models/task.dart';
+import 'package:todo_list/Models/theme.dart';
+import 'package:provider/provider.dart';
 
 import 'package:todo_list/Models/user.dart';
 
@@ -19,13 +21,63 @@ class StatisticScreen extends StatefulWidget {
 }
 
 class _StatisticScreenState extends State<StatisticScreen> {
+  final DateTime today = DateTime.utc(
+          DateTime.now().year, DateTime.now().month, DateTime.now().day)
+      .toLocal();
+  final int periodNum = 7;
+  int periodChoice = 0;
+
   late Map<DateTime, int> taskCountsMap = {};
 
-  final List periodBtnTitles = <String>['Day', 'Week', 'Month'];
+  final List periodBtnTitles = const <String>['Day', 'Week', 'Month'];
+
+  final List months = const <String>[
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec'
+  ];
 
   List<TaskData> dailyTaskCounts = [];
+  List<TaskData> weeklyTaskCounts = [];
+  List<TaskData> monthlyTaskCounts = [];
 
-  int periodChoice = 0;
+  late List<TaskData> selectTaskCounts = dailyTaskCounts;
+
+  final choiceBtnStyle = ButtonStyle(
+    shape: MaterialStateProperty.all(
+        RoundedRectangleBorder(borderRadius: BorderRadius.circular(18))),
+    minimumSize: MaterialStateProperty.all(const Size(64, 30)),
+    side: MaterialStateProperty.all(
+        const BorderSide(color: Colors.grey, width: 0.8)),
+  );
+
+  final choiceBtnTextStyle = const TextStyle(fontSize: 12);
+
+  void selectPeriod(int index) {
+    setState(() {
+      periodChoice = index;
+      switch (index) {
+        case 0:
+          selectTaskCounts = dailyTaskCounts;
+          break;
+        case 1:
+          selectTaskCounts = weeklyTaskCounts;
+          break;
+        case 2:
+          selectTaskCounts = monthlyTaskCounts;
+          break;
+      }
+    });
+  }
 
   void setTaskCountsMap() {
     for (Task task in widget.user.taskMap['Completed']!) {
@@ -42,19 +94,74 @@ class _StatisticScreenState extends State<StatisticScreen> {
     return taskCountsMap[date] ?? 0;
   }
 
+  int getCountForWeek(DateTime date) {
+    int count = 0;
+    for (int day = 0; day < periodNum; day++) {
+      count += getCountForDay(date.subtract(Duration(days: day)));
+    }
+    return count;
+  }
+
+  int getCountForMonth(DateTime date) {
+    int count = 0;
+    int diff = date.difference(findFirstDayinMonth(date)).inDays;
+    for (int day = 0; day <= diff; day++) {
+      count += getCountForDay(date.subtract(Duration(days: day)));
+    }
+    return count;
+  }
+
+  void setDailyTaskCount() {
+    dailyTaskCounts = List<TaskData>.generate(periodNum, (index) {
+      DateTime date = today.subtract(Duration(days: index));
+      bool isToday = date == today;
+      String time = isToday ? 'Today' : (date.day).toString() + 'th';
+
+      return TaskData(time: time, count: getCountForDay(date));
+    });
+  }
+
+  void setWeeklyTaskCount() {
+    weeklyTaskCounts = List<TaskData>.generate(periodNum, (index) {
+      DateTime date = findSaturday(
+          today.subtract(Duration(days: DateTime.daysPerWeek * index)));
+      bool isThisWeek = findSunday(date) == findSunday(today);
+      String time =
+          isThisWeek ? 'This Week' : (findSunday(date).day).toString() + 'th';
+      return TaskData(time: time, count: getCountForWeek(date));
+    });
+  }
+
+  void setMonthlyTaskCount() {
+    monthlyTaskCounts = List<TaskData>.generate(periodNum, (index) {
+      DateTime date = findLastDayinMonth(
+          DateTime.utc(today.year, today.month - index, today.day).toLocal());
+      bool isThisMonth =
+          findFirstDayinMonth(date) == findFirstDayinMonth(today);
+      String time = isThisMonth ? 'This Month' : months[date.month - 1];
+      return TaskData(time: time, count: getCountForMonth(date));
+    });
+  }
+
+  DateTime findSunday(DateTime date) =>
+      date.subtract(Duration(days: date.weekday));
+
+  DateTime findSaturday(DateTime date) =>
+      date.add(Duration(days: DateTime.daysPerWeek - (date.weekday + 1)));
+
+  DateTime findFirstDayinMonth(DateTime date) =>
+      DateTime(date.year, date.month, 1).toLocal();
+
+  DateTime findLastDayinMonth(DateTime date) =>
+      DateTime.utc(date.year, date.month + 1, 0).toLocal();
+
   @override
   void initState() {
     setState(() {
       setTaskCountsMap();
-      dailyTaskCounts = List<TaskData>.generate(7, (index) {
-        DateTime now = DateTime.now();
-        DateTime today = DateTime.utc(now.year, now.month, now.day).toLocal();
-
-        DateTime date = today.subtract(Duration(days: index));
-        String time = (date.day).toString();
-
-        return TaskData(time: time, count: getCountForDay(date));
-      });
+      setDailyTaskCount();
+      setWeeklyTaskCount();
+      setMonthlyTaskCount();
     });
     // print(dailyTaskCounts);
     super.initState();
@@ -62,27 +169,46 @@ class _StatisticScreenState extends State<StatisticScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
         appBar: AppBar(),
         body: ListView(children: [
           Card(
             child: Column(
               children: [
-                SizedBox(
-                  height: 36,
-                  child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: periodBtnTitles.length,
-                      itemBuilder: (context, index) {
-                        return OutlinedButton(
-                            onPressed: () {
-                              periodChoice = index;
-                            },
-                            child: Text(periodBtnTitles[index]));
-                      }),
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                  child: SizedBox(
+                    height: 30,
+                    child: ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        physics: const NeverScrollableScrollPhysics(),
+                        separatorBuilder: (context, index) =>
+                            const SizedBox(width: 10),
+                        itemCount: periodBtnTitles.length,
+                        itemBuilder: (context, index) {
+                          return OutlinedButton(
+                              onPressed: () {
+                                selectPeriod(index);
+                              },
+                              style: periodChoice == index
+                                  ? choiceBtnStyle.copyWith(
+                                      backgroundColor:
+                                          MaterialStateProperty.all(
+                                              themeProvider.lighttheme
+                                                  .colorScheme.secondary
+                                                  .withOpacity(0.2)))
+                                  : choiceBtnStyle,
+                              child: Text(periodBtnTitles[index],
+                                  style: choiceBtnTextStyle));
+                        }),
+                  ),
                 ),
                 SfCartesianChart(
+                  title: ChartTitle(
+                      text: 'Recent Completion Curve',
+                      alignment: ChartAlignment.near),
                   // for String as Xasis label
                   primaryXAxis: CategoryAxis(isInversed: true),
                   primaryYAxis: NumericAxis(
@@ -90,7 +216,7 @@ class _StatisticScreenState extends State<StatisticScreen> {
                   ),
                   series: <ChartSeries>[
                     LineSeries<TaskData, String>(
-                        dataSource: dailyTaskCounts,
+                        dataSource: selectTaskCounts,
                         xValueMapper: (TaskData data, _) => data.time,
                         yValueMapper: (TaskData data, _) => data.count)
                   ],
