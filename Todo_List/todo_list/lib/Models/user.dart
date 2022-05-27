@@ -7,6 +7,7 @@ class User {
   bool showComplete;
   bool showDetails;
   int sortIndex;
+
   final Map<String, List<Task>> taskMap;
 
   User({

@@ -1,35 +1,65 @@
-import 'dart:collection';
-import 'package:table_calendar/table_calendar.dart';
-
 class Task {
   int? id;
   bool isCompleted;
   bool isExpand;
-  String title, time, status, deadline;
+  bool isAllDay;
+  String title, time, status;
   DateTime? date;
   DateTime createdTime;
+  DateTime? completedTime;
   List<Task> subtasks;
   List<Tag>? tags;
 
+  int repeatChoice = -1;
+
   @override
   String toString() {
-    return "$title: $date, $createdTime,$subtasks";
+    return "$title: $isCompleted";
   }
 
-  double get setProgress => subtasks.isNotEmpty
+  double get getProgress => subtasks.isNotEmpty
       ? subtasks.where((s) => s.isCompleted == true).toList().length /
           subtasks.length
       : 0;
+
+  String get getDeadline {
+    String deadline = "none";
+    if (date != null) {
+      var diff = (date)?.difference(DateTime.now()).inDays ?? 0;
+      if (diff > 0) {
+        if (diff == 1) {
+          deadline = 'Due Tomorrow';
+        } else {
+          deadline =
+              '${date!.day}/${date!.month}/${date!.year}: $diff days left';
+        }
+      } else if (diff == 0) {
+        var diffHour = (date!).difference(DateTime.now()).inHours;
+        if (diffHour >= 0) {
+          deadline = '$diffHour hrs left';
+        } else {
+          diffHour = -diffHour;
+          deadline = '$diffHour hrs late';
+        }
+      } else {
+        diff = -diff;
+        deadline = '${date!.day}/${date!.month}/${date!.year}: $diff days late';
+      }
+    }
+
+    return deadline;
+  }
 
   Task({
     int? id,
     required this.title,
     required this.date,
+    required this.isAllDay,
     required this.isCompleted,
     required this.time,
     required this.createdTime,
+    required this.completedTime,
     required this.status,
-    required this.deadline,
     required this.subtasks,
     required this.isExpand,
   });
@@ -40,10 +70,13 @@ class Task {
         date: map['date'] != null ? DateTime.parse(map['date']) : null,
         isCompleted: map['isCompleted'],
         isExpand: map['isExpand'] as bool,
+        isAllDay: map['isAllDay'] as bool,
         time: map['time'],
         createdTime: DateTime.parse(map['createdTime']),
+        completedTime: map['completedTime'] != null
+            ? DateTime.parse(map['completedTime'])
+            : null,
         status: map['status'],
-        deadline: map['deadline'],
         subtasks: map['subtasks'] != null
             ? map['subtasks'].map<Task>((s) => Task.fromJson(s)).toList()
             : []);
@@ -56,29 +89,16 @@ class Task {
       'title': title,
       'date': date?.toIso8601String(),
       'isCompleted': isCompleted,
+      'isAllDay': isAllDay,
       'time': time,
       'createdTime': createdTime.toIso8601String(),
+      'completedTime': completedTime?.toIso8601String(),
       'status': status,
-      'deadline': deadline,
       'subtasks': subtasks,
       'isExpand': isExpand,
     };
   }
 }
-
-// final Set<Task> taskSet = {};
-// Future<void> writeTask(Task task, List<Task> taskList) async {
-//   taskSet.add(task);
-//   taskList = taskSet.toList();
-// }
-
-// Future<void> updateTask(
-//     {required Task oldTask,
-//     required Task updatedTask,
-//     required List<Task> taskList}) async {
-//   taskSet.remove(oldTask);
-//   await writeTask(updatedTask, taskList);
-// }
 
 class Tag {
   String name;
@@ -89,12 +109,11 @@ int getHashCode(DateTime key) {
   return key.day * 1000000 + key.month * 10000 + key.year;
 }
 
-
 List<DateTime> daysInRange(DateTime first, DateTime last) {
   final dayCount = last.difference(first).inDays + 1;
   return List.generate(
     dayCount,
-    (index) => DateTime.utc(first.year, first.month, first.day + index),
+    (index) => DateTime(first.year, first.month, first.day + index),
   );
 }
 
